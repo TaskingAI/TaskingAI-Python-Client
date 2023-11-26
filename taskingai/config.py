@@ -45,28 +45,17 @@ class _CONFIG:
     def reset(self, **kwargs):
         config = ConfigBase()
 
-        # Get the environment first. Make sure that it is not overwritten in subsequent config objects.
+        # Get from kwargs first, then environment variables, then default
         api_key = (
-            kwargs.pop("api_key", None)
-            or os.getenv("TASKINGAI_API_KEY")
+            kwargs.pop("api_key", None) or os.getenv("TASKINGAI_API_KEY")
         )
-        config = config._replace(api_key=api_key)
-
-        # Set default config
-        default_config = ConfigBase(
-            host="https://api.tasking.ai"
+        host = (
+            kwargs.pop("host", None) or os.getenv("TASKINGAI_HOST") or "https://api.tasking.ai"
         )
-        config = config._replace(**self._preprocess_and_validate_config(default_config._asdict()))
-
-        # Set environment config
-        env_config = ConfigBase(
-            api_key=os.getenv("TASKINGAI_API_KEY"),
-            host=os.getenv("TASKINGAI_HOST"),
-        )
-        config = config._replace(**self._preprocess_and_validate_config(env_config._asdict()))
+        config = config._replace(api_key=api_key, host=host)
 
         # Set explicit config
-        config = config._replace(**self._preprocess_and_validate_config(kwargs))
+        # config = config._replace(**self._preprocess_and_validate_config(kwargs))
 
         self._config = config
 
