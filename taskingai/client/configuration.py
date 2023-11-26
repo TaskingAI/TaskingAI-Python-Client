@@ -13,7 +13,6 @@ import logging
 import multiprocessing
 import sys
 import urllib3
-import os
 
 import six
 from six.moves import http_client as httplib
@@ -50,9 +49,6 @@ class Configuration(six.with_metaclass(TypeWithDefault, object)):
         # Authentication Settings
         # dict to store API key(s)
         self.api_key = ""
-        env_api_key = os.getenv('TASKINGAI_API_KEY')
-        if env_api_key:
-            self.api_key = env_api_key
         # dict to store API prefix (e.g. Bearer)
         self.api_key_prefix = "Bearer"
         # function to refresh API key if expired
