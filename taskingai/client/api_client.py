@@ -20,6 +20,7 @@ from six.moves.urllib.parse import quote
 
 from taskingai.client.configuration import Configuration
 from taskingai.client import rest
+import taskingai.client as client
 
 
 class ApiClient(object):
