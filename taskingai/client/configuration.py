@@ -49,7 +49,7 @@ class Configuration(six.with_metaclass(TypeWithDefault, object)):
 
         # Authentication Settings
         # dict to store API key(s)
-        self.api_key = {}
+        self.api_key = ""
         env_api_key = os.getenv('TASKINGAI_API_KEY')
         if env_api_key:
             self.api_key = env_api_key

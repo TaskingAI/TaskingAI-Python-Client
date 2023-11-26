@@ -168,9 +168,6 @@ class Assistant(object):
         :param name: The name of this Assistant.  # noqa: E501
         :type: object
         """
-        if name is None:
-            raise ValueError("Invalid value for `name`, must not be `None`")  # noqa: E501
-
         self._name = name
 
     @property
@@ -193,9 +190,6 @@ class Assistant(object):
         :param description: The description of this Assistant.  # noqa: E501
         :type: object
         """
-        if description is None:
-            raise ValueError("Invalid value for `description`, must not be `None`")  # noqa: E501
-
         self._description = description
 
     @property
@@ -218,9 +212,6 @@ class Assistant(object):
         :param system_prompt_template: The system_prompt_template of this Assistant.  # noqa: E501
         :type: object
         """
-        if system_prompt_template is None:
-            raise ValueError("Invalid value for `system_prompt_template`, must not be `None`")  # noqa: E501
-
         self._system_prompt_template = system_prompt_template
 
     @property
@@ -243,9 +234,6 @@ class Assistant(object):
         :param tools: The tools of this Assistant.  # noqa: E501
         :type: object
         """
-        if tools is None:
-            raise ValueError("Invalid value for `tools`, must not be `None`")  # noqa: E501
-
         self._tools = tools
 
     @property
@@ -268,9 +256,6 @@ class Assistant(object):
         :param retrievals: The retrievals of this Assistant.  # noqa: E501
         :type: object
         """
-        if retrievals is None:
-            raise ValueError("Invalid value for `retrievals`, must not be `None`")  # noqa: E501
-
         self._retrievals = retrievals
 
     @property
@@ -293,9 +278,6 @@ class Assistant(object):
         :param metadata: The metadata of this Assistant.  # noqa: E501
         :type: object
         """
-        if metadata is None:
-            raise ValueError("Invalid value for `metadata`, must not be `None`")  # noqa: E501
-
         self._metadata = metadata
 
     @property
@@ -318,9 +300,6 @@ class Assistant(object):
         :param created_timestamp: The created_timestamp of this Assistant.  # noqa: E501
         :type: object
         """
-        if created_timestamp is None:
-            raise ValueError("Invalid value for `created_timestamp`, must not be `None`")  # noqa: E501
-
         self._created_timestamp = created_timestamp
 
     def to_dict(self):
