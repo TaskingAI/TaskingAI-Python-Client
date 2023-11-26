@@ -20,8 +20,7 @@ from taskingai.client.api_client import ApiClient
 from taskingai.client.configuration import Configuration
 # import models into sdk package
 from taskingai.client.models.action import Action
-from taskingai.client.models.action_authentication_input import ActionAuthenticationInput
-from taskingai.client.models.action_authentication_output import ActionAuthenticationOutput
+from taskingai.client.models.action_authentication import ActionAuthentication
 from taskingai.client.models.action_authentication_type import ActionAuthenticationType
 from taskingai.client.models.action_create_request import ActionCreateRequest
 from taskingai.client.models.action_create_response import ActionCreateResponse
@@ -62,8 +61,7 @@ from taskingai.client.models.chunk import Chunk
 from taskingai.client.models.chunk_query_request import ChunkQueryRequest
 from taskingai.client.models.chunk_query_response import ChunkQueryResponse
 from taskingai.client.models.collection import Collection
-from taskingai.client.models.collection_config_input import CollectionConfigInput
-from taskingai.client.models.collection_config_output import CollectionConfigOutput
+from taskingai.client.models.collection_config import CollectionConfig
 from taskingai.client.models.collection_create_request import CollectionCreateRequest
 from taskingai.client.models.collection_create_response import CollectionCreateResponse
 from taskingai.client.models.collection_get_response import CollectionGetResponse

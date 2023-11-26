@@ -7,6 +7,7 @@ from taskingai.client.models import AssistantCreateRequest, AssistantCreateRespo
     AssistantGetResponse, AssistantListResponse
 
 __all__ = [
+    "Assistant",
     "get_assistant",
     "list_assistants",
     "create_assistant",
@@ -33,7 +34,7 @@ def list_assistants(
     :param before: The cursor to get the previous page of assistants.
     :return: The list of assistants.
     """
-
+    # todo: verify only one of offset, after and before is not None
     api_instance = get_assistant_api_instance()
     # only add non-None parameters
     params = {
@@ -70,7 +71,7 @@ def create_assistant(
     system_prompt_template: Optional[List[str]] = None,
     tools: Optional[List[AssistantTool]] = None,
     retrievals: Optional[List[AssistantRetrieval]] = None,
-    metadata: Optional[Dict] = None,
+    metadata: Optional[Dict[str, str]] = None,
 ) -> Assistant:
     """
     Create an assistant.
@@ -82,7 +83,7 @@ def create_assistant(
     :param tools: The assistant tools.
     :param retrievals: The assistant retrievals.
     :param metadata: The assistant metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
-    :return: The assistant object.
+    :return: The created assistant object.
     """
 
     api_instance = get_assistant_api_instance()
@@ -108,7 +109,7 @@ def update_assistant(
     system_prompt_template: Optional[List[str]] = None,
     tools: Optional[List[AssistantTool]] = None,
     retrievals: Optional[List[AssistantRetrieval]] = None,
-    metadata: Optional[Dict] = None,
+    metadata: Optional[Dict[str, str]] = None,
 ) -> Assistant:
     """
     Update an assistant.
@@ -121,7 +122,7 @@ def update_assistant(
     :param tools: The assistant tools.
     :param retrievals: The assistant retrievals.
     :param metadata: The assistant metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
-    :return: The assistant object.
+    :return: The updated assistant object.
     """
 
     api_instance = get_assistant_api_instance()

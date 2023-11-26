@@ -7,6 +7,7 @@ from taskingai.client.models import MessageCreateRequest, MessageCreateResponse,
     MessageGetResponse, MessageListResponse, MessageGenerateRequest
 
 __all__ = [
+    "Message",
     "get_message",
     "list_messages",
     "create_user_message",
@@ -26,6 +27,8 @@ def list_messages(
     """
     List messages.
 
+    :param assistant_id: The ID of the assistant.
+    :param chat_id: The ID of the chat.
     :param order: The order of the messages. It can be "asc" or "desc".
     :param limit: The maximum number of messages to return.
     :param after: The cursor to get the next page of messages.
@@ -78,7 +81,7 @@ def create_user_message(
     assistant_id: str,
     chat_id: str,
     text: str,
-    metadata: Optional[Dict] = None,
+    metadata: Optional[Dict[str, str]] = None,
 ) -> Message:
     """
     Create a message.
@@ -87,7 +90,7 @@ def create_user_message(
     :param chat_id: The ID of the chat.
     :param text: The text content of the message.
     :param metadata: The message metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
-    :return: The assistant object.
+    :return: The created message object.
     """
 
     api_instance = get_assistant_api_instance()
@@ -108,7 +111,7 @@ def create_user_message(
 def update_message(
     assistant_id: str,
     message_id: str,
-    metadata: Dict,
+    metadata: Dict[str, str],
 ) -> Message:
     """
     Update a message.
@@ -116,7 +119,7 @@ def update_message(
     :param assistant_id: The ID of the assistant.
     :param message_id: The ID of the message.
     :param metadata: The assistant metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
-    :return: The assistant object.
+    :return: The updated message object.
     """
 
     api_instance = get_assistant_api_instance()
@@ -145,7 +148,7 @@ def generate_assistant_message(
     :param chat_id: The ID of the chat.
     :param text: The text content of the message.
     :param metadata: The message metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
-    :return: The assistant object.
+    :return: The generated message object.
     """
 
     api_instance = get_assistant_api_instance()

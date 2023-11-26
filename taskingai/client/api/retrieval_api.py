@@ -133,7 +133,7 @@ class RetrievalApi(object):
         Create a new record in a collection.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.create_record(body, collection_id, async_req=True)
+        >>> thread = api.create_text_record(body, collection_id, async_req=True)
         >>> result = thread.get()
 
         :param async_req bool

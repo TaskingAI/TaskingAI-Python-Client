@@ -7,6 +7,7 @@ from taskingai.client.models import ChatCreateRequest, ChatCreateResponse, \
     ChatGetResponse, ChatListResponse
 
 __all__ = [
+    "Chat",
     "get_chat",
     "list_chats",
     "create_chat",
@@ -24,7 +25,7 @@ def list_chats(
 ) -> List[Chat]:
     """
     List chats.
-
+    :param assistant_id: The ID of the assistant.
     :param order: The order of the chats. It can be "asc" or "desc".
     :param limit: The maximum number of chats to return.
     :param after: The cursor to get the next page of chats.
@@ -68,14 +69,14 @@ def get_chat(assistant_id: str, chat_id: str) -> Chat:
 
 def create_chat(
     assistant_id: str,
-    metadata: Optional[Dict] = None,
+    metadata: Optional[Dict[str, str]] = None,
 ) -> Chat:
     """
     Create a chat.
 
     :param assistant_id: The ID of the assistant.
     :param metadata: The chat metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
-    :return: The assistant object.
+    :return: The created chat object.
     """
 
     api_instance = get_assistant_api_instance()
@@ -93,7 +94,7 @@ def create_chat(
 def update_chat(
     assistant_id: str,
     chat_id: str,
-    metadata: Dict,
+    metadata: Dict[str, str],
 ) -> Chat:
     """
     Update a chat.
@@ -101,7 +102,7 @@ def update_chat(
     :param assistant_id: The ID of the assistant.
     :param chat_id: The ID of the chat.
     :param metadata: The assistant metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
-    :return: The assistant object.
+    :return: The updated chat object.
     """
 
     api_instance = get_assistant_api_instance()
