@@ -24,7 +24,7 @@ pip install git+https://github.com/GIT_USER_ID/GIT_REPO_ID.git
 Then import the package:
 
 ```python
-import taskingai 
+from taskingai import client
 ```
 
 ### Setuptools
@@ -39,7 +39,8 @@ python setup.py install --user
 Then import the package:
 
 ```python
-import taskingai
+
+from taskingai import client
 ```
 
 ## Getting Started
@@ -49,13 +50,13 @@ Please follow the [installation procedure](#installation--usage) and then run th
 ```python
 from __future__ import print_function
 import time
-import taskingai
-from taskingai.rest import ApiException
+from taskingai import client
+from taskingai.client.rest import ApiException
 from pprint import pprint
 
 # create an instance of the API class
-api_instance = taskingai.AssistantApi(taskingai.ApiClient(configuration))
-body = taskingai.AssistantCreateRequestBodySchema()  # AssistantCreateRequestBodySchema | 
+api_instance = client.AssistantApi(client.ApiClient(configuration))
+body = client.AssistantCreateRequestBodySchema()  # AssistantCreateRequestBodySchema | 
 
 try:
     # Create assistant
@@ -65,8 +66,8 @@ except ApiException as e:
     print("Exception when calling AssistantApi->create_assistant: %s\n" % e)
 
 # create an instance of the API class
-api_instance = taskingai.AssistantApi(taskingai.ApiClient(configuration))
-body = taskingai.ChatCreateRequestBodySchema()  # ChatCreateRequestBodySchema | 
+api_instance = client.AssistantApi(client.ApiClient(configuration))
+body = client.ChatCreateRequestBodySchema()  # ChatCreateRequestBodySchema | 
 assistant_id = NULL  # object | 
 
 try:
@@ -77,7 +78,7 @@ except ApiException as e:
     print("Exception when calling AssistantApi->create_chat: %s\n" % e)
 
 # create an instance of the API class
-api_instance = taskingai.AssistantApi(taskingai.ApiClient(configuration))
+api_instance = client.AssistantApi(client.ApiClient(configuration))
 assistant_id = NULL  # object | 
 
 try:
@@ -88,7 +89,7 @@ except ApiException as e:
     print("Exception when calling AssistantApi->delete_assistant: %s\n" % e)
 
 # create an instance of the API class
-api_instance = taskingai.AssistantApi(taskingai.ApiClient(configuration))
+api_instance = client.AssistantApi(client.ApiClient(configuration))
 assistant_id = NULL  # object | 
 chat_id = NULL  # object | 
 
@@ -100,8 +101,8 @@ except ApiException as e:
     print("Exception when calling AssistantApi->delete_chat: %s\n" % e)
 
 # create an instance of the API class
-api_instance = taskingai.AssistantApi(taskingai.ApiClient(configuration))
-body = taskingai.ChatGenerateRequestBodySchema()  # ChatGenerateRequestBodySchema | 
+api_instance = client.AssistantApi(client.ApiClient(configuration))
+body = client.ChatGenerateRequestBodySchema()  # ChatGenerateRequestBodySchema | 
 assistant_id = NULL  # object | 
 chat_id = NULL  # object | 
 
@@ -113,7 +114,7 @@ except ApiException as e:
     print("Exception when calling AssistantApi->generate: %s\n" % e)
 
 # create an instance of the API class
-api_instance = taskingai.AssistantApi(taskingai.ApiClient(configuration))
+api_instance = client.AssistantApi(client.ApiClient(configuration))
 assistant_id = NULL  # object | 
 
 try:
@@ -124,7 +125,7 @@ except ApiException as e:
     print("Exception when calling AssistantApi->get_assistant: %s\n" % e)
 
 # create an instance of the API class
-api_instance = taskingai.AssistantApi(taskingai.ApiClient(configuration))
+api_instance = client.AssistantApi(client.ApiClient(configuration))
 assistant_id = NULL  # object | 
 chat_id = NULL  # object | 
 
@@ -136,7 +137,7 @@ except ApiException as e:
     print("Exception when calling AssistantApi->get_chat: %s\n" % e)
 
 # create an instance of the API class
-api_instance = taskingai.AssistantApi(taskingai.ApiClient(configuration))
+api_instance = client.AssistantApi(client.ApiClient(configuration))
 assistant_id = NULL  # object | 
 chat_id = NULL  # object | 
 message_id = NULL  # object | 
@@ -149,7 +150,7 @@ except ApiException as e:
     print("Exception when calling AssistantApi->get_message: %s\n" % e)
 
 # create an instance of the API class
-api_instance = taskingai.AssistantApi(taskingai.ApiClient(configuration))
+api_instance = client.AssistantApi(client.ApiClient(configuration))
 limit = 20  # object |  (optional) (default to 20)
 order = desc  # object |  (optional) (default to desc)
 after = NULL  # object |  (optional)
@@ -164,7 +165,7 @@ except ApiException as e:
     print("Exception when calling AssistantApi->list_assistants: %s\n" % e)
 
 # create an instance of the API class
-api_instance = taskingai.AssistantApi(taskingai.ApiClient(configuration))
+api_instance = client.AssistantApi(client.ApiClient(configuration))
 assistant_id = NULL  # object | 
 
 try:
@@ -175,7 +176,7 @@ except ApiException as e:
     print("Exception when calling AssistantApi->list_chats: %s\n" % e)
 
 # create an instance of the API class
-api_instance = taskingai.AssistantApi(taskingai.ApiClient(configuration))
+api_instance = client.AssistantApi(client.ApiClient(configuration))
 assistant_id = NULL  # object | 
 chat_id = NULL  # object | 
 limit = 20  # object |  (optional) (default to 20)
@@ -192,8 +193,8 @@ except ApiException as e:
     print("Exception when calling AssistantApi->list_messages: %s\n" % e)
 
 # create an instance of the API class
-api_instance = taskingai.AssistantApi(taskingai.ApiClient(configuration))
-body = taskingai.AssistantUpdateRequestBodySchema()  # AssistantUpdateRequestBodySchema | 
+api_instance = client.AssistantApi(client.ApiClient(configuration))
+body = client.AssistantUpdateRequestBodySchema()  # AssistantUpdateRequestBodySchema | 
 assistant_id = NULL  # object | 
 
 try:
@@ -204,8 +205,8 @@ except ApiException as e:
     print("Exception when calling AssistantApi->update_assistant: %s\n" % e)
 
 # create an instance of the API class
-api_instance = taskingai.AssistantApi(taskingai.ApiClient(configuration))
-body = taskingai.ChatUpdateRequestBodySchema()  # ChatUpdateRequestBodySchema | 
+api_instance = client.AssistantApi(client.ApiClient(configuration))
+body = client.ChatUpdateRequestBodySchema()  # ChatUpdateRequestBodySchema | 
 assistant_id = NULL  # object | 
 chat_id = NULL  # object | 
 
@@ -217,8 +218,8 @@ except ApiException as e:
     print("Exception when calling AssistantApi->update_chat: %s\n" % e)
 
 # create an instance of the API class
-api_instance = taskingai.AssistantApi(taskingai.ApiClient(configuration))
-body = taskingai.MessageUpdateRequestBodySchema()  # MessageUpdateRequestBodySchema | 
+api_instance = client.AssistantApi(client.ApiClient(configuration))
+body = client.MessageUpdateRequestBodySchema()  # MessageUpdateRequestBodySchema | 
 assistant_id = NULL  # object | 
 chat_id = NULL  # object | 
 message_id = NULL  # object | 
