@@ -52,7 +52,10 @@ def chat_completion(
     body = ChatCompletionRequest(
         model_id=model_id,
         messages=messages,
-        configs=configs
+        configs=configs,
+        function_call=function_call,
+        functions=functions,
+        stream=False
     )
     response: ChatCompletionResponse = api_instance.chat_completion(body=body)
     chat_completion_result: ChatCompletion = ChatCompletion(**response.data)
