@@ -23,6 +23,7 @@ class ActionAuthenticationType(object):
     BASIC = "basic"
     BEARER = "bearer"
     CUSTOM = "custom"
+    NONE = "none"
     """
     Attributes:
       swagger_types (dict): The key is attribute name
