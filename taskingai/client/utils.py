@@ -2,7 +2,6 @@ import inspect
 import logging
 from pathlib import Path
 import urllib3
-from taskingai.config import Config
 from taskingai.client.api import AssistantApi, ToolApi, RetrievalApi, InferenceApi
 from taskingai.client.api_client import ApiClient
 
@@ -25,6 +24,7 @@ def get_user_agent():
 
 
 def get_assistant_api_instance():
+    from taskingai.config import Config
     client_config = Config.OPENAPI_CONFIG
     client_config.api_key = client_config.api_key or {}
     api_client = ApiClient(configuration=client_config)
@@ -34,6 +34,7 @@ def get_assistant_api_instance():
 
 
 def get_tool_api_instance():
+    from taskingai.config import Config
     client_config = Config.OPENAPI_CONFIG
     client_config.api_key = client_config.api_key or {}
     api_client = ApiClient(configuration=client_config)
@@ -43,6 +44,7 @@ def get_tool_api_instance():
 
 
 def get_retrieval_api_instance():
+    from taskingai.config import Config
     client_config = Config.OPENAPI_CONFIG
     client_config.api_key = client_config.api_key or {}
     api_client = ApiClient(configuration=client_config)
@@ -52,6 +54,7 @@ def get_retrieval_api_instance():
 
 
 def get_inference_api_instance():
+    from taskingai.config import Config
     client_config = Config.OPENAPI_CONFIG
     client_config.api_key = client_config.api_key or {}
     api_client = ApiClient(configuration=client_config)

@@ -5,10 +5,10 @@ import os
 
 import certifi
 
-from taskingai.client.utils import check_kwargs
-from taskingai.client.exceptions import ApiKeyError
-from taskingai.client.constants import PARENT_LOGGER_NAME, DEFAULT_PARENT_LOGGER_LEVEL
-from taskingai.client.configuration import Configuration as OpenApiConfiguration
+from .client.utils import check_kwargs
+from .client.exceptions import ApiKeyError
+from .client.constants import PARENT_LOGGER_NAME, DEFAULT_PARENT_LOGGER_LEVEL
+from .client.configuration import Configuration as OpenApiConfiguration
 
 __all__ = ["Config", "init"]
 
