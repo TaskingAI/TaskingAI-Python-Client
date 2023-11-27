@@ -66,7 +66,7 @@ def get_action(action_id: str) -> Action:
 
 def create_action(
     schema: Dict,
-    authentication: ActionAuthentication
+    authentication: Optional[ActionAuthentication] = None
 ) -> Action:
     """
     Create an action.
@@ -78,6 +78,10 @@ def create_action(
 
     # todo verify schema
     api_instance = get_tool_api_instance()
+    if authentication is None:
+        authentication = ActionAuthentication(
+            type=ActionAuthenticationType.NONE,
+        )
     body = ActionCreateRequest(
         schema=schema,
         authentication=authentication,
