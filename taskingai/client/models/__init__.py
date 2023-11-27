@@ -33,6 +33,8 @@ from taskingai.client.models.assistant_tool import AssistantTool
 from taskingai.client.models.assistant_update_request import AssistantUpdateRequest
 from taskingai.client.models.assistant_update_response import AssistantUpdateResponse
 from taskingai.client.models.chat import Chat
+from taskingai.client.models.chat_completion_response import ChatCompletionResponse
+from taskingai.client.models.chat_completion import ChatCompletion
 from taskingai.client.models.chat_completion_assistant_message import ChatCompletionAssistantMessage
 from taskingai.client.models.chat_completion_function import ChatCompletionFunction
 from taskingai.client.models.chat_completion_function_call import ChatCompletionFunctionCall
@@ -74,6 +76,7 @@ from taskingai.client.models.message_content import MessageContent
 from taskingai.client.models.message_create_request import MessageCreateRequest
 from taskingai.client.models.message_create_response import MessageCreateResponse
 from taskingai.client.models.message_generate_request import MessageGenerateRequest
+from taskingai.client.models.message_generate_response import MessageGenerateResponse
 from taskingai.client.models.message_generation_response_option import MessageGenerationResponseOption
 from taskingai.client.models.message_get_response import MessageGetResponse
 from taskingai.client.models.message_list_response import MessageListResponse
