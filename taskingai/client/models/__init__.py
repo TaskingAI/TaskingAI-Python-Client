@@ -13,8 +13,8 @@ from __future__ import absolute_import
 from taskingai.client.models.action import Action
 from taskingai.client.models.action_authentication import ActionAuthentication
 from taskingai.client.models.action_authentication_type import ActionAuthenticationType
-from taskingai.client.models.action_create_request import ActionCreateRequest
-from taskingai.client.models.action_create_response import ActionCreateResponse
+from taskingai.client.models.action_bulk_create_request import ActionBulkCreateRequest
+from taskingai.client.models.action_bulk_create_response import ActionBulkCreateResponse
 from taskingai.client.models.action_delete_response import ActionDeleteResponse
 from taskingai.client.models.action_get_response import ActionGetResponse
 from taskingai.client.models.action_list_response import ActionListResponse

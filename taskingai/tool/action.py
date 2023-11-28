@@ -2,7 +2,7 @@ from typing import Optional, List, Dict
 
 from taskingai.client.utils import get_tool_api_instance
 from taskingai.client.models import Action, ActionAuthentication, ActionAuthenticationType
-from taskingai.client.models import ActionCreateRequest, ActionCreateResponse, \
+from taskingai.client.models import ActionBulkCreateRequest, ActionBulkCreateResponse, \
     ActionUpdateRequest, ActionUpdateResponse, \
     ActionGetResponse, ActionListResponse
 
@@ -12,7 +12,7 @@ __all__ = [
     "ActionAuthenticationType",
     "get_action",
     "list_actions",
-    "create_action",
+    "bulk_create_actions",
     "update_action",
     "delete_action",
 ]
@@ -64,12 +64,12 @@ def get_action(action_id: str) -> Action:
     return action
 
 
-def create_action(
+def bulk_create_actions(
     schema: Dict,
     authentication: Optional[ActionAuthentication] = None
-) -> Action:
+) -> List[Action]:
     """
-    Create an action.
+    Create actions from an OpenAPI schema.
 
     :param schema: The action schema is compliant with the OpenAPI Specification. If there are multiple paths and methods in the schema, the service will create multiple actions whose schema only has exactly one path and one method
     :param authentication: The action API authentication.
@@ -82,13 +82,13 @@ def create_action(
         authentication = ActionAuthentication(
             type=ActionAuthenticationType.NONE,
         )
-    body = ActionCreateRequest(
+    body = ActionBulkCreateRequest(
         schema=schema,
         authentication=authentication,
     )
-    response: ActionCreateResponse = api_instance.create_action(body=body)
-    action: Action = Action(**response.data)
-    return action
+    response: ActionBulkCreateResponse = api_instance.bulk_create_action(body=body)
+    actions: List[Action] = [Action(**data) for data in response.data]
+    return actions
 
 
 def update_action(

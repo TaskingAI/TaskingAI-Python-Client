@@ -28,40 +28,40 @@ class ToolApi(object):
             api_client = ApiClient()
         self.api_client = api_client
 
-    def create_action(self, body, **kwargs):  # noqa: E501
-        """Create action  # noqa: E501
+    def bulk_create_action(self, body, **kwargs):  # noqa: E501
+        """Bulk create action  # noqa: E501
 
-        Create actions with an OpenAPI schema. If there are multiple paths and methods in the schema, multiple actions will be created.  # noqa: E501
+        Bulk create actions with an OpenAPI schema. If there are multiple paths and methods in the schema, multiple actions will be created.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.create_action(body, async_req=True)
+        >>> thread = api.bulk_create_action(body, async_req=True)
         >>> result = thread.get()
 
         :param async_req bool
-        :param ActionCreateRequest body: (required)
-        :return: ActionCreateResponse
+        :param ActionBulkCreateRequest body: (required)
+        :return: ActionBulkCreateResponse
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.create_action_with_http_info(body, **kwargs)  # noqa: E501
+            return self.bulk_create_action_with_http_info(body, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_action_with_http_info(body, **kwargs)  # noqa: E501
+            (data) = self.bulk_create_action_with_http_info(body, **kwargs)  # noqa: E501
             return data
 
-    def create_action_with_http_info(self, body, **kwargs):  # noqa: E501
-        """Create action  # noqa: E501
+    def bulk_create_action_with_http_info(self, body, **kwargs):  # noqa: E501
+        """Bulk create action  # noqa: E501
 
-        Create actions with an OpenAPI schema. If there are multiple paths and methods in the schema, multiple actions will be created.  # noqa: E501
+        Bulk create actions with an OpenAPI schema. If there are multiple paths and methods in the schema, multiple actions will be created.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.create_action_with_http_info(body, async_req=True)
+        >>> thread = api.bulk_create_action_with_http_info(body, async_req=True)
         >>> result = thread.get()
 
         :param async_req bool
-        :param ActionCreateRequest body: (required)
-        :return: ActionCreateResponse
+        :param ActionBulkCreateRequest body: (required)
+        :return: ActionBulkCreateResponse
                  If the method is called asynchronously,
                  returns the request thread.
         """
@@ -77,14 +77,14 @@ class ToolApi(object):
             if key not in all_params:
                 raise TypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method create_action" % key
+                    " to method bulk_create_action" % key
                 )
             params[key] = val
         del params['kwargs']
         # verify the required parameter 'body' is set
         if ('body' not in params or
                 params['body'] is None):
-            raise ValueError("Missing the required parameter `body` when calling `create_action`")  # noqa: E501
+            raise ValueError("Missing the required parameter `body` when calling `bulk_create_action`")  # noqa: E501
 
         collection_formats = {}
 
@@ -112,14 +112,14 @@ class ToolApi(object):
         auth_settings = []  # noqa: E501
 
         return self.api_client.call_api(
-            '/v1/actions', 'POST',
+            '/v1/actions/bulk_create', 'POST',
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='ActionCreateResponse',  # noqa: E501
+            response_type='ActionBulkCreateResponse',  # noqa: E501
             auth_settings=auth_settings,
             async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
