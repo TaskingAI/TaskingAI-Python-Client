@@ -1,2 +1,2 @@
-from action import *
-from function import *
+from .action import *
+from .function import *
