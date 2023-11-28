@@ -7,12 +7,12 @@ REQUEST_ID: str = "request_id"
 CLIENT_VERSION_HEADER = 'X-TaskingAI-Client-Version'
 
 
-class ToolType(str, Enum):
+class AssistantToolType(str, Enum):
     action = "action"
     function = "function"
 
 
-class RetrievalType(str, Enum):
+class AssistantRetrievalType(str, Enum):
     collection = "collection"
 
 
