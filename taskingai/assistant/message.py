@@ -153,7 +153,7 @@ def generate_assistant_message(
 
     api_instance = get_assistant_api_instance()
     body = MessageGenerateRequest(
-        options=[MessageGenerationResponseOption(stream=False, debug=False)],
+        options=MessageGenerationResponseOption(stream=False, debug=False),
         system_prompt_variables=system_prompt_variables
     )
     response = api_instance.generate_assistant_message(
