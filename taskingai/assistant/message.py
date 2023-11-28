@@ -110,6 +110,7 @@ def create_user_message(
 
 def update_message(
     assistant_id: str,
+    chat_id: str,
     message_id: str,
     metadata: Dict[str, str],
 ) -> Message:
@@ -128,6 +129,7 @@ def update_message(
     )
     response: MessageUpdateResponse = api_instance.update_message(
         assistant_id=assistant_id,
+        chat_id=chat_id,
         message_id=message_id,
         body=body
     )

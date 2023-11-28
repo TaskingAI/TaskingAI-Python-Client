@@ -5,12 +5,13 @@ from taskingai.client.models import (
     ChatCompletionRequest,
     ChatCompletionResponse,
     ChatCompletion,
-    ChatCompletionFunctionMessage as FunctionMessage,
-    ChatCompletionAssistantMessage as AssistantMessage,
-    ChatCompletionUserMessage as UserMessage,
-    ChatCompletionSystemMessage as SystemMessage,
+    ChatCompletionFunctionMessage,
+    ChatCompletionAssistantMessage,
+    ChatCompletionUserMessage,
+    ChatCompletionSystemMessage,
     ChatCompletionFunctionCall as FunctionCall,
     ChatCompletionFunction as Function,
+    ChatCompletionRole,
 )
 
 __all__ = [
@@ -23,6 +24,40 @@ __all__ = [
     "UserMessage",
     "SystemMessage",
 ]
+
+
+class SystemMessage(ChatCompletionSystemMessage):
+    def __init__(self, content: str):
+        super().__init__(
+            role=ChatCompletionRole.SYSTEM,
+            content=content
+        )
+
+
+class UserMessage(ChatCompletionUserMessage):
+    def __init__(self, content: str):
+        super().__init__(
+            role=ChatCompletionRole.USER,
+            content=content
+        )
+
+
+class AssistantMessage(ChatCompletionAssistantMessage):
+    def __init__(self, content: str = None, function_call: Optional[FunctionCall] = None):
+        super().__init__(
+            role=ChatCompletionRole.ASSISTANT,
+            content=content,
+            function_call=function_call
+        )
+
+
+class FunctionMessage(ChatCompletionFunctionMessage):
+    def __init__(self, name: str, content: str):
+        super().__init__(
+            role=ChatCompletionRole.FUNCTION,
+            name=name,
+            content=content
+        )
 
 
 def chat_completion(
@@ -58,7 +93,10 @@ def chat_completion(
         stream=False
     )
     response: ChatCompletionResponse = api_instance.chat_completion(body=body)
-    chat_completion_result: ChatCompletion = ChatCompletion(**response.data)
+    chat_completion_result: ChatCompletion = ChatCompletion(**response["data"])
+    chat_completion_result.message = ChatCompletionAssistantMessage(**chat_completion_result.message)
+    if chat_completion_result.message.function_call:
+        chat_completion_result.message.function_call = FunctionCall(**chat_completion_result.message.function_call)
     return chat_completion_result
 
 
