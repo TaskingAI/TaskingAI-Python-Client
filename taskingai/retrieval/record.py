@@ -92,7 +92,7 @@ def create_text_record(
         text=text,
         metadata=metadata,
     )
-    response: RecordCreateResponse = api_instance.create_text_record(
+    response: RecordCreateResponse = api_instance.create_record(
         collection_id=collection_id,
         body=body
     )
