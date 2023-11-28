@@ -8,6 +8,7 @@ from taskingai.client.models import CollectionCreateRequest, CollectionCreateRes
 
 __all__ = [
     "Collection",
+    "CollectionConfig",
     "get_collection",
     "list_collections",
     "create_collection",
