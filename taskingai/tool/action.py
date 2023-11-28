@@ -2,9 +2,16 @@ from typing import Optional, List, Dict
 
 from taskingai.client.utils import get_tool_api_instance
 from taskingai.client.models import Action, ActionAuthentication, ActionAuthenticationType
-from taskingai.client.models import ActionBulkCreateRequest, ActionBulkCreateResponse, \
-    ActionUpdateRequest, ActionUpdateResponse, \
-    ActionGetResponse, ActionListResponse
+from taskingai.client.models import (
+    ActionBulkCreateRequest,
+    ActionBulkCreateResponse,
+    ActionUpdateRequest,
+    ActionUpdateResponse,
+    ActionGetResponse,
+    ActionListResponse,
+    ActionRunRequest,
+    ActionRunResponse
+)
 
 __all__ = [
     "Action",
@@ -15,6 +22,7 @@ __all__ = [
     "bulk_create_actions",
     "update_action",
     "delete_action",
+    "run_action",
 ]
 
 
@@ -128,3 +136,27 @@ def delete_action(action_id: str) -> None:
     api_instance = get_tool_api_instance()
     api_instance.delete_action(action_id=action_id)
 
+
+
+def run_action(
+    action_id: str,
+    parameters: Dict,
+) -> Dict:
+    """
+    Run an action.
+
+    :param action_id: The ID of the action.
+    :param parameters: The action parameters.
+    :return: The action response.
+    """
+
+    api_instance = get_tool_api_instance()
+    body = ActionRunRequest(
+        parameters=parameters,
+    )
+    response: ActionRunResponse = api_instance.run_action(
+        action_id=action_id,
+        body=body
+    )
+    result = response.data
+    return result
