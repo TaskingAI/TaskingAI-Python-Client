@@ -12,7 +12,6 @@ import copy
 import logging
 import multiprocessing
 import sys
-import urllib3
 
 import six
 from six.moves import http_client as httplib
