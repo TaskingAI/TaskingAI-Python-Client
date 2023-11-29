@@ -139,7 +139,7 @@ def bulk_create_actions(
     api_instance = get_api_instance(ModuleType.tool)
     if authentication is None:
         authentication = ActionAuthentication(
-            type=ActionAuthenticationType.NONE,
+            type=ActionAuthenticationType.none,
         )
     body = ActionBulkCreateRequest(
         schema=schema,

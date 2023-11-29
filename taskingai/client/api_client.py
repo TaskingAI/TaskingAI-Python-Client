@@ -20,6 +20,7 @@ from six.moves.urllib.parse import quote
 from taskingai.client.configuration import Configuration
 from taskingai.client import rest
 import taskingai.client as client
+from pydantic import BaseModel
 
 
 class BaseApiClient(object):
@@ -105,6 +106,8 @@ class BaseApiClient(object):
                          for sub_obj in obj)
         elif isinstance(obj, (datetime.datetime, datetime.date)):
             return obj.isoformat()
+        elif isinstance(obj, BaseModel):
+            return obj.model_dump()
 
         if isinstance(obj, dict):
             obj_dict = obj

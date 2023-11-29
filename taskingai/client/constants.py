@@ -10,15 +10,6 @@ class ModuleType(str, Enum):
     inference = "inference"
 
 
-class AssistantToolType(str, Enum):
-    action = "action"
-    function = "function"
-
-
-class AssistantRetrievalType(str, Enum):
-    collection = "collection"
-
-
 
 
 

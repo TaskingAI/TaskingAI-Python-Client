@@ -30,7 +30,7 @@ __all__ = [
 class SystemMessage(ChatCompletionSystemMessage):
     def __init__(self, content: str):
         super().__init__(
-            role=ChatCompletionRole.SYSTEM,
+            role=ChatCompletionRole.system,
             content=content
         )
 
@@ -38,7 +38,7 @@ class SystemMessage(ChatCompletionSystemMessage):
 class UserMessage(ChatCompletionUserMessage):
     def __init__(self, content: str):
         super().__init__(
-            role=ChatCompletionRole.USER,
+            role=ChatCompletionRole.user,
             content=content
         )
 
@@ -46,7 +46,7 @@ class UserMessage(ChatCompletionUserMessage):
 class AssistantMessage(ChatCompletionAssistantMessage):
     def __init__(self, content: str = None, function_call: Optional[FunctionCall] = None):
         super().__init__(
-            role=ChatCompletionRole.ASSISTANT,
+            role=ChatCompletionRole.assistant,
             content=content,
             function_call=function_call
         )
@@ -55,7 +55,7 @@ class AssistantMessage(ChatCompletionAssistantMessage):
 class FunctionMessage(ChatCompletionFunctionMessage):
     def __init__(self, name: str, content: str):
         super().__init__(
-            role=ChatCompletionRole.FUNCTION,
+            role=ChatCompletionRole.function,
             name=name,
             content=content
         )
@@ -95,9 +95,6 @@ def chat_completion(
     )
     response: ChatCompletionResponse = api_instance.chat_completion(body=body)
     chat_completion_result: ChatCompletion = ChatCompletion(**response["data"])
-    chat_completion_result.message = ChatCompletionAssistantMessage(**chat_completion_result.message)
-    if chat_completion_result.message.function_call:
-        chat_completion_result.message.function_call = FunctionCall(**chat_completion_result.message.function_call)
     return chat_completion_result
 
 
@@ -135,9 +132,6 @@ async def a_chat_completion(
     )
     response: ChatCompletionResponse = await api_instance.chat_completion(body=body)
     chat_completion_result: ChatCompletion = ChatCompletion(**response["data"])
-    chat_completion_result.message = ChatCompletionAssistantMessage(**chat_completion_result.message)
-    if chat_completion_result.message.function_call:
-        chat_completion_result.message.function_call = FunctionCall(**chat_completion_result.message.function_call)
     return chat_completion_result
 
 
