@@ -3,3 +3,4 @@ six >= 1.10
 python_dateutil >= 2.5.3
 setuptools >= 21.0.0
 httpx >= 0.23.0
+pydantic>=2.0
