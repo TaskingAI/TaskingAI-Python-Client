@@ -18,9 +18,9 @@ _parent_logger.setLevel(DEFAULT_PARENT_LOGGER_LEVEL)
 
 
 class ConfigBase(NamedTuple):
-    # todo add more project information
     api_key: str = ""
     host: str = ""
+    proxy: str = ""
     openapi_config: OpenApiConfiguration = None
 
 
@@ -52,7 +52,10 @@ class _CONFIG:
         host = (
             kwargs.pop("host", None) or os.getenv("TASKINGAI_HOST") or "https://api.tasking.ai"
         )
-        config = config._replace(api_key=api_key, host=host)
+        proxy = (
+            kwargs.pop("proxy", None) or os.getenv("TASKINGAI_PROXY") or ""
+        )
+        config = config._replace(api_key=api_key, host=host, proxy=proxy)
 
         # Set explicit config
         # config = config._replace(**self._preprocess_and_validate_config(kwargs))
@@ -64,6 +67,7 @@ class _CONFIG:
         openapi_config.ssl_ca_cert = certifi.where()
         openapi_config.api_key = config.api_key
         openapi_config.host = config.host
+        openapi_config.proxy = config.proxy
 
         config = config._replace(openapi_config=openapi_config)
         self._config = config
@@ -87,13 +91,14 @@ class _CONFIG:
         return self._config.host
 
     @property
-    def OPENAPI_CONFIG(self):
-        return self._config.openapi_config
+    def PROXY(self):
+        return self._config.proxy
 
 
 def init(
     api_key: str = None,
     host: str = None,
+    proxy: str = None,
     **kwargs
 ):
     """Initializes the TaskingAI client.
@@ -106,6 +111,7 @@ def init(
     Config.reset(
         api_key=api_key,
         host=host,
+        proxy=proxy,
         **kwargs
     )
 

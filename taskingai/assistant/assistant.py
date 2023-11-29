@@ -1,8 +1,7 @@
 from typing import Optional, List, Dict
 
 from taskingai.client.utils import get_api_instance, ModuleType
-from taskingai.client.constants import AssistantToolType, AssistantRetrievalType
-from taskingai.client.models import Assistant, AssistantRetrieval, AssistantTool
+from taskingai.client.models import Assistant, AssistantRetrieval, AssistantTool, AssistantToolType, AssistantRetrievalType
 from taskingai.client.models import AssistantCreateRequest, AssistantCreateResponse,\
     AssistantUpdateRequest, AssistantUpdateResponse,\
     AssistantGetResponse, AssistantListResponse

@@ -199,7 +199,7 @@ async def a_create_user_message(
 
     api_instance = get_api_instance(ModuleType.assistant, async_client=True)
     body = MessageCreateRequest(
-        role=MessageRole.USER,
+        role=MessageRole.user,
         content=MessageContent(text=text),
         metadata=metadata,
     )
