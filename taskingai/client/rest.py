@@ -198,10 +198,13 @@ class RESTSyncClientObject(object):
 class RESTAsyncClientObject(object):
 
     def __init__(self, configuration, pools_size=4, maxsize=None):
+        cert = None
+        if configuration.cert_file and configuration.key_file:
+            cert = (configuration.cert_file, configuration.key_file)
         self.client = httpx.AsyncClient(
             proxies=configuration.proxy,
             verify=configuration.verify_ssl,
-            cert=(configuration.cert_file, configuration.key_file),
+            cert=cert,
             http1=True
         )
 

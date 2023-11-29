@@ -13,17 +13,17 @@ import re  # noqa: F401
 # python 2 and python 3 compatibility library
 import six
 
-from taskingai.client.api_client import SyncApiClient
+from taskingai.client.api_client import AsyncApiClient
 
 
-class AssistantApi(object):
+class AsyncAssistantApi(object):
 
     def __init__(self, api_client=None):
         if api_client is None:
-            api_client = SyncApiClient()
+            api_client = AsyncApiClient()
         self.api_client = api_client
 
-    def create_assistant(self, body, **kwargs):  # noqa: E501
+    async def create_assistant(self, body, **kwargs):  # noqa: E501
         """Create assistant  # noqa: E501
 
         Create an assistant with a model and instructions.  # noqa: E501
@@ -40,12 +40,12 @@ class AssistantApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.create_assistant_with_http_info(body, **kwargs)  # noqa: E501
+            return await self.create_assistant_with_http_info(body, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_assistant_with_http_info(body, **kwargs)  # noqa: E501
+            (data) = await self.create_assistant_with_http_info(body, **kwargs)  # noqa: E501
             return data
 
-    def create_assistant_with_http_info(self, body, **kwargs):  # noqa: E501
+    async def create_assistant_with_http_info(self, body, **kwargs):  # noqa: E501
         """Create assistant  # noqa: E501
 
         Create an assistant with a model and instructions.  # noqa: E501
@@ -106,7 +106,7 @@ class AssistantApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/assistants', 'POST',
             path_params,
             query_params,
@@ -121,7 +121,7 @@ class AssistantApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def create_chat(self, body, assistant_id, **kwargs):  # noqa: E501
+    async def create_chat(self, body, assistant_id, **kwargs):  # noqa: E501
         """Create chat  # noqa: E501
 
         Create a new chat within your project.  # noqa: E501
@@ -139,12 +139,12 @@ class AssistantApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.create_chat_with_http_info(body, assistant_id, **kwargs)  # noqa: E501
+            return await self.create_chat_with_http_info(body, assistant_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_chat_with_http_info(body, assistant_id, **kwargs)  # noqa: E501
+            (data) = await self.create_chat_with_http_info(body, assistant_id, **kwargs)  # noqa: E501
             return data
 
-    def create_chat_with_http_info(self, body, assistant_id, **kwargs):  # noqa: E501
+    async def create_chat_with_http_info(self, body, assistant_id, **kwargs):  # noqa: E501
         """Create chat  # noqa: E501
 
         Create a new chat within your project.  # noqa: E501
@@ -212,7 +212,7 @@ class AssistantApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/assistants/{assistant_id}/chats', 'POST',
             path_params,
             query_params,
@@ -227,7 +227,7 @@ class AssistantApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def create_message(self, body, assistant_id, chat_id, **kwargs):  # noqa: E501
+    async def create_message(self, body, assistant_id, chat_id, **kwargs):  # noqa: E501
         """Create message  # noqa: E501
 
         Send a new message within a specific chat.  # noqa: E501
@@ -246,12 +246,12 @@ class AssistantApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.create_message_with_http_info(body, assistant_id, chat_id, **kwargs)  # noqa: E501
+            return await self.create_message_with_http_info(body, assistant_id, chat_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_message_with_http_info(body, assistant_id, chat_id, **kwargs)  # noqa: E501
+            (data) = await self.create_message_with_http_info(body, assistant_id, chat_id, **kwargs)  # noqa: E501
             return data
 
-    def create_message_with_http_info(self, body, assistant_id, chat_id, **kwargs):  # noqa: E501
+    async def create_message_with_http_info(self, body, assistant_id, chat_id, **kwargs):  # noqa: E501
         """Create message  # noqa: E501
 
         Send a new message within a specific chat.  # noqa: E501
@@ -327,7 +327,7 @@ class AssistantApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/assistants/{assistant_id}/chats/{chat_id}/messages', 'POST',
             path_params,
             query_params,
@@ -342,7 +342,7 @@ class AssistantApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def delete_assistant(self, assistant_id, **kwargs):  # noqa: E501
+    async def delete_assistant(self, assistant_id, **kwargs):  # noqa: E501
         """Delete assistant  # noqa: E501
 
         Remove an existing assistant from your project.  # noqa: E501
@@ -359,12 +359,12 @@ class AssistantApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.delete_assistant_with_http_info(assistant_id, **kwargs)  # noqa: E501
+            return await self.delete_assistant_with_http_info(assistant_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.delete_assistant_with_http_info(assistant_id, **kwargs)  # noqa: E501
+            (data) = await self.delete_assistant_with_http_info(assistant_id, **kwargs)  # noqa: E501
             return data
 
-    def delete_assistant_with_http_info(self, assistant_id, **kwargs):  # noqa: E501
+    async def delete_assistant_with_http_info(self, assistant_id, **kwargs):  # noqa: E501
         """Delete assistant  # noqa: E501
 
         Remove an existing assistant from your project.  # noqa: E501
@@ -422,7 +422,7 @@ class AssistantApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/assistants/{assistant_id}', 'DELETE',
             path_params,
             query_params,
@@ -437,7 +437,7 @@ class AssistantApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def delete_chat(self, assistant_id, chat_id, **kwargs):  # noqa: E501
+    async def delete_chat(self, assistant_id, chat_id, **kwargs):  # noqa: E501
         """Delete chat  # noqa: E501
 
         Remove an existing chat from your project.  # noqa: E501
@@ -455,12 +455,12 @@ class AssistantApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.delete_chat_with_http_info(assistant_id, chat_id, **kwargs)  # noqa: E501
+            return await self.delete_chat_with_http_info(assistant_id, chat_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.delete_chat_with_http_info(assistant_id, chat_id, **kwargs)  # noqa: E501
+            (data) = await self.delete_chat_with_http_info(assistant_id, chat_id, **kwargs)  # noqa: E501
             return data
 
-    def delete_chat_with_http_info(self, assistant_id, chat_id, **kwargs):  # noqa: E501
+    async def delete_chat_with_http_info(self, assistant_id, chat_id, **kwargs):  # noqa: E501
         """Delete chat  # noqa: E501
 
         Remove an existing chat from your project.  # noqa: E501
@@ -524,7 +524,7 @@ class AssistantApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/assistants/{assistant_id}/chats/{chat_id}', 'DELETE',
             path_params,
             query_params,
@@ -539,7 +539,8 @@ class AssistantApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def generate_assistant_message(self, body, assistant_id, chat_id, **kwargs):  # noqa: E501
+
+    async def generate_assistant_message(self, body, assistant_id, chat_id, **kwargs):  # noqa: E501
         """Generate assistant message  # noqa: E501
 
         Generate a new message with the role of 'assistant'.  # noqa: E501
@@ -558,12 +559,13 @@ class AssistantApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.generate_assistant_message_with_http_info(body, assistant_id, chat_id, **kwargs)  # noqa: E501
+            return await self.generate_assistant_message_with_http_info(body, assistant_id, chat_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.generate_assistant_message_with_http_info(body, assistant_id, chat_id, **kwargs)  # noqa: E501
+            (data) = await self.generate_assistant_message_with_http_info(body, assistant_id, chat_id, **kwargs)  # noqa: E501
             return data
 
-    def generate_assistant_message_with_http_info(self, body, assistant_id, chat_id, **kwargs):  # noqa: E501
+
+    async def generate_assistant_message_with_http_info(self, body, assistant_id, chat_id, **kwargs):  # noqa: E501
         """Generate assistant message  # noqa: E501
 
         Generate a new message with the role of 'assistant'.  # noqa: E501
@@ -641,7 +643,7 @@ class AssistantApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/assistants/{assistant_id}/chats/{chat_id}/generate', 'POST',
             path_params,
             query_params,
@@ -656,7 +658,7 @@ class AssistantApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def get_assistant(self, assistant_id, **kwargs):  # noqa: E501
+    async def get_assistant(self, assistant_id, **kwargs):  # noqa: E501
         """Get assistant  # noqa: E501
 
         Retrieve a single assistant by its unique ID.  # noqa: E501
@@ -673,12 +675,12 @@ class AssistantApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.get_assistant_with_http_info(assistant_id, **kwargs)  # noqa: E501
+            return await self.get_assistant_with_http_info(assistant_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.get_assistant_with_http_info(assistant_id, **kwargs)  # noqa: E501
+            (data) = await self.get_assistant_with_http_info(assistant_id, **kwargs)  # noqa: E501
             return data
 
-    def get_assistant_with_http_info(self, assistant_id, **kwargs):  # noqa: E501
+    async def get_assistant_with_http_info(self, assistant_id, **kwargs):  # noqa: E501
         """Get assistant  # noqa: E501
 
         Retrieve a single assistant by its unique ID.  # noqa: E501
@@ -735,7 +737,7 @@ class AssistantApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/assistants/{assistant_id}', 'GET',
             path_params,
             query_params,
@@ -750,7 +752,7 @@ class AssistantApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def get_chat(self, assistant_id, chat_id, **kwargs):  # noqa: E501
+    async def get_chat(self, assistant_id, chat_id, **kwargs):  # noqa: E501
         """Get chat  # noqa: E501
 
         Retrieve the details of a specific chat by its unique ID.  # noqa: E501
@@ -768,12 +770,12 @@ class AssistantApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.get_chat_with_http_info(assistant_id, chat_id, **kwargs)  # noqa: E501
+            return await self.get_chat_with_http_info(assistant_id, chat_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.get_chat_with_http_info(assistant_id, chat_id, **kwargs)  # noqa: E501
+            (data) = await self.get_chat_with_http_info(assistant_id, chat_id, **kwargs)  # noqa: E501
             return data
 
-    def get_chat_with_http_info(self, assistant_id, chat_id, **kwargs):  # noqa: E501
+    async def get_chat_with_http_info(self, assistant_id, chat_id, **kwargs):  # noqa: E501
         """Get chat  # noqa: E501
 
         Retrieve the details of a specific chat by its unique ID.  # noqa: E501
@@ -837,7 +839,7 @@ class AssistantApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/assistants/{assistant_id}/chats/{chat_id}', 'GET',
             path_params,
             query_params,
@@ -852,7 +854,7 @@ class AssistantApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def get_message(self, assistant_id, chat_id, message_id, **kwargs):  # noqa: E501
+    async def get_message(self, assistant_id, chat_id, message_id, **kwargs):  # noqa: E501
         """Get message  # noqa: E501
 
         Retrieve a specific message from a chat.  # noqa: E501
@@ -871,12 +873,12 @@ class AssistantApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.get_message_with_http_info(assistant_id, chat_id, message_id, **kwargs)  # noqa: E501
+            return await self.get_message_with_http_info(assistant_id, chat_id, message_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.get_message_with_http_info(assistant_id, chat_id, message_id, **kwargs)  # noqa: E501
+            (data) = await self.get_message_with_http_info(assistant_id, chat_id, message_id, **kwargs)  # noqa: E501
             return data
 
-    def get_message_with_http_info(self, assistant_id, chat_id, message_id, **kwargs):  # noqa: E501
+    async def get_message_with_http_info(self, assistant_id, chat_id, message_id, **kwargs):  # noqa: E501
         """Get message  # noqa: E501
 
         Retrieve a specific message from a chat.  # noqa: E501
@@ -947,7 +949,7 @@ class AssistantApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/assistants/{assistant_id}/chats/{chat_id}/messages/{message_id}', 'GET',
             path_params,
             query_params,
@@ -962,7 +964,7 @@ class AssistantApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def list_assistants(self, **kwargs):  # noqa: E501
+    async def list_assistants(self, **kwargs):  # noqa: E501
         """List assistants  # noqa: E501
 
         Retrieve a list of all assistants available in your project.  # noqa: E501
@@ -983,12 +985,12 @@ class AssistantApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.list_assistants_with_http_info(**kwargs)  # noqa: E501
+            return await self.list_assistants_with_http_info(**kwargs)  # noqa: E501
         else:
-            (data) = self.list_assistants_with_http_info(**kwargs)  # noqa: E501
+            (data) = await self.list_assistants_with_http_info(**kwargs)  # noqa: E501
             return data
 
-    def list_assistants_with_http_info(self, **kwargs):  # noqa: E501
+    async def list_assistants_with_http_info(self, **kwargs):  # noqa: E501
         """List assistants  # noqa: E501
 
         Retrieve a list of all assistants available in your project.  # noqa: E501
@@ -1053,7 +1055,7 @@ class AssistantApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/assistants', 'GET',
             path_params,
             query_params,
@@ -1068,7 +1070,7 @@ class AssistantApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def list_chats(self, assistant_id, **kwargs):  # noqa: E501
+    async def list_chats(self, assistant_id, **kwargs):  # noqa: E501
         """List chats  # noqa: E501
 
         Retrieve a list of all chats available in your project.  # noqa: E501
@@ -1089,12 +1091,12 @@ class AssistantApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.list_chats_with_http_info(assistant_id, **kwargs)  # noqa: E501
+            return await self.list_chats_with_http_info(assistant_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.list_chats_with_http_info(assistant_id, **kwargs)  # noqa: E501
+            (data) = await self.list_chats_with_http_info(assistant_id, **kwargs)  # noqa: E501
             return data
 
-    def list_chats_with_http_info(self, assistant_id, **kwargs):  # noqa: E501
+    async def list_chats_with_http_info(self, assistant_id, **kwargs):  # noqa: E501
         """List chats  # noqa: E501
 
         Retrieve a list of all chats available in your project.  # noqa: E501
@@ -1163,7 +1165,7 @@ class AssistantApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/assistants/{assistant_id}/chats', 'GET',
             path_params,
             query_params,
@@ -1178,7 +1180,7 @@ class AssistantApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def list_messages(self, assistant_id, chat_id, **kwargs):  # noqa: E501
+    async def list_messages(self, assistant_id, chat_id, **kwargs):  # noqa: E501
         """List messages  # noqa: E501
 
         Retrieve a paginated list of messages from a specific chat.  # noqa: E501
@@ -1200,12 +1202,12 @@ class AssistantApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.list_messages_with_http_info(assistant_id, chat_id, **kwargs)  # noqa: E501
+            return await self.list_messages_with_http_info(assistant_id, chat_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.list_messages_with_http_info(assistant_id, chat_id, **kwargs)  # noqa: E501
+            (data) = await self.list_messages_with_http_info(assistant_id, chat_id, **kwargs)  # noqa: E501
             return data
 
-    def list_messages_with_http_info(self, assistant_id, chat_id, **kwargs):  # noqa: E501
+    async def list_messages_with_http_info(self, assistant_id, chat_id, **kwargs):  # noqa: E501
         """List messages  # noqa: E501
 
         Retrieve a paginated list of messages from a specific chat.  # noqa: E501
@@ -1281,7 +1283,7 @@ class AssistantApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/assistants/{assistant_id}/chats/{chat_id}/messages', 'GET',
             path_params,
             query_params,
@@ -1296,7 +1298,7 @@ class AssistantApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def update_assistant(self, body, assistant_id, **kwargs):  # noqa: E501
+    async def update_assistant(self, body, assistant_id, **kwargs):  # noqa: E501
         """Update assistant  # noqa: E501
 
         Update the properties of an existing assistant.  # noqa: E501
@@ -1314,12 +1316,12 @@ class AssistantApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.update_assistant_with_http_info(body, assistant_id, **kwargs)  # noqa: E501
+            return await self.update_assistant_with_http_info(body, assistant_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.update_assistant_with_http_info(body, assistant_id, **kwargs)  # noqa: E501
+            (data) = await self.update_assistant_with_http_info(body, assistant_id, **kwargs)  # noqa: E501
             return data
 
-    def update_assistant_with_http_info(self, body, assistant_id, **kwargs):  # noqa: E501
+    async def update_assistant_with_http_info(self, body, assistant_id, **kwargs):  # noqa: E501
         """Update assistant  # noqa: E501
 
         Update the properties of an existing assistant.  # noqa: E501
@@ -1388,7 +1390,7 @@ class AssistantApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/assistants/{assistant_id}', 'POST',
             path_params,
             query_params,
@@ -1403,7 +1405,7 @@ class AssistantApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def update_chat(self, body, assistant_id, chat_id, **kwargs):  # noqa: E501
+    async def update_chat(self, body, assistant_id, chat_id, **kwargs):  # noqa: E501
         """Update chat  # noqa: E501
 
         Update the properties of a specific chat.  # noqa: E501
@@ -1422,12 +1424,12 @@ class AssistantApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.update_chat_with_http_info(body, assistant_id, chat_id, **kwargs)  # noqa: E501
+            return await self.update_chat_with_http_info(body, assistant_id, chat_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.update_chat_with_http_info(body, assistant_id, chat_id, **kwargs)  # noqa: E501
+            (data) = await self.update_chat_with_http_info(body, assistant_id, chat_id, **kwargs)  # noqa: E501
             return data
 
-    def update_chat_with_http_info(self, body, assistant_id, chat_id, **kwargs):  # noqa: E501
+    async def update_chat_with_http_info(self, body, assistant_id, chat_id, **kwargs):  # noqa: E501
         """Update chat  # noqa: E501
 
         Update the properties of a specific chat.  # noqa: E501
@@ -1502,7 +1504,7 @@ class AssistantApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/assistants/{assistant_id}/chats/{chat_id}', 'POST',
             path_params,
             query_params,
@@ -1517,7 +1519,7 @@ class AssistantApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def update_message(self, body, assistant_id, chat_id, message_id, **kwargs):  # noqa: E501
+    async def update_message(self, body, assistant_id, chat_id, message_id, **kwargs):  # noqa: E501
         """Update message  # noqa: E501
 
         Modify the metadata of a specific message within a chat.  # noqa: E501
@@ -1537,12 +1539,12 @@ class AssistantApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.update_message_with_http_info(body, assistant_id, chat_id, message_id, **kwargs)  # noqa: E501
+            return await self.update_message_with_http_info(body, assistant_id, chat_id, message_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.update_message_with_http_info(body, assistant_id, chat_id, message_id, **kwargs)  # noqa: E501
+            (data) = await self.update_message_with_http_info(body, assistant_id, chat_id, message_id, **kwargs)  # noqa: E501
             return data
 
-    def update_message_with_http_info(self, body, assistant_id, chat_id, message_id, **kwargs):  # noqa: E501
+    async def update_message_with_http_info(self, body, assistant_id, chat_id, message_id, **kwargs):  # noqa: E501
         """Update message  # noqa: E501
 
         Modify the metadata of a specific message within a chat.  # noqa: E501
@@ -1625,7 +1627,7 @@ class AssistantApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/assistants/{assistant_id}/chats/{chat_id}/messages/{message_id}', 'POST',
             path_params,
             query_params,

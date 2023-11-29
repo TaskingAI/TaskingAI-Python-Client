@@ -13,17 +13,17 @@ import re  # noqa: F401
 # python 2 and python 3 compatibility library
 import six
 
-from taskingai.client.api_client import SyncApiClient
+from taskingai.client.api_client import AsyncApiClient
 
 
-class RetrievalApi(object):
+class AsyncRetrievalApi(object):
 
     def __init__(self, api_client=None):
         if api_client is None:
-            api_client = SyncApiClient()
+            api_client = AsyncApiClient()
         self.api_client = api_client
 
-    def create_collection(self, body, **kwargs):  # noqa: E501
+    async def create_collection(self, body, **kwargs):  # noqa: E501
         """Create collection  # noqa: E501
 
         This operation creates a new retrieval collection.  # noqa: E501
@@ -40,12 +40,12 @@ class RetrievalApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.create_collection_with_http_info(body, **kwargs)  # noqa: E501
+            return await self.create_collection_with_http_info(body, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_collection_with_http_info(body, **kwargs)  # noqa: E501
+            (data) = await self.create_collection_with_http_info(body, **kwargs)  # noqa: E501
             return data
 
-    def create_collection_with_http_info(self, body, **kwargs):  # noqa: E501
+    async def create_collection_with_http_info(self, body, **kwargs):  # noqa: E501
         """Create collection  # noqa: E501
 
         This operation creates a new retrieval collection.  # noqa: E501
@@ -106,7 +106,7 @@ class RetrievalApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/collections', 'POST',
             path_params,
             query_params,
@@ -121,7 +121,7 @@ class RetrievalApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def create_record(self, body, collection_id, **kwargs):  # noqa: E501
+    async def create_record(self, body, collection_id, **kwargs):  # noqa: E501
         """Create record  # noqa: E501
 
         Create a new record in a collection.  # noqa: E501
@@ -139,12 +139,12 @@ class RetrievalApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.create_record_with_http_info(body, collection_id, **kwargs)  # noqa: E501
+            return await self.create_record_with_http_info(body, collection_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_record_with_http_info(body, collection_id, **kwargs)  # noqa: E501
+            (data) = await self.create_record_with_http_info(body, collection_id, **kwargs)  # noqa: E501
             return data
 
-    def create_record_with_http_info(self, body, collection_id, **kwargs):  # noqa: E501
+    async def create_record_with_http_info(self, body, collection_id, **kwargs):  # noqa: E501
         """Create record  # noqa: E501
 
         Create a new record in a collection.  # noqa: E501
@@ -212,7 +212,7 @@ class RetrievalApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/collections/{collection_id}/records', 'POST',
             path_params,
             query_params,
@@ -227,7 +227,7 @@ class RetrievalApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def delete_collection(self, collection_id, **kwargs):  # noqa: E501
+    async def delete_collection(self, collection_id, **kwargs):  # noqa: E501
         """Delete collection  # noqa: E501
 
         This operation deletes a specific collection.  # noqa: E501
@@ -244,12 +244,12 @@ class RetrievalApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.delete_collection_with_http_info(collection_id, **kwargs)  # noqa: E501
+            return await self.delete_collection_with_http_info(collection_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.delete_collection_with_http_info(collection_id, **kwargs)  # noqa: E501
+            (data) = await self.delete_collection_with_http_info(collection_id, **kwargs)  # noqa: E501
             return data
 
-    def delete_collection_with_http_info(self, collection_id, **kwargs):  # noqa: E501
+    async def delete_collection_with_http_info(self, collection_id, **kwargs):  # noqa: E501
         """Delete collection  # noqa: E501
 
         This operation deletes a specific collection.  # noqa: E501
@@ -306,7 +306,7 @@ class RetrievalApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/collections/{collection_id}', 'DELETE',
             path_params,
             query_params,
@@ -321,7 +321,7 @@ class RetrievalApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def delete_record(self, collection_id, record_id, **kwargs):  # noqa: E501
+    async def delete_record(self, collection_id, record_id, **kwargs):  # noqa: E501
         """Delete record  # noqa: E501
 
         Delete a specific record from a collection.  # noqa: E501
@@ -339,12 +339,12 @@ class RetrievalApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.delete_record_with_http_info(collection_id, record_id, **kwargs)  # noqa: E501
+            return await self.delete_record_with_http_info(collection_id, record_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.delete_record_with_http_info(collection_id, record_id, **kwargs)  # noqa: E501
+            (data) = await self.delete_record_with_http_info(collection_id, record_id, **kwargs)  # noqa: E501
             return data
 
-    def delete_record_with_http_info(self, collection_id, record_id, **kwargs):  # noqa: E501
+    async def delete_record_with_http_info(self, collection_id, record_id, **kwargs):  # noqa: E501
         """Delete record  # noqa: E501
 
         Delete a specific record from a collection.  # noqa: E501
@@ -408,7 +408,7 @@ class RetrievalApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/collections/{collection_id}/records/{record_id}', 'DELETE',
             path_params,
             query_params,
@@ -423,7 +423,7 @@ class RetrievalApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def get_collection(self, collection_id, **kwargs):  # noqa: E501
+    async def get_collection(self, collection_id, **kwargs):  # noqa: E501
         """Get collection  # noqa: E501
 
         This operation returns a single collection in your Text Base by its unique ID.  # noqa: E501
@@ -440,12 +440,12 @@ class RetrievalApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.get_collection_with_http_info(collection_id, **kwargs)  # noqa: E501
+            return await self.get_collection_with_http_info(collection_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.get_collection_with_http_info(collection_id, **kwargs)  # noqa: E501
+            (data) = await self.get_collection_with_http_info(collection_id, **kwargs)  # noqa: E501
             return data
 
-    def get_collection_with_http_info(self, collection_id, **kwargs):  # noqa: E501
+    async def get_collection_with_http_info(self, collection_id, **kwargs):  # noqa: E501
         """Get collection  # noqa: E501
 
         This operation returns a single collection in your Text Base by its unique ID.  # noqa: E501
@@ -502,7 +502,7 @@ class RetrievalApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/collections/{collection_id}', 'GET',
             path_params,
             query_params,
@@ -517,7 +517,7 @@ class RetrievalApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def get_record(self, collection_id, record_id, **kwargs):  # noqa: E501
+    async def get_record(self, collection_id, record_id, **kwargs):  # noqa: E501
         """Get record  # noqa: E501
 
         Retrieve a specific record from a collection.  # noqa: E501
@@ -535,12 +535,12 @@ class RetrievalApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.get_record_with_http_info(collection_id, record_id, **kwargs)  # noqa: E501
+            return await self.get_record_with_http_info(collection_id, record_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.get_record_with_http_info(collection_id, record_id, **kwargs)  # noqa: E501
+            (data) = await self.get_record_with_http_info(collection_id, record_id, **kwargs)  # noqa: E501
             return data
 
-    def get_record_with_http_info(self, collection_id, record_id, **kwargs):  # noqa: E501
+    async def get_record_with_http_info(self, collection_id, record_id, **kwargs):  # noqa: E501
         """Get record  # noqa: E501
 
         Retrieve a specific record from a collection.  # noqa: E501
@@ -604,7 +604,7 @@ class RetrievalApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/collections/{collection_id}/records/{record_id}', 'GET',
             path_params,
             query_params,
@@ -619,7 +619,7 @@ class RetrievalApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def list_collections(self, **kwargs):  # noqa: E501
+    async def list_collections(self, **kwargs):  # noqa: E501
         """List collections  # noqa: E501
 
         This operation returns a list of your retrieval collections.  # noqa: E501
@@ -640,12 +640,12 @@ class RetrievalApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.list_collections_with_http_info(**kwargs)  # noqa: E501
+            return await self.list_collections_with_http_info(**kwargs)  # noqa: E501
         else:
-            (data) = self.list_collections_with_http_info(**kwargs)  # noqa: E501
+            (data) = await self.list_collections_with_http_info(**kwargs)  # noqa: E501
             return data
 
-    def list_collections_with_http_info(self, **kwargs):  # noqa: E501
+    async def list_collections_with_http_info(self, **kwargs):  # noqa: E501
         """List collections  # noqa: E501
 
         This operation returns a list of your retrieval collections.  # noqa: E501
@@ -710,7 +710,7 @@ class RetrievalApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/collections', 'GET',
             path_params,
             query_params,
@@ -725,7 +725,7 @@ class RetrievalApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def list_records(self, collection_id, **kwargs):  # noqa: E501
+    async def list_records(self, collection_id, **kwargs):  # noqa: E501
         """List records  # noqa: E501
 
         Retrieve a paginated list of records from a specific collection.  # noqa: E501
@@ -747,12 +747,12 @@ class RetrievalApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.list_records_with_http_info(collection_id, **kwargs)  # noqa: E501
+            return await self.list_records_with_http_info(collection_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.list_records_with_http_info(collection_id, **kwargs)  # noqa: E501
+            (data) = await self.list_records_with_http_info(collection_id, **kwargs)  # noqa: E501
             return data
 
-    def list_records_with_http_info(self, collection_id, **kwargs):  # noqa: E501
+    async def list_records_with_http_info(self, collection_id, **kwargs):  # noqa: E501
         """List records  # noqa: E501
 
         Retrieve a paginated list of records from a specific collection.  # noqa: E501
@@ -824,7 +824,7 @@ class RetrievalApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/collections/{collection_id}/records', 'GET',
             path_params,
             query_params,
@@ -839,7 +839,7 @@ class RetrievalApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def query_chunks(self, body, collection_id, **kwargs):  # noqa: E501
+    async def query_chunks(self, body, collection_id, **kwargs):  # noqa: E501
         """Query chunks  # noqa: E501
 
         Query the most relevant chunks from a specific collection.  # noqa: E501
@@ -857,12 +857,12 @@ class RetrievalApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.query_chunks_with_http_info(body, collection_id, **kwargs)  # noqa: E501
+            return await self.query_chunks_with_http_info(body, collection_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.query_chunks_with_http_info(body, collection_id, **kwargs)  # noqa: E501
+            (data) = await self.query_chunks_with_http_info(body, collection_id, **kwargs)  # noqa: E501
             return data
 
-    def query_chunks_with_http_info(self, body, collection_id, **kwargs):  # noqa: E501
+    async def query_chunks_with_http_info(self, body, collection_id, **kwargs):  # noqa: E501
         """Query chunks  # noqa: E501
 
         Query the most relevant chunks from a specific collection.  # noqa: E501
@@ -930,7 +930,7 @@ class RetrievalApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/collections/{collection_id}/chunks/query', 'POST',
             path_params,
             query_params,
@@ -945,7 +945,7 @@ class RetrievalApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def update_collection(self, body, collection_id, **kwargs):  # noqa: E501
+    async def update_collection(self, body, collection_id, **kwargs):  # noqa: E501
         """Update collection  # noqa: E501
 
         This operation updates the metadata of a specific collection.  # noqa: E501
@@ -963,12 +963,12 @@ class RetrievalApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.update_collection_with_http_info(body, collection_id, **kwargs)  # noqa: E501
+            return await self.update_collection_with_http_info(body, collection_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.update_collection_with_http_info(body, collection_id, **kwargs)  # noqa: E501
+            (data) = await self.update_collection_with_http_info(body, collection_id, **kwargs)  # noqa: E501
             return data
 
-    def update_collection_with_http_info(self, body, collection_id, **kwargs):  # noqa: E501
+    async def update_collection_with_http_info(self, body, collection_id, **kwargs):  # noqa: E501
         """Update collection  # noqa: E501
 
         This operation updates the metadata of a specific collection.  # noqa: E501
@@ -1036,7 +1036,7 @@ class RetrievalApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/collections/{collection_id}', 'POST',
             path_params,
             query_params,
@@ -1051,7 +1051,7 @@ class RetrievalApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def update_record(self, body, collection_id, record_id, **kwargs):  # noqa: E501
+    async def update_record(self, body, collection_id, record_id, **kwargs):  # noqa: E501
         """Update record  # noqa: E501
 
         Modify the metadata of a specific record within a collection.  # noqa: E501
@@ -1070,12 +1070,12 @@ class RetrievalApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.update_record_with_http_info(body, collection_id, record_id, **kwargs)  # noqa: E501
+            return await self.update_record_with_http_info(body, collection_id, record_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.update_record_with_http_info(body, collection_id, record_id, **kwargs)  # noqa: E501
+            (data) = await self.update_record_with_http_info(body, collection_id, record_id, **kwargs)  # noqa: E501
             return data
 
-    def update_record_with_http_info(self, body, collection_id, record_id, **kwargs):  # noqa: E501
+    async def update_record_with_http_info(self, body, collection_id, record_id, **kwargs):  # noqa: E501
         """Update record  # noqa: E501
 
         Modify the metadata of a specific record within a collection.  # noqa: E501
@@ -1150,7 +1150,7 @@ class RetrievalApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/collections/{collection_id}/records/{record_id}', 'POST',
             path_params,
             query_params,

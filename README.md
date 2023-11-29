@@ -55,7 +55,7 @@ from taskingai.client.rest import ApiException
 from pprint import pprint
 
 # create an instance of the API class
-api_instance = client.AssistantApi(client.SyncApiClient(configuration))
+api_instance = client.AsyncAssistantApi(client.SyncApiClient(configuration))
 body = client.AssistantCreateRequestBodySchema()  # AssistantCreateRequestBodySchema | 
 
 try:
@@ -63,10 +63,10 @@ try:
     api_response = api_instance.create_assistant(body)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling AssistantApi->create_assistant: %s\n" % e)
+    print("Exception when calling AsyncAssistantApi->create_assistant: %s\n" % e)
 
 # create an instance of the API class
-api_instance = client.AssistantApi(client.SyncApiClient(configuration))
+api_instance = client.AsyncAssistantApi(client.SyncApiClient(configuration))
 body = client.ChatCreateRequestBodySchema()  # ChatCreateRequestBodySchema | 
 assistant_id = NULL  # object | 
 
@@ -75,10 +75,10 @@ try:
     api_response = api_instance.create_chat(body, assistant_id)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling AssistantApi->create_chat: %s\n" % e)
+    print("Exception when calling AsyncAssistantApi->create_chat: %s\n" % e)
 
 # create an instance of the API class
-api_instance = client.AssistantApi(client.SyncApiClient(configuration))
+api_instance = client.AsyncAssistantApi(client.SyncApiClient(configuration))
 assistant_id = NULL  # object | 
 
 try:
@@ -86,10 +86,10 @@ try:
     api_response = api_instance.delete_assistant(assistant_id)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling AssistantApi->delete_assistant: %s\n" % e)
+    print("Exception when calling AsyncAssistantApi->delete_assistant: %s\n" % e)
 
 # create an instance of the API class
-api_instance = client.AssistantApi(client.SyncApiClient(configuration))
+api_instance = client.AsyncAssistantApi(client.SyncApiClient(configuration))
 assistant_id = NULL  # object | 
 chat_id = NULL  # object | 
 
@@ -98,10 +98,10 @@ try:
     api_response = api_instance.delete_chat(assistant_id, chat_id)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling AssistantApi->delete_chat: %s\n" % e)
+    print("Exception when calling AsyncAssistantApi->delete_chat: %s\n" % e)
 
 # create an instance of the API class
-api_instance = client.AssistantApi(client.SyncApiClient(configuration))
+api_instance = client.AsyncAssistantApi(client.SyncApiClient(configuration))
 body = client.ChatGenerateRequestBodySchema()  # ChatGenerateRequestBodySchema | 
 assistant_id = NULL  # object | 
 chat_id = NULL  # object | 
@@ -111,10 +111,10 @@ try:
     api_response = api_instance.generate(body, assistant_id, chat_id)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling AssistantApi->generate: %s\n" % e)
+    print("Exception when calling AsyncAssistantApi->generate: %s\n" % e)
 
 # create an instance of the API class
-api_instance = client.AssistantApi(client.SyncApiClient(configuration))
+api_instance = client.AsyncAssistantApi(client.SyncApiClient(configuration))
 assistant_id = NULL  # object | 
 
 try:
@@ -122,10 +122,10 @@ try:
     api_response = api_instance.get_assistant(assistant_id)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling AssistantApi->get_assistant: %s\n" % e)
+    print("Exception when calling AsyncAssistantApi->get_assistant: %s\n" % e)
 
 # create an instance of the API class
-api_instance = client.AssistantApi(client.SyncApiClient(configuration))
+api_instance = client.AsyncAssistantApi(client.SyncApiClient(configuration))
 assistant_id = NULL  # object | 
 chat_id = NULL  # object | 
 
@@ -134,10 +134,10 @@ try:
     api_response = api_instance.get_chat(assistant_id, chat_id)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling AssistantApi->get_chat: %s\n" % e)
+    print("Exception when calling AsyncAssistantApi->get_chat: %s\n" % e)
 
 # create an instance of the API class
-api_instance = client.AssistantApi(client.SyncApiClient(configuration))
+api_instance = client.AsyncAssistantApi(client.SyncApiClient(configuration))
 assistant_id = NULL  # object | 
 chat_id = NULL  # object | 
 message_id = NULL  # object | 
@@ -147,10 +147,10 @@ try:
     api_response = api_instance.get_message(assistant_id, chat_id, message_id)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling AssistantApi->get_message: %s\n" % e)
+    print("Exception when calling AsyncAssistantApi->get_message: %s\n" % e)
 
 # create an instance of the API class
-api_instance = client.AssistantApi(client.SyncApiClient(configuration))
+api_instance = client.AsyncAssistantApi(client.SyncApiClient(configuration))
 limit = 20  # object |  (optional) (default to 20)
 order = desc  # object |  (optional) (default to desc)
 after = NULL  # object |  (optional)
@@ -162,10 +162,10 @@ try:
     api_response = api_instance.list_assistants(limit=limit, order=order, after=after, before=before, offset=offset)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling AssistantApi->list_assistants: %s\n" % e)
+    print("Exception when calling AsyncAssistantApi->list_assistants: %s\n" % e)
 
 # create an instance of the API class
-api_instance = client.AssistantApi(client.SyncApiClient(configuration))
+api_instance = client.AsyncAssistantApi(client.SyncApiClient(configuration))
 assistant_id = NULL  # object | 
 
 try:
@@ -173,10 +173,10 @@ try:
     api_response = api_instance.list_chats(assistant_id)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling AssistantApi->list_chats: %s\n" % e)
+    print("Exception when calling AsyncAssistantApi->list_chats: %s\n" % e)
 
 # create an instance of the API class
-api_instance = client.AssistantApi(client.SyncApiClient(configuration))
+api_instance = client.AsyncAssistantApi(client.SyncApiClient(configuration))
 assistant_id = NULL  # object | 
 chat_id = NULL  # object | 
 limit = 20  # object |  (optional) (default to 20)
@@ -190,10 +190,10 @@ try:
                                               before=before)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling AssistantApi->list_messages: %s\n" % e)
+    print("Exception when calling AsyncAssistantApi->list_messages: %s\n" % e)
 
 # create an instance of the API class
-api_instance = client.AssistantApi(client.SyncApiClient(configuration))
+api_instance = client.AsyncAssistantApi(client.SyncApiClient(configuration))
 body = client.AssistantUpdateRequestBodySchema()  # AssistantUpdateRequestBodySchema | 
 assistant_id = NULL  # object | 
 
@@ -202,10 +202,10 @@ try:
     api_response = api_instance.update_assistant(body, assistant_id)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling AssistantApi->update_assistant: %s\n" % e)
+    print("Exception when calling AsyncAssistantApi->update_assistant: %s\n" % e)
 
 # create an instance of the API class
-api_instance = client.AssistantApi(client.SyncApiClient(configuration))
+api_instance = client.AsyncAssistantApi(client.SyncApiClient(configuration))
 body = client.ChatUpdateRequestBodySchema()  # ChatUpdateRequestBodySchema | 
 assistant_id = NULL  # object | 
 chat_id = NULL  # object | 
@@ -215,10 +215,10 @@ try:
     api_response = api_instance.update_chat(body, assistant_id, chat_id)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling AssistantApi->update_chat: %s\n" % e)
+    print("Exception when calling AsyncAssistantApi->update_chat: %s\n" % e)
 
 # create an instance of the API class
-api_instance = client.AssistantApi(client.SyncApiClient(configuration))
+api_instance = client.AsyncAssistantApi(client.SyncApiClient(configuration))
 body = client.MessageUpdateRequestBodySchema()  # MessageUpdateRequestBodySchema | 
 assistant_id = NULL  # object | 
 chat_id = NULL  # object | 
@@ -229,7 +229,7 @@ try:
     api_response = api_instance.update_message(body, assistant_id, chat_id, message_id)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling AssistantApi->update_message: %s\n" % e)
+    print("Exception when calling AsyncAssistantApi->update_message: %s\n" % e)
 ```
 
 ## Documentation for API Endpoints
@@ -238,20 +238,20 @@ All URIs are relative to */*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*AssistantApi* | [**create_assistant**](docs/AssistantApi.md#create_assistant) | **POST** /api/v1/assistants | Create assistant
-*AssistantApi* | [**create_chat**](docs/AssistantApi.md#create_chat) | **POST** /api/v1/assistants/{assistant_id}/chats | Create chat
-*AssistantApi* | [**delete_assistant**](docs/AssistantApi.md#delete_assistant) | **DELETE** /api/v1/assistants/{assistant_id} | Delete assistant
-*AssistantApi* | [**delete_chat**](docs/AssistantApi.md#delete_chat) | **DELETE** /api/v1/assistants/{assistant_id}/chats/{chat_id} | Delete chat
-*AssistantApi* | [**generate**](docs/AssistantApi.md#generate) | **POST** /api/v1/assistants/{assistant_id}/chats/{chat_id}/generate | Generate
-*AssistantApi* | [**get_assistant**](docs/AssistantApi.md#get_assistant) | **GET** /api/v1/assistants/{assistant_id} | Get assistant
-*AssistantApi* | [**get_chat**](docs/AssistantApi.md#get_chat) | **GET** /api/v1/assistants/{assistant_id}/chats/{chat_id} | Get chat
-*AssistantApi* | [**get_message**](docs/AssistantApi.md#get_message) | **GET** /api/v1/assistants/{assistant_id}/chats/{chat_id}/messages/{message_id} | Get message
-*AssistantApi* | [**list_assistants**](docs/AssistantApi.md#list_assistants) | **GET** /api/v1/assistants | List assistants
-*AssistantApi* | [**list_chats**](docs/AssistantApi.md#list_chats) | **GET** /api/v1/assistants/{assistant_id}/chats | List chats
-*AssistantApi* | [**list_messages**](docs/AssistantApi.md#list_messages) | **GET** /api/v1/assistants/{assistant_id}/chats/{chat_id}/messages | List messages
-*AssistantApi* | [**update_assistant**](docs/AssistantApi.md#update_assistant) | **POST** /api/v1/assistants/{assistant_id} | Update assistant
-*AssistantApi* | [**update_chat**](docs/AssistantApi.md#update_chat) | **POST** /api/v1/assistants/{assistant_id}/chats/{chat_id} | Update chat
-*AssistantApi* | [**update_message**](docs/AssistantApi.md#update_message) | **POST** /api/v1/assistants/{assistant_id}/chats/{chat_id}/messages/{message_id} | Update message
+*AsyncAssistantApi* | [**create_assistant**](docs/AssistantApi.md#create_assistant) | **POST** /api/v1/assistants | Create assistant
+*AsyncAssistantApi* | [**create_chat**](docs/AssistantApi.md#create_chat) | **POST** /api/v1/assistants/{assistant_id}/chats | Create chat
+*AsyncAssistantApi* | [**delete_assistant**](docs/AssistantApi.md#delete_assistant) | **DELETE** /api/v1/assistants/{assistant_id} | Delete assistant
+*AsyncAssistantApi* | [**delete_chat**](docs/AssistantApi.md#delete_chat) | **DELETE** /api/v1/assistants/{assistant_id}/chats/{chat_id} | Delete chat
+*AsyncAssistantApi* | [**generate**](docs/AssistantApi.md#generate) | **POST** /api/v1/assistants/{assistant_id}/chats/{chat_id}/generate | Generate
+*AsyncAssistantApi* | [**get_assistant**](docs/AssistantApi.md#get_assistant) | **GET** /api/v1/assistants/{assistant_id} | Get assistant
+*AsyncAssistantApi* | [**get_chat**](docs/AssistantApi.md#get_chat) | **GET** /api/v1/assistants/{assistant_id}/chats/{chat_id} | Get chat
+*AsyncAssistantApi* | [**get_message**](docs/AssistantApi.md#get_message) | **GET** /api/v1/assistants/{assistant_id}/chats/{chat_id}/messages/{message_id} | Get message
+*AsyncAssistantApi* | [**list_assistants**](docs/AssistantApi.md#list_assistants) | **GET** /api/v1/assistants | List assistants
+*AsyncAssistantApi* | [**list_chats**](docs/AssistantApi.md#list_chats) | **GET** /api/v1/assistants/{assistant_id}/chats | List chats
+*AsyncAssistantApi* | [**list_messages**](docs/AssistantApi.md#list_messages) | **GET** /api/v1/assistants/{assistant_id}/chats/{chat_id}/messages | List messages
+*AsyncAssistantApi* | [**update_assistant**](docs/AssistantApi.md#update_assistant) | **POST** /api/v1/assistants/{assistant_id} | Update assistant
+*AsyncAssistantApi* | [**update_chat**](docs/AssistantApi.md#update_chat) | **POST** /api/v1/assistants/{assistant_id}/chats/{chat_id} | Update chat
+*AsyncAssistantApi* | [**update_message**](docs/AssistantApi.md#update_message) | **POST** /api/v1/assistants/{assistant_id}/chats/{chat_id}/messages/{message_id} | Update message
 *RetrievalApi* | [**create_collection**](docs/RetrievalApi.md#create_collection) | **POST** /api/v1/collections | Create collection
 *RetrievalApi* | [**create_record**](docs/RetrievalApi.md#create_record) | **POST** /api/v1/collections/{collection_id}/records | Create record
 *RetrievalApi* | [**delete_collection**](docs/RetrievalApi.md#delete_collection) | **DELETE** /api/v1/collections/{collection_id} | Delete collection
