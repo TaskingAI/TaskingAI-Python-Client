@@ -2,8 +2,9 @@ import inspect
 import logging
 from pathlib import Path
 import httpx
-from taskingai.client.api import AssistantApi, ToolApi, RetrievalApi, InferenceApi
-from taskingai.client.api_client import SyncApiClient
+from taskingai.client.api import *
+from taskingai.client.api_client import SyncApiClient, AsyncApiClient
+from .constants import ModuleType
 
 def check_kwargs(caller, given):
     argspec = inspect.getfullargspec(caller)
@@ -23,42 +24,61 @@ def get_user_agent():
     user_agent = '{} ({})'.format(client_id, ', '.join([f'{k}:{v}' for k, v in user_agent_details.items()]))
     return user_agent
 
+sync_api_instance_dict = {
+    ModuleType.assistant: None,
+    ModuleType.tool: None,
+    ModuleType.retrieval: None,
+    ModuleType.inference: None
+}
 
-def get_assistant_api_instance():
+async_api_instance_dict = {
+    ModuleType.assistant: None,
+    ModuleType.tool: None,
+    ModuleType.retrieval: None,
+    ModuleType.inference: None
+}
+
+def get_api_instance(module: ModuleType, async_client=False):
     from taskingai.config import Config
     client_config = Config.OPENAPI_CONFIG
     client_config.api_key = client_config.api_key or {}
-    api_client = SyncApiClient(configuration=client_config)
-    api_client.user_agent = get_user_agent()
-    api_instance = AssistantApi(api_client)
-    return api_instance
 
+    api_instance = None
 
-def get_tool_api_instance():
-    from taskingai.config import Config
-    client_config = Config.OPENAPI_CONFIG
-    client_config.api_key = client_config.api_key or {}
-    api_client = SyncApiClient(configuration=client_config)
-    api_client.user_agent = get_user_agent()
-    api_instance = ToolApi(api_client)
-    return api_instance
+    if async_client:
+        api_client = AsyncApiClient(configuration=client_config)
+        api_client.user_agent = get_user_agent()
 
+        if async_api_instance_dict.get(module) is None:
+            if module == ModuleType.assistant:
+                async_api_instance_dict[module] = AsyncAssistantApi(api_client)
+            elif module == ModuleType.tool:
+                async_api_instance_dict[module] = AsyncToolApi(api_client)
+            elif module == ModuleType.retrieval:
+                async_api_instance_dict[module] = AsyncRetrievalApi(api_client)
+            elif module == ModuleType.inference:
+                async_api_instance_dict[module] = AsyncInferenceApi(api_client)
 
-def get_retrieval_api_instance():
-    from taskingai.config import Config
-    client_config = Config.OPENAPI_CONFIG
-    client_config.api_key = client_config.api_key or {}
-    api_client = SyncApiClient(configuration=client_config)
-    api_client.user_agent = get_user_agent()
-    api_instance = RetrievalApi(api_client)
-    return api_instance
+        api_instance = async_api_instance_dict[module]
 
+    else:
+        api_client = SyncApiClient(configuration=client_config)
+        api_client.user_agent = get_user_agent()
 
-def get_inference_api_instance():
-    from taskingai.config import Config
-    client_config = Config.OPENAPI_CONFIG
-    client_config.api_key = client_config.api_key or {}
-    api_client = SyncApiClient(configuration=client_config)
-    api_client.user_agent = get_user_agent()
-    api_instance = InferenceApi(api_client)
+        if sync_api_instance_dict.get(module) is None:
+
+            if module == ModuleType.assistant:
+                sync_api_instance_dict[module] = AssistantApi(api_client)
+            elif module == ModuleType.tool:
+                sync_api_instance_dict[module] = ToolApi(api_client)
+            elif module == ModuleType.retrieval:
+                sync_api_instance_dict[module] = RetrievalApi(api_client)
+            elif module == ModuleType.inference:
+                sync_api_instance_dict[module] = InferenceApi(api_client)
+
+        api_instance = sync_api_instance_dict[module]
+
+    if api_instance is None:
+        raise NotImplementedError(f"Cannot find api instance for module {module} with async={async_client}")
+
     return api_instance

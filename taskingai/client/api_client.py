@@ -614,10 +614,10 @@ class SyncApiClient(BaseApiClient):
 
 
 
-class ASyncApiClient(BaseApiClient):
+class AsyncApiClient(BaseApiClient):
 
     def __init__(self, *args, **kwargs):
-        super(ASyncApiClient, self).__init__(*args, **kwargs)
+        super(AsyncApiClient, self).__init__(*args, **kwargs)
         # Initialize the asynchronous REST client here
         self.rest_client = rest.RESTAsyncClientObject(self.configuration)
 

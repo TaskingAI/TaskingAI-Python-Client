@@ -13,17 +13,17 @@ import re  # noqa: F401
 # python 2 and python 3 compatibility library
 import six
 
-from taskingai.client.api_client import SyncApiClient
+from taskingai.client.api_client import AsyncApiClient
 
 
-class InferenceApi(object):
+class AsyncInferenceApi(object):
 
     def __init__(self, api_client=None):
         if api_client is None:
-            api_client = SyncApiClient()
+            api_client = AsyncApiClient()
         self.api_client = api_client
 
-    def chat_completion(self, body, **kwargs):  # noqa: E501
+    async def chat_completion(self, body, **kwargs):  # noqa: E501
         """Chat Completion  # noqa: E501
 
         Model inference for chat completion.  # noqa: E501
@@ -40,12 +40,12 @@ class InferenceApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.chat_completion_with_http_info(body, **kwargs)  # noqa: E501
+            return await self.chat_completion_with_http_info(body, **kwargs)  # noqa: E501
         else:
-            (data) = self.chat_completion_with_http_info(body, **kwargs)  # noqa: E501
+            (data) = await self.chat_completion_with_http_info(body, **kwargs)  # noqa: E501
             return data
 
-    def chat_completion_with_http_info(self, body, **kwargs):  # noqa: E501
+    async def chat_completion_with_http_info(self, body, **kwargs):  # noqa: E501
         """Chat Completion  # noqa: E501
 
         Model inference for chat completion.  # noqa: E501
@@ -106,7 +106,7 @@ class InferenceApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/inference/chat_completion', 'POST',
             path_params,
             query_params,
@@ -121,7 +121,7 @@ class InferenceApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def text_embedding(self, body, **kwargs):  # noqa: E501
+    async def text_embedding(self, body, **kwargs):  # noqa: E501
         """Text Embedding  # noqa: E501
 
         Model inference for text embedding.  # noqa: E501
@@ -138,12 +138,12 @@ class InferenceApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async_req'):
-            return self.text_embedding_with_http_info(body, **kwargs)  # noqa: E501
+            return await self.text_embedding_with_http_info(body, **kwargs)  # noqa: E501
         else:
-            (data) = self.text_embedding_with_http_info(body, **kwargs)  # noqa: E501
+            (data) = await self.text_embedding_with_http_info(body, **kwargs)  # noqa: E501
             return data
 
-    def text_embedding_with_http_info(self, body, **kwargs):  # noqa: E501
+    async def text_embedding_with_http_info(self, body, **kwargs):  # noqa: E501
         """Text Embedding  # noqa: E501
 
         Model inference for text embedding.  # noqa: E501
@@ -204,7 +204,7 @@ class InferenceApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        return await self.api_client.call_api(
             '/v1/inference/text_embedding', 'POST',
             path_params,
             query_params,

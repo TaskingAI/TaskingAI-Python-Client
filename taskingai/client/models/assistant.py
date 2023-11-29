@@ -99,7 +99,7 @@ class Assistant(object):
         self._object = object
 
     @property
-    def assistant_id(self):
+    def assistant_id(self): 
         """Gets the assistant_id of this Assistant.  # noqa: E501
 
         The assistant ID.  # noqa: E501
