@@ -9,7 +9,6 @@ from __future__ import absolute_import
 import datetime
 import json
 import mimetypes
-from multiprocessing.pool import ThreadPool
 import os
 import re
 import tempfile
@@ -23,7 +22,7 @@ from taskingai.client import rest
 import taskingai.client as client
 
 
-class ApiClient(object):
+class BaseApiClient(object):
     """Generic API client for Swagger client library builds.
 
     Swagger generic API client. This client handles the client-
@@ -61,18 +60,12 @@ class ApiClient(object):
             configuration = Configuration()
         self.configuration = configuration
 
-        self.pool = ThreadPool()
-        self.rest_client = rest.RESTClientObject(configuration)
         self.default_headers = {}
         if header_name is not None:
             self.default_headers[header_name] = header_value
         self.cookie = cookie
         # Set default User-Agent.
-        self.user_agent = 'Swagger-Codegen/1.0.0/python'
-
-    def __del__(self):
-        self.pool.close()
-        self.pool.join()
+        self.user_agent = 'TaskingAI-Client/1.0.0/python'
 
     @property
     def user_agent(self):
@@ -85,85 +78,6 @@ class ApiClient(object):
 
     def set_default_header(self, header_name, header_value):
         self.default_headers[header_name] = header_value
-
-    def __call_api(
-            self, resource_path, method, path_params=None,
-            query_params=None, header_params=None, body=None, post_params=None,
-            files=None, response_type=None, auth_settings=None,
-            _return_http_data_only=None, collection_formats=None,
-            _preload_content=True, _request_timeout=None):
-
-        config = self.configuration
-
-        # header parameters
-        header_params = header_params or {}
-        header_params.update(self.default_headers)
-        if self.cookie:
-            header_params['Cookie'] = self.cookie
-        if header_params:
-            header_params = self.sanitize_for_serialization(header_params)
-            header_params = dict(self.parameters_to_tuples(header_params,
-                                                           collection_formats))
-            if config.api_key_prefix and config.api_key:
-                header_params['Authorization'] = f'{config.api_key_prefix} {config.api_key}'
-
-        # path parameters
-        if path_params:
-            path_params = self.sanitize_for_serialization(path_params)
-            path_params = self.parameters_to_tuples(path_params,
-                                                    collection_formats)
-            for k, v in path_params:
-                # specified safe chars, encode everything
-                resource_path = resource_path.replace(
-                    '{%s}' % k,
-                    quote(str(v), safe=config.safe_chars_for_path_param)
-                )
-
-        # query parameters
-        if query_params:
-            query_params = self.sanitize_for_serialization(query_params)
-            query_params = self.parameters_to_tuples(query_params,
-                                                     collection_formats)
-
-        # post parameters
-        if post_params or files:
-            post_params = self.prepare_post_parameters(post_params, files)
-            post_params = self.sanitize_for_serialization(post_params)
-            post_params = self.parameters_to_tuples(post_params,
-                                                    collection_formats)
-
-        # auth setting
-        self.update_params_for_auth(header_params, query_params, auth_settings)
-
-        # body
-        if body:
-            body = self.sanitize_for_serialization(body)
-
-        # request url
-        url = self.configuration.host + resource_path
-
-        # perform request and return response
-        response_data = self.request(
-            method, url, query_params=query_params, headers=header_params,
-            post_params=post_params, body=body,
-            _preload_content=_preload_content,
-            _request_timeout=_request_timeout)
-
-        self.last_response = response_data
-
-        return_data = response_data
-        if _preload_content:
-            # deserialize response data
-            if response_type:
-                return_data = self.deserialize(response_data, response_type)
-            else:
-                return_data = None
-
-        if _return_http_data_only:
-            return (return_data)
-        else:
-            return (return_data, response_data.status,
-                    response_data.getheaders())
 
     def sanitize_for_serialization(self, obj):
         """Builds a JSON POST object.
@@ -267,127 +181,6 @@ class ApiClient(object):
             return self.__deserialize_datatime(data)
         else:
             return self.__deserialize_model(data, klass)
-
-    def call_api(self, resource_path, method,
-                 path_params=None, query_params=None, header_params=None,
-                 body=None, post_params=None, files=None,
-                 response_type=None, auth_settings=None, async_req=None,
-                 _return_http_data_only=None, collection_formats=None,
-                 _preload_content=True, _request_timeout=None):
-        """Makes the HTTP request (synchronous) and returns deserialized data.
-
-        To make an async request, set the async_req parameter.
-
-        :param resource_path: Path to method endpoint.
-        :param method: Method to call.
-        :param path_params: Path parameters in the url.
-        :param query_params: Query parameters in the url.
-        :param header_params: Header parameters to be
-            placed in the request header.
-        :param body: Request body.
-        :param post_params dict: Request post form parameters,
-            for `application/x-www-form-urlencoded`, `multipart/form-data`.
-        :param auth_settings list: Auth Settings names for the request.
-        :param response: Response data type.
-        :param files dict: key -> filename, value -> filepath,
-            for `multipart/form-data`.
-        :param async_req bool: execute request asynchronously
-        :param _return_http_data_only: response data without head status code
-                                       and headers
-        :param collection_formats: dict of collection formats for path, query,
-            header, and post parameters.
-        :param _preload_content: if False, the urllib3.HTTPResponse object will
-                                 be returned without reading/decoding response
-                                 data. Default is True.
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :return:
-            If async_req parameter is True,
-            the request will be called asynchronously.
-            The method will return the request thread.
-            If parameter async_req is False or missing,
-            then the method will return the response directly.
-        """
-        if not async_req:
-            return self.__call_api(resource_path, method,
-                                   path_params, query_params, header_params,
-                                   body, post_params, files,
-                                   response_type, auth_settings,
-                                   _return_http_data_only, collection_formats,
-                                   _preload_content, _request_timeout)
-        else:
-            thread = self.pool.apply_async(self.__call_api, (resource_path,
-                                           method, path_params, query_params,
-                                           header_params, body,
-                                           post_params, files,
-                                           response_type, auth_settings,
-                                           _return_http_data_only,
-                                           collection_formats,
-                                           _preload_content, _request_timeout))
-        return thread
-
-    def request(self, method, url, query_params=None, headers=None,
-                post_params=None, body=None, _preload_content=True,
-                _request_timeout=None):
-        """Makes the HTTP request using RESTClient."""
-        if method == "GET":
-            return self.rest_client.GET(url,
-                                        query_params=query_params,
-                                        _preload_content=_preload_content,
-                                        _request_timeout=_request_timeout,
-                                        headers=headers)
-        elif method == "HEAD":
-            return self.rest_client.HEAD(url,
-                                         query_params=query_params,
-                                         _preload_content=_preload_content,
-                                         _request_timeout=_request_timeout,
-                                         headers=headers)
-        elif method == "OPTIONS":
-            return self.rest_client.OPTIONS(url,
-                                            query_params=query_params,
-                                            headers=headers,
-                                            post_params=post_params,
-                                            _preload_content=_preload_content,
-                                            _request_timeout=_request_timeout,
-                                            body=body)
-        elif method == "POST":
-            return self.rest_client.POST(url,
-                                         query_params=query_params,
-                                         headers=headers,
-                                         post_params=post_params,
-                                         _preload_content=_preload_content,
-                                         _request_timeout=_request_timeout,
-                                         body=body)
-        elif method == "PUT":
-            return self.rest_client.PUT(url,
-                                        query_params=query_params,
-                                        headers=headers,
-                                        post_params=post_params,
-                                        _preload_content=_preload_content,
-                                        _request_timeout=_request_timeout,
-                                        body=body)
-        elif method == "PATCH":
-            return self.rest_client.PATCH(url,
-                                          query_params=query_params,
-                                          headers=headers,
-                                          post_params=post_params,
-                                          _preload_content=_preload_content,
-                                          _request_timeout=_request_timeout,
-                                          body=body)
-        elif method == "DELETE":
-            return self.rest_client.DELETE(url,
-                                           query_params=query_params,
-                                           headers=headers,
-                                           _preload_content=_preload_content,
-                                           _request_timeout=_request_timeout,
-                                           body=body)
-        else:
-            raise ValueError(
-                "http method must be `GET`, `HEAD`, `OPTIONS`,"
-                " `POST`, `PATCH`, `PUT` or `DELETE`."
-            )
 
     def parameters_to_tuples(self, params, collection_formats):
         """Get parameters as list of tuples, formatting collections.
@@ -628,3 +421,380 @@ class ApiClient(object):
             if klass_name:
                 instance = self.__deserialize(data, klass_name)
         return instance
+
+
+class SyncApiClient(BaseApiClient):
+
+    def __init__(self, *args, **kwargs):
+        super(SyncApiClient, self).__init__(*args, **kwargs)
+        self.rest_client = rest.RESTSyncClientObject(self.configuration)
+
+    def __call_api(
+            self, resource_path, method, path_params=None,
+            query_params=None, header_params=None, body=None, post_params=None,
+            files=None, response_type=None, auth_settings=None,
+            _return_http_data_only=None, collection_formats=None,
+            _preload_content=True, _request_timeout=None):
+
+        config = self.configuration
+
+        # header parameters
+        header_params = header_params or {}
+        header_params.update(self.default_headers)
+        if self.cookie:
+            header_params['Cookie'] = self.cookie
+        if header_params:
+            header_params = self.sanitize_for_serialization(header_params)
+            header_params = dict(self.parameters_to_tuples(header_params,
+                                                           collection_formats))
+            if config.api_key_prefix and config.api_key:
+                header_params['Authorization'] = f'{config.api_key_prefix} {config.api_key}'
+
+        # path parameters
+        if path_params:
+            path_params = self.sanitize_for_serialization(path_params)
+            path_params = self.parameters_to_tuples(path_params,
+                                                    collection_formats)
+            for k, v in path_params:
+                # specified safe chars, encode everything
+                resource_path = resource_path.replace(
+                    '{%s}' % k,
+                    quote(str(v), safe=config.safe_chars_for_path_param)
+                )
+
+        # query parameters
+        if query_params:
+            query_params = self.sanitize_for_serialization(query_params)
+            query_params = self.parameters_to_tuples(query_params,
+                                                     collection_formats)
+
+        # post parameters
+        if post_params or files:
+            post_params = self.prepare_post_parameters(post_params, files)
+            post_params = self.sanitize_for_serialization(post_params)
+            post_params = self.parameters_to_tuples(post_params,
+                                                    collection_formats)
+
+        # auth setting
+        self.update_params_for_auth(header_params, query_params, auth_settings)
+
+        # body
+        if body:
+            body = self.sanitize_for_serialization(body)
+
+        # request url
+        url = self.configuration.host + resource_path
+
+        # perform request and return response
+        response_data = self.request(
+            method, url, query_params=query_params, headers=header_params,
+            post_params=post_params, body=body,
+            _preload_content=_preload_content,
+            _request_timeout=_request_timeout)
+
+        self.last_response = response_data
+
+        return_data = response_data
+        if _preload_content:
+            # deserialize response data
+            if response_type:
+                return_data = self.deserialize(response_data, response_type)
+            else:
+                return_data = None
+
+        if _return_http_data_only:
+            return (return_data)
+        else:
+            return (return_data, response_data.status,
+                    response_data.getheaders())
+
+
+    def call_api(self, resource_path, method,
+                 path_params=None, query_params=None, header_params=None,
+                 body=None, post_params=None, files=None,
+                 response_type=None, auth_settings=None,
+                 _return_http_data_only=None, collection_formats=None,
+                 _preload_content=True, _request_timeout=None):
+        """Makes the HTTP request (synchronous) and returns deserialized data.
+
+        :param resource_path: Path to method endpoint.
+        :param method: Method to call.
+        :param path_params: Path parameters in the url.
+        :param query_params: Query parameters in the url.
+        :param header_params: Header parameters to be
+            placed in the request header.
+        :param body: Request body.
+        :param post_params dict: Request post form parameters,
+            for `application/x-www-form-urlencoded`, `multipart/form-data`.
+        :param auth_settings list: Auth Settings names for the request.
+        :param response: Response data type.
+        :param files dict: key -> filename, value -> filepath,
+            for `multipart/form-data`.
+        :param _return_http_data_only: response data without head status code
+                                       and headers
+        :param collection_formats: dict of collection formats for path, query,
+            header, and post parameters.
+        :param _preload_content: if False, the urllib3.HTTPResponse object will
+                                 be returned without reading/decoding response
+                                 data. Default is True.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :return: Response object data.
+        """
+        return self.__call_api(resource_path, method,
+                               path_params, query_params, header_params,
+                               body, post_params, files,
+                               response_type, auth_settings,
+                               _return_http_data_only, collection_formats,
+                               _preload_content, _request_timeout)
+
+
+    def request(self, method, url, query_params=None, headers=None,
+                post_params=None, body=None, _preload_content=True,
+                _request_timeout=None):
+        """Makes the HTTP request using RESTClient."""
+        if method == "GET":
+            return self.rest_client.GET(url,
+                                        query_params=query_params,
+                                        _preload_content=_preload_content,
+                                        _request_timeout=_request_timeout,
+                                        headers=headers)
+        elif method == "HEAD":
+            return self.rest_client.HEAD(url,
+                                         query_params=query_params,
+                                         _preload_content=_preload_content,
+                                         _request_timeout=_request_timeout,
+                                         headers=headers)
+        elif method == "OPTIONS":
+            return self.rest_client.OPTIONS(url,
+                                            query_params=query_params,
+                                            headers=headers,
+                                            post_params=post_params,
+                                            _preload_content=_preload_content,
+                                            _request_timeout=_request_timeout,
+                                            body=body)
+        elif method == "POST":
+            return self.rest_client.POST(url,
+                                         query_params=query_params,
+                                         headers=headers,
+                                         post_params=post_params,
+                                         _preload_content=_preload_content,
+                                         _request_timeout=_request_timeout,
+                                         body=body)
+        elif method == "PUT":
+            return self.rest_client.PUT(url,
+                                        query_params=query_params,
+                                        headers=headers,
+                                        post_params=post_params,
+                                        _preload_content=_preload_content,
+                                        _request_timeout=_request_timeout,
+                                        body=body)
+        elif method == "PATCH":
+            return self.rest_client.PATCH(url,
+                                          query_params=query_params,
+                                          headers=headers,
+                                          post_params=post_params,
+                                          _preload_content=_preload_content,
+                                          _request_timeout=_request_timeout,
+                                          body=body)
+        elif method == "DELETE":
+            return self.rest_client.DELETE(url,
+                                           query_params=query_params,
+                                           headers=headers,
+                                           _preload_content=_preload_content,
+                                           _request_timeout=_request_timeout,
+                                           body=body)
+        else:
+            raise ValueError(
+                "http method must be `GET`, `HEAD`, `OPTIONS`,"
+                " `POST`, `PATCH`, `PUT` or `DELETE`."
+            )
+
+
+
+class ASyncApiClient(BaseApiClient):
+
+    def __init__(self, *args, **kwargs):
+        super(ASyncApiClient, self).__init__(*args, **kwargs)
+        # Initialize the asynchronous REST client here
+        self.rest_client = rest.RESTAsyncClientObject(self.configuration)
+
+    async def __call_api(
+            self, resource_path, method, path_params=None,
+            query_params=None, header_params=None, body=None, post_params=None,
+            files=None, response_type=None, auth_settings=None,
+            _return_http_data_only=None, collection_formats=None,
+            _preload_content=True, _request_timeout=None):
+
+        config = self.configuration
+        # header parameters
+        header_params = header_params or {}
+        header_params.update(self.default_headers)
+        if self.cookie:
+            header_params['Cookie'] = self.cookie
+        if header_params:
+            header_params = self.sanitize_for_serialization(header_params)
+            header_params = dict(self.parameters_to_tuples(header_params,
+                                                           collection_formats))
+            if config.api_key_prefix and config.api_key:
+                header_params['Authorization'] = f'{config.api_key_prefix} {config.api_key}'
+
+        # path parameters
+        if path_params:
+            path_params = self.sanitize_for_serialization(path_params)
+            path_params = self.parameters_to_tuples(path_params,
+                                                    collection_formats)
+            for k, v in path_params:
+                # specified safe chars, encode everything
+                resource_path = resource_path.replace(
+                    '{%s}' % k,
+                    quote(str(v), safe=config.safe_chars_for_path_param)
+                )
+
+        # query parameters
+        if query_params:
+            query_params = self.sanitize_for_serialization(query_params)
+            query_params = self.parameters_to_tuples(query_params,
+                                                     collection_formats)
+
+        # post parameters
+        if post_params or files:
+            post_params = self.prepare_post_parameters(post_params, files)
+            post_params = self.sanitize_for_serialization(post_params)
+            post_params = self.parameters_to_tuples(post_params,
+                                                    collection_formats)
+
+        # auth setting
+        self.update_params_for_auth(header_params, query_params, auth_settings)
+
+        # body
+        if body:
+            body = self.sanitize_for_serialization(body)
+
+        # request url
+        url = self.configuration.host + resource_path
+
+        # perform request and return response
+        response_data = await self.request(
+            method, url, query_params=query_params, headers=header_params,
+            post_params=post_params, body=body,
+            _preload_content=_preload_content,
+            _request_timeout=_request_timeout)
+
+        self.last_response = response_data
+
+        return_data = response_data
+        if _preload_content:
+            # deserialize response data
+            if response_type:
+                return_data = self.deserialize(response_data, response_type)
+            else:
+                return_data = None
+
+        if _return_http_data_only:
+            return (return_data)
+        else:
+            return (return_data, response_data.status,
+                    response_data.getheaders())
+
+    async def call_api(self, resource_path, method,
+                       path_params=None, query_params=None, header_params=None,
+                       body=None, post_params=None, files=None,
+                       response_type=None, auth_settings=None,
+                       _return_http_data_only=None, collection_formats=None,
+                       _preload_content=True, _request_timeout=None):
+        """
+             Asynchronously makes the HTTP request and returns deserialized data.
+
+             This method prepares and executes an HTTP request asynchronously based on the specified parameters
+             and the method to be called. It supports various HTTP methods like GET, POST, PUT, DELETE, etc.
+
+             :param resource_path: Path to the API endpoint. For example, '/items/{itemId}'.
+             :param method: HTTP method to be used for the request, e.g., 'GET', 'POST', 'PUT', 'DELETE'.
+             :param path_params: Dictionary of path parameters to be replaced in the resource_path.
+             :param query_params: Dictionary of query parameters to be appended to the URL.
+             :param header_params: Dictionary of header parameters to be included in the request header.
+             :param body: Payload to be sent with the request. Usually for POST/PUT/PATCH methods.
+             :param post_params: Dictionary of parameters for form-encoded data (used with POST, typically for file uploads).
+             :param files: Dictionary with file names as keys and file paths as values for multipart file uploading.
+             :param response_type: Expected data type of the response, e.g., a model class or a primitive type.
+             :param auth_settings: List of authentication setting names to configure the request.
+             :param _return_http_data_only: If True, returns only the data part of the response, excluding status code and headers.
+             :param collection_formats: Specifies the format of collection parameters (query, path, header, post parameters).
+             :param _preload_content: If False, the response object will be returned without reading/decoding response data. Default is True.
+             :param _request_timeout: Specifies the request timeout. Can be a single number (total timeout) or a tuple (connection, read timeouts).
+
+             :return: If _return_http_data_only is True, returns only the data part of the response.
+                      Otherwise, returns a tuple containing data, HTTP status code, and HTTP headers.
+             """
+
+        return await self.__call_api(resource_path, method,
+                                     path_params, query_params, header_params,
+                                     body, post_params, files,
+                                     response_type, auth_settings,
+                                     _return_http_data_only, collection_formats,
+                                     _preload_content, _request_timeout)
+
+
+    async def request(self, method, url, query_params=None, headers=None,
+                      post_params=None, body=None, _preload_content=True,
+                      _request_timeout=None):
+        """Makes the HTTP request using the asynchronous RESTClient."""
+        if method == "GET":
+            return await self.rest_client.GET(url,
+                                              query_params=query_params,
+                                              _preload_content=_preload_content,
+                                              _request_timeout=_request_timeout,
+                                              headers=headers)
+        elif method == "HEAD":
+            return await self.rest_client.HEAD(url,
+                                               query_params=query_params,
+                                               _preload_content=_preload_content,
+                                               _request_timeout=_request_timeout,
+                                               headers=headers)
+        elif method == "OPTIONS":
+            return await self.rest_client.OPTIONS(url,
+                                                  query_params=query_params,
+                                                  headers=headers,
+                                                  post_params=post_params,
+                                                  _preload_content=_preload_content,
+                                                  _request_timeout=_request_timeout,
+                                                  body=body)
+        elif method == "POST":
+            return await self.rest_client.POST(url,
+                                               query_params=query_params,
+                                               headers=headers,
+                                               post_params=post_params,
+                                               _preload_content=_preload_content,
+                                               _request_timeout=_request_timeout,
+                                               body=body)
+        elif method == "PUT":
+            return await self.rest_client.PUT(url,
+                                              query_params=query_params,
+                                              headers=headers,
+                                              post_params=post_params,
+                                              _preload_content=_preload_content,
+                                              _request_timeout=_request_timeout,
+                                              body=body)
+        elif method == "PATCH":
+            return await self.rest_client.PATCH(url,
+                                                query_params=query_params,
+                                                headers=headers,
+                                                post_params=post_params,
+                                                _preload_content=_preload_content,
+                                                _request_timeout=_request_timeout,
+                                                body=body)
+        elif method == "DELETE":
+            return await self.rest_client.DELETE(url,
+                                                 query_params=query_params,
+                                                 headers=headers,
+                                                 _preload_content=_preload_content,
+                                                 _request_timeout=_request_timeout,
+                                                 body=body)
+        else:
+            raise ValueError(
+                "HTTP method must be `GET`, `HEAD`, `OPTIONS`, "
+                "`POST`, `PATCH`, `PUT`, or `DELETE`."
+            )

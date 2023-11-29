@@ -13,7 +13,7 @@ import re  # noqa: F401
 # python 2 and python 3 compatibility library
 import six
 
-from taskingai.client.api_client import ApiClient
+from taskingai.client.api_client import SyncApiClient
 
 
 class ToolApi(object):
@@ -25,7 +25,7 @@ class ToolApi(object):
 
     def __init__(self, api_client=None):
         if api_client is None:
-            api_client = ApiClient()
+            api_client = SyncApiClient()
         self.api_client = api_client
 
     def bulk_create_action(self, body, **kwargs):  # noqa: E501
@@ -121,7 +121,6 @@ class ToolApi(object):
             files=local_var_files,
             response_type='ActionBulkCreateResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -220,7 +219,6 @@ class ToolApi(object):
             files=local_var_files,
             response_type='FunctionCreateResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -315,7 +313,6 @@ class ToolApi(object):
             files=local_var_files,
             response_type='ActionDeleteResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -410,7 +407,6 @@ class ToolApi(object):
             files=local_var_files,
             response_type='FunctionDeleteResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -505,7 +501,6 @@ class ToolApi(object):
             files=local_var_files,
             response_type='ActionGetResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -600,7 +595,6 @@ class ToolApi(object):
             files=local_var_files,
             response_type='FunctionGetResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -707,7 +701,6 @@ class ToolApi(object):
             files=local_var_files,
             response_type='ActionListResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -814,7 +807,6 @@ class ToolApi(object):
             files=local_var_files,
             response_type='FunctionListResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -921,7 +913,6 @@ class ToolApi(object):
             files=local_var_files,
             response_type='ActionRunResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -1028,7 +1019,6 @@ class ToolApi(object):
             files=local_var_files,
             response_type='ActionUpdateResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -1135,7 +1125,6 @@ class ToolApi(object):
             files=local_var_files,
             response_type='FunctionUpdateResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),

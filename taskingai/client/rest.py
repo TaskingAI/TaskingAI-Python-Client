@@ -16,203 +16,113 @@ import ssl
 
 import certifi
 # python 2 and python 3 compatibility library
-import six
-from six.moves.urllib.parse import urlencode
-
-try:
-    import urllib3
-except ImportError:
-    raise ImportError('Swagger python client requires urllib3.')
-
+import httpx
+from httpx import HTTPError
 
 logger = logging.getLogger(__name__)
 
 
 class RESTResponse(io.IOBase):
-
     def __init__(self, resp):
-        self.urllib3_response = resp
-        self.status = resp.status
-        self.reason = resp.reason
-        self.data = resp.data
+        self.httpx_response = resp
+        self.status = resp.status_code  # httpx uses status_code
+        self.reason = resp.reason_phrase  # httpx uses reason_phrase
+        self.data = resp.content  # httpx uses content for the response body
 
     def getheaders(self):
         """Returns a dictionary of the response headers."""
-        return self.urllib3_response.getheaders()
+        return self.httpx_response.headers  # httpx headers are a dict-like object
 
     def getheader(self, name, default=None):
         """Returns a given response header."""
-        return self.urllib3_response.getheader(name, default)
+        return self.httpx_response.headers.get(name, default)  # Using dict get method
 
 
-class RESTClientObject(object):
+class RESTSyncClientObject(object):
 
     def __init__(self, configuration, pools_size=4, maxsize=None):
-        # urllib3.PoolManager will pass all kw parameters to connectionpool
-        # https://github.com/shazow/urllib3/blob/f9409436f83aeb79fbaf090181cd81b784f1b8ce/urllib3/poolmanager.py#L75  # noqa: E501
-        # https://github.com/shazow/urllib3/blob/f9409436f83aeb79fbaf090181cd81b784f1b8ce/urllib3/connectionpool.py#L680  # noqa: E501
-        # maxsize is the number of requests to host that are allowed in parallel  # noqa: E501
-        # Custom SSL certificates and client certificates: http://urllib3.readthedocs.io/en/latest/advanced-usage.html  # noqa: E501
-
-        # cert_reqs
-        if configuration.verify_ssl:
-            cert_reqs = ssl.CERT_REQUIRED
-        else:
-            cert_reqs = ssl.CERT_NONE
-
-        # ca_certs
-        if configuration.ssl_ca_cert:
-            ca_certs = configuration.ssl_ca_cert
-        else:
-            # if not set certificate file, use Mozilla's root certificates.
-            ca_certs = certifi.where()
-
-        addition_pool_args = {}
-        if configuration.assert_hostname is not None:
-            addition_pool_args['assert_hostname'] = configuration.assert_hostname  # noqa: E501
-
+        # 设置连接池的最大并发连接数
         if maxsize is None:
-            if configuration.connection_pool_maxsize is not None:
-                maxsize = configuration.connection_pool_maxsize
-            else:
-                maxsize = 4
+            maxsize = configuration.connection_pool_maxsize if configuration.connection_pool_maxsize is not None else 4
 
-        # https pool manager
+        # 设置连接限制
+        limits = httpx.Limits(max_connections=maxsize, max_keepalive_connections=pools_size)
+
+        # 设置 SSL 配置
+        verify = configuration.ssl_ca_cert or True  # 如果提供了自定义 CA 证书则使用，否则默认启用 SSL 验证
+        if not configuration.verify_ssl:
+            verify = False  # 如果明确指定不进行 SSL 验证，则设置为 False
+
+        # 设置代理
+        proxies = None
         if configuration.proxy:
-            self.pool_manager = urllib3.ProxyManager(
-                num_pools=pools_size,
-                maxsize=maxsize,
-                cert_reqs=cert_reqs,
-                ca_certs=ca_certs,
-                cert_file=configuration.cert_file,
-                key_file=configuration.key_file,
-                proxy_url=configuration.proxy,
-                **addition_pool_args
-            )
-        else:
-            self.pool_manager = urllib3.PoolManager(
-                num_pools=pools_size,
-                maxsize=maxsize,
-                cert_reqs=cert_reqs,
-                ca_certs=ca_certs,
-                cert_file=configuration.cert_file,
-                key_file=configuration.key_file,
-                **addition_pool_args
-            )
+            proxies = {
+                'http://': configuration.proxy,
+                'https://': configuration.proxy,
+            }
+
+        # 创建 httpx 客户端
+        self.client = httpx.Client(
+            limits=limits,
+            verify=verify,
+            proxies=proxies,
+        )
+
+        # 如果有提供客户端证书，设置之
+        if configuration.cert_file and configuration.key_file:
+            self.client.cert = (configuration.cert_file, configuration.key_file)
 
     def request(self, method, url, query_params=None, headers=None,
                 body=None, post_params=None, _preload_content=True,
                 _request_timeout=None):
-        """Perform requests.
+        """
+            Perform asynchronous HTTP requests.
 
-        :param method: http request method
-        :param url: http request url
-        :param query_params: query parameters in the url
-        :param headers: http request headers
-        :param body: request json body, for `application/json`
-        :param post_params: request post parameters,
-                            `application/x-www-form-urlencoded`
-                            and `multipart/form-data`
-        :param _preload_content: if False, the urllib3.HTTPResponse object will
-                                 be returned without reading/decoding response
-                                 data. Default is True.
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
+            :param method: HTTP request method (e.g., 'GET', 'POST', 'PUT', etc.).
+            :param url: URL for the HTTP request.
+            :param query_params: Query parameters to be included in the URL.
+            :param headers: HTTP request headers.
+            :param body: Request body for 'application/json' content type.
+            :param post_params: Request post parameters for content types
+                                'application/x-www-form-urlencoded' and
+                                'multipart/form-data'.
+            :param _preload_content: If False, the httpx.Response object will
+                                     be returned without reading/decoding response
+                                     data. Default is True.
+            :param _request_timeout: Timeout setting for this request. If a single
+                                     number is provided, it will be the total request
+                                     timeout. It can also be a pair (tuple) of
+                                     (connection, read) timeouts.
+
+            This method is asynchronous and should be called with 'await' in an
+            asynchronous context. It uses httpx.AsyncClient for making HTTP requests.
         """
         method = method.upper()
-        assert method in ['GET', 'HEAD', 'DELETE', 'POST', 'PUT',
-                          'PATCH', 'OPTIONS']
+        assert method in ['GET', 'HEAD', 'DELETE', 'POST', 'PUT', 'PATCH', 'OPTIONS']
 
         if post_params and body:
-            raise ValueError(
-                "body parameter cannot be used with post_params parameter."
-            )
+            raise ValueError("body parameter cannot be used with post_params parameter.")
 
-        post_params = post_params or {}
         headers = headers or {}
-
-        timeout = None
-        if _request_timeout:
-            if isinstance(_request_timeout, (int, ) if six.PY3 else (int, long)):  # noqa: E501,F821
-                timeout = urllib3.Timeout(total=_request_timeout)
-            elif (isinstance(_request_timeout, tuple) and
-                  len(_request_timeout) == 2):
-                timeout = urllib3.Timeout(
-                    connect=_request_timeout[0], read=_request_timeout[1])
-
         if 'Content-Type' not in headers:
             headers['Content-Type'] = 'application/json'
 
+        request_body = json.dumps(body) if body is not None else None
+
         try:
-            # For `POST`, `PUT`, `PATCH`, `OPTIONS`, `DELETE`
-            if method in ['POST', 'PUT', 'PATCH', 'OPTIONS', 'DELETE']:
-                if query_params:
-                    url += '?' + urlencode(query_params)
-                if re.search('json', headers['Content-Type'], re.IGNORECASE):
-                    request_body = '{}'
-                    if body is not None:
-                        request_body = json.dumps(body)
-                    r = self.pool_manager.request(
-                        method, url,
-                        body=request_body,
-                        preload_content=_preload_content,
-                        timeout=timeout,
-                        headers=headers)
-                elif headers['Content-Type'] == 'application/x-www-form-urlencoded':  # noqa: E501
-                    r = self.pool_manager.request(
-                        method, url,
-                        fields=post_params,
-                        encode_multipart=False,
-                        preload_content=_preload_content,
-                        timeout=timeout,
-                        headers=headers)
-                elif headers['Content-Type'] == 'multipart/form-data':
-                    # must del headers['Content-Type'], or the correct
-                    # Content-Type which generated by urllib3 will be
-                    # overwritten.
-                    del headers['Content-Type']
-                    r = self.pool_manager.request(
-                        method, url,
-                        fields=post_params,
-                        encode_multipart=True,
-                        preload_content=_preload_content,
-                        timeout=timeout,
-                        headers=headers)
-                # Pass a `string` parameter directly in the body to support
-                # other content types than Json when `body` argument is
-                # provided in serialized form
-                elif isinstance(body, str):
-                    request_body = body
-                    r = self.pool_manager.request(
-                        method, url,
-                        body=request_body,
-                        preload_content=_preload_content,
-                        timeout=timeout,
-                        headers=headers)
-                else:
-                    # Cannot generate the request from given parameters
-                    msg = """Cannot prepare a request message for provided
-                             arguments. Please check that your arguments match
-                             declared content type."""
-                    raise ApiException(status=0, reason=msg)
-            # For `GET`, `HEAD`
-            else:
-                r = self.pool_manager.request(method, url,
-                                              fields=query_params,
-                                              preload_content=_preload_content,
-                                              timeout=timeout,
-                                              headers=headers)
-        except urllib3.exceptions.SSLError as e:
+            r = self.client.request(
+                method, url,
+                params=query_params,
+                headers=headers,
+                content=request_body,
+                timeout=_request_timeout
+            )
+        except HTTPError as e:
             msg = "{0}\n{1}".format(type(e).__name__, str(e))
             raise ApiException(status=0, reason=msg)
 
         if _preload_content:
             r = RESTResponse(r)
-
-            # log response body
-            logger.debug("response body: %s", r.data)
 
         if not 200 <= r.status <= 299:
             raise ApiException(http_resp=r)
@@ -285,6 +195,139 @@ class RESTClientObject(object):
                             body=body)
 
 
+class RESTAsyncClientObject(object):
+
+    def __init__(self, configuration, pools_size=4, maxsize=None):
+        self.client = httpx.AsyncClient(
+            proxies=configuration.proxy,
+            verify=configuration.verify_ssl,
+            cert=(configuration.cert_file, configuration.key_file),
+            http1=True
+        )
+
+    async def request(self, method, url, query_params=None, headers=None,
+                      body=None, post_params=None, _preload_content=True,
+                      _request_timeout=None):
+        """
+            Perform asynchronous HTTP requests.
+
+            :param method: HTTP request method (e.g., 'GET', 'POST', 'PUT', etc.).
+            :param url: URL for the HTTP request.
+            :param query_params: Query parameters to be included in the URL.
+            :param headers: HTTP request headers.
+            :param body: Request body for 'application/json' content type.
+            :param post_params: Request post parameters for content types
+                                'application/x-www-form-urlencoded' and
+                                'multipart/form-data'.
+            :param _preload_content: If False, the httpx.Response object will
+                                     be returned without reading/decoding response
+                                     data. Default is True.
+            :param _request_timeout: Timeout setting for this request. If a single
+                                     number is provided, it will be the total request
+                                     timeout. It can also be a pair (tuple) of
+                                     (connection, read) timeouts.
+
+            This method is asynchronous and should be called with 'await' in an
+            asynchronous context. It uses httpx.AsyncClient for making HTTP requests.
+        """
+        method = method.upper()
+        assert method in ['GET', 'HEAD', 'DELETE', 'POST', 'PUT', 'PATCH', 'OPTIONS']
+
+        if post_params and body:
+            raise ValueError("body parameter cannot be used with post_params parameter.")
+
+        headers = headers or {}
+        if 'Content-Type' not in headers:
+            headers['Content-Type'] = 'application/json'
+
+        request_body = json.dumps(body) if body is not None else None
+
+        try:
+            r = await self.client.request(
+                method, url,
+                params=query_params,
+                headers=headers,
+                content=request_body,
+                timeout=_request_timeout
+            )
+        except HTTPError as e:
+            msg = "{0}\n{1}".format(type(e).__name__, str(e))
+            raise ApiException(status=0, reason=msg)
+
+        if _preload_content:
+            r = RESTResponse(r)
+
+        if not 200 <= r.status <= 299:
+            raise ApiException(http_resp=r)
+
+        return r
+
+    async def GET(self, url, headers=None, query_params=None, _preload_content=True,
+                  _request_timeout=None):
+        return await self.request("GET", url,
+                                  headers=headers,
+                                  _preload_content=_preload_content,
+                                  _request_timeout=_request_timeout,
+                                  query_params=query_params)
+
+    async def HEAD(self, url, headers=None, query_params=None, _preload_content=True,
+                   _request_timeout=None):
+        return await self.request("HEAD", url,
+                                  headers=headers,
+                                  _preload_content=_preload_content,
+                                  _request_timeout=_request_timeout,
+                                  query_params=query_params)
+
+    async def OPTIONS(self, url, headers=None, query_params=None, post_params=None,
+                body=None, _preload_content=True, _request_timeout=None):
+        return await self.request("OPTIONS", url,
+                            headers=headers,
+                            query_params=query_params,
+                            post_params=post_params,
+                            _preload_content=_preload_content,
+                            _request_timeout=_request_timeout,
+                            body=body)
+
+    async def DELETE(self, url, headers=None, query_params=None, body=None,
+               _preload_content=True, _request_timeout=None):
+        return await self.request("DELETE", url,
+                            headers=headers,
+                            query_params=query_params,
+                            _preload_content=_preload_content,
+                            _request_timeout=_request_timeout,
+                            body=body)
+
+    async def POST(self, url, headers=None, query_params=None, post_params=None,
+             body=None, _preload_content=True, _request_timeout=None):
+        return await self.request("POST", url,
+                            headers=headers,
+                            query_params=query_params,
+                            post_params=post_params,
+                            _preload_content=_preload_content,
+                            _request_timeout=_request_timeout,
+                            body=body)
+
+    async def PUT(self, url, headers=None, query_params=None, post_params=None,
+            body=None, _preload_content=True, _request_timeout=None):
+        return await self.request("PUT", url,
+                            headers=headers,
+                            query_params=query_params,
+                            post_params=post_params,
+                            _preload_content=_preload_content,
+                            _request_timeout=_request_timeout,
+                            body=body)
+
+    async def PATCH(self, url, headers=None, query_params=None, post_params=None,
+              body=None, _preload_content=True, _request_timeout=None):
+        return await self.request("PATCH", url,
+                            headers=headers,
+                            query_params=query_params,
+                            post_params=post_params,
+                            _preload_content=_preload_content,
+                            _request_timeout=_request_timeout,
+                            body=body)
+
+
 class ApiException(Exception):
 
     def __init__(self, status=None, reason=None, http_resp=None):
@@ -301,7 +344,7 @@ class ApiException(Exception):
 
     def __str__(self):
         """Custom error messages for exception"""
-        error_message = "({0})\n"\
+        error_message = "({0})\n" \
                         "Reason: {1}\n".format(self.status, self.reason)
         if self.headers:
             error_message += "HTTP response headers: {0}\n".format(

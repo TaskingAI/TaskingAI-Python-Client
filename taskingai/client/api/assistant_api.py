@@ -13,7 +13,7 @@ import re  # noqa: F401
 # python 2 and python 3 compatibility library
 import six
 
-from taskingai.client.api_client import ApiClient
+from taskingai.client.api_client import SyncApiClient
 
 
 class AssistantApi(object):
@@ -25,7 +25,7 @@ class AssistantApi(object):
 
     def __init__(self, api_client=None):
         if api_client is None:
-            api_client = ApiClient()
+            api_client = SyncApiClient()
         self.api_client = api_client
 
     def create_assistant(self, body, **kwargs):  # noqa: E501
@@ -121,7 +121,6 @@ class AssistantApi(object):
             files=local_var_files,
             response_type='AssistantCreateResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -228,7 +227,6 @@ class AssistantApi(object):
             files=local_var_files,
             response_type='ChatCreateResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -344,7 +342,6 @@ class AssistantApi(object):
             files=local_var_files,
             response_type='MessageCreateResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -440,7 +437,6 @@ class AssistantApi(object):
             files=local_var_files,
             response_type='AssistantDeleteResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -543,7 +539,6 @@ class AssistantApi(object):
             files=local_var_files,
             response_type='ChatDeleteResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -661,7 +656,6 @@ class AssistantApi(object):
             files=local_var_files,
             response_type='object',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -756,7 +750,6 @@ class AssistantApi(object):
             files=local_var_files,
             response_type='AssistantGetResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -859,7 +852,6 @@ class AssistantApi(object):
             files=local_var_files,
             response_type='ChatGetResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -970,7 +962,6 @@ class AssistantApi(object):
             files=local_var_files,
             response_type='MessageGetResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -1077,7 +1068,6 @@ class AssistantApi(object):
             files=local_var_files,
             response_type='AssistantListResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -1188,7 +1178,6 @@ class AssistantApi(object):
             files=local_var_files,
             response_type='ChatListResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -1307,7 +1296,6 @@ class AssistantApi(object):
             files=local_var_files,
             response_type='MessageListResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -1415,7 +1403,6 @@ class AssistantApi(object):
             files=local_var_files,
             response_type='AssistantUpdateResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -1530,7 +1517,6 @@ class AssistantApi(object):
             files=local_var_files,
             response_type='ChatUpdateResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
@@ -1654,7 +1640,6 @@ class AssistantApi(object):
             files=local_var_files,
             response_type='MessageUpdateResponse',  # noqa: E501
             auth_settings=auth_settings,
-            async_req=params.get('async_req'),
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
