@@ -168,7 +168,7 @@ def create_user_message(
 
     api_instance = get_api_instance(ModuleType.assistant)
     body = MessageCreateRequest(
-        role=MessageRole.USER,
+        role=MessageRole.user,
         content=MessageContent(text=text),
         metadata=metadata,
     )
