@@ -23,38 +23,22 @@ class AsyncInferenceApi(object):
             api_client = AsyncApiClient()
         self.api_client = api_client
 
-    async def chat_completion(self, body, **kwargs):  # noqa: E501
+    async def chat_completion(self, body, stream=False, **kwargs):  # noqa: E501
         """Chat Completion  # noqa: E501
 
         Model inference for chat completion.  # noqa: E501
-        This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.chat_completion(body, async_req=True)
-        >>> result = thread.get()
-
-        :param async_req bool
         :param ChatCompletionRequest body: (required)
         :return: object
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
-        if kwargs.get('async_req'):
-            return await self.chat_completion_with_http_info(body, **kwargs)  # noqa: E501
-        else:
-            (data) = await self.chat_completion_with_http_info(body, **kwargs)  # noqa: E501
-            return data
+        return await self.chat_completion_with_http_info(body, stream, **kwargs)
 
-    async def chat_completion_with_http_info(self, body, **kwargs):  # noqa: E501
+    async def chat_completion_with_http_info(self, body, stream, **kwargs):  # noqa: E501
         """Chat Completion  # noqa: E501
 
         Model inference for chat completion.  # noqa: E501
-        This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.chat_completion_with_http_info(body, async_req=True)
-        >>> result = thread.get()
-
-        :param async_req bool
         :param ChatCompletionRequest body: (required)
         :return: object
                  If the method is called asynchronously,
@@ -106,7 +90,7 @@ class AsyncInferenceApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return await self.api_client.call_api(
+        response = await self.api_client.call_api(
             '/v1/inference/chat_completion', 'POST',
             path_params,
             query_params,
@@ -119,7 +103,10 @@ class AsyncInferenceApi(object):
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
-            collection_formats=collection_formats)
+            collection_formats=collection_formats,
+            stream=stream
+        )
+        return response
 
     async def text_embedding(self, body, **kwargs):  # noqa: E501
         """Text Embedding  # noqa: E501

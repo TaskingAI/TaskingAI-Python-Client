@@ -8,6 +8,10 @@
 """
 
 from __future__ import absolute_import
+import warnings
+
+# filter wanrings from pydantic
+warnings.filterwarnings("ignore", module="pydantic")
 
 # import models into model package
 from taskingai.client.models.entity.assistant.assistant import *
@@ -80,3 +84,6 @@ from taskingai.client.models.rest.record_update_response import RecordUpdateResp
 from taskingai.client.models.rest.text_embedding_request import TextEmbeddingRequest
 from taskingai.client.models.rest.text_embedding_response import TextEmbeddingResponse
 from taskingai.client.models.rest.validation_error import ValidationError
+
+# allow filter warnigns from pydantic
+warnings.filterwarnings("default", module="pydantic")

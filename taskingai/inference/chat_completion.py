@@ -1,11 +1,12 @@
 from typing import Optional, List, Dict, Union, Any
-from ..client.stream import Stream
+from ..client.stream import Stream, AsyncStream
 
 from taskingai.client.utils import get_api_instance, ModuleType
 from taskingai.client.models import (
     ChatCompletionRequest,
     ChatCompletionResponse,
     ChatCompletion,
+    ChatCompletionChunk,
     ChatCompletionFunctionMessage,
     ChatCompletionAssistantMessage,
     ChatCompletionUserMessage,
@@ -17,6 +18,7 @@ from taskingai.client.models import (
 
 __all__ = [
     "ChatCompletion",
+    "ChatCompletionChunk",
     "FunctionCall",
     "Function",
     "FunctionMessage",
@@ -115,7 +117,8 @@ async def a_chat_completion(
         configs: Optional[Dict] = None,
         function_call: Optional[str] = None,
         functions: Optional[List[Function]] = None,
-) -> ChatCompletion:
+        stream: bool = False
+) -> ChatCompletion | AsyncStream:
     """
     Chat completion model inference in async mode.
 
@@ -134,11 +137,15 @@ async def a_chat_completion(
         configs=configs,
         function_call=function_call,
         functions=functions,
-        stream=False
+        stream=stream
     )
-    response: ChatCompletionResponse = await api_instance.chat_completion(body=body)
-    chat_completion_result: ChatCompletion = ChatCompletion(**response["data"])
-    return chat_completion_result
+    if not stream:
+        response: ChatCompletionResponse = await api_instance.chat_completion(body=body)
+        chat_completion_result: ChatCompletion = ChatCompletion(**response["data"])
+        return chat_completion_result
+    else:
+        response: AsyncStream = await api_instance.chat_completion(body=body, stream=True)
+        return response
 
 
 

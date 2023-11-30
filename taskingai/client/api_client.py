@@ -640,7 +640,7 @@ class AsyncApiClient(BaseApiClient):
             query_params=None, header_params=None, body=None, post_params=None,
             files=None, response_type=None, auth_settings=None,
             _return_http_data_only=None, collection_formats=None,
-            _preload_content=True, _request_timeout=None):
+            _preload_content=True, _request_timeout=None, stream=False):
 
         config = self.configuration
         # header parameters
@@ -692,10 +692,14 @@ class AsyncApiClient(BaseApiClient):
 
         # perform request and return response
         response_data = await self.request(
-            method, url, query_params=query_params, headers=header_params,
+            method, url, stream,
+            query_params=query_params, headers=header_params,
             post_params=post_params, body=body,
             _preload_content=_preload_content,
             _request_timeout=_request_timeout)
+
+        if stream:
+            return response_data
 
         self.last_response = response_data
 
@@ -718,7 +722,7 @@ class AsyncApiClient(BaseApiClient):
                        body=None, post_params=None, files=None,
                        response_type=None, auth_settings=None,
                        _return_http_data_only=None, collection_formats=None,
-                       _preload_content=True, _request_timeout=None):
+                       _preload_content=True, _request_timeout=None, stream=False):
         """
              Asynchronously makes the HTTP request and returns deserialized data.
 
@@ -749,27 +753,30 @@ class AsyncApiClient(BaseApiClient):
                                      body, post_params, files,
                                      response_type, auth_settings,
                                      _return_http_data_only, collection_formats,
-                                     _preload_content, _request_timeout)
+                                     _preload_content, _request_timeout, stream)
 
 
-    async def request(self, method, url, query_params=None, headers=None,
+    async def request(self, method, url, stream, query_params=None, headers=None,
                       post_params=None, body=None, _preload_content=True,
                       _request_timeout=None):
         """Makes the HTTP request using the asynchronous RESTClient."""
         if method == "GET":
             return await self.rest_client.GET(url,
+                                              stream=stream,
                                               query_params=query_params,
                                               _preload_content=_preload_content,
                                               _request_timeout=_request_timeout,
                                               headers=headers)
         elif method == "HEAD":
             return await self.rest_client.HEAD(url,
+                                               stream=stream,
                                                query_params=query_params,
                                                _preload_content=_preload_content,
                                                _request_timeout=_request_timeout,
                                                headers=headers)
         elif method == "OPTIONS":
             return await self.rest_client.OPTIONS(url,
+                                                  stream=stream,
                                                   query_params=query_params,
                                                   headers=headers,
                                                   post_params=post_params,
@@ -778,6 +785,7 @@ class AsyncApiClient(BaseApiClient):
                                                   body=body)
         elif method == "POST":
             return await self.rest_client.POST(url,
+                                               stream=stream,
                                                query_params=query_params,
                                                headers=headers,
                                                post_params=post_params,
@@ -786,6 +794,7 @@ class AsyncApiClient(BaseApiClient):
                                                body=body)
         elif method == "PUT":
             return await self.rest_client.PUT(url,
+                                              stream=stream,
                                               query_params=query_params,
                                               headers=headers,
                                               post_params=post_params,
@@ -794,6 +803,7 @@ class AsyncApiClient(BaseApiClient):
                                               body=body)
         elif method == "PATCH":
             return await self.rest_client.PATCH(url,
+                                                stream=stream,
                                                 query_params=query_params,
                                                 headers=headers,
                                                 post_params=post_params,
@@ -802,6 +812,7 @@ class AsyncApiClient(BaseApiClient):
                                                 body=body)
         elif method == "DELETE":
             return await self.rest_client.DELETE(url,
+                                                 stream=stream,
                                                  query_params=query_params,
                                                  headers=headers,
                                                  _preload_content=_preload_content,

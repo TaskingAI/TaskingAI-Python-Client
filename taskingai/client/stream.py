@@ -2,11 +2,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Any, Dict, Iterator, AsyncIterator, Type
-
-import httpx
-
-from .models.entity._base import TaskingaiBaseModel
+from typing import Any, Dict, Iterator, AsyncIterator
 
 from .exceptions import ApiException
 
@@ -18,17 +14,17 @@ class Stream(object):
         self._decoder = SSEDecoder()
         self._iterator = self.__stream__()
 
-    def __next__(self):
+    def __next__(self) -> Dict:
         return self._iterator.__next__()
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Dict]:
         for item in self._iterator:
             yield item
 
-    def _iter_events(self):
+    def _iter_events(self) -> Iterator[ServerSentEvent]:
         yield from self._decoder.iter(self._stream_generator)
 
-    def __stream__(self):
+    def __stream__(self) -> Iterator[Dict]:
         iterator = self._iter_events()
 
         for sse in iterator:
@@ -49,6 +45,43 @@ class Stream(object):
         for sse in iterator:
             ...
 
+class AsyncStream(object):
+    """Provides the core interface to iterate over an asynchronous stream response."""
+
+    def __init__(self, async_stream_generator):
+        self._async_stream_generator = async_stream_generator
+        self._decoder = SSEDecoder()  # Assuming SSEDecoder is compatible with async
+        self._iterator = self.__stream__()
+
+    async def __anext__(self) -> Dict:
+        return await self._iterator.__anext__()
+
+    async def __aiter__(self) -> AsyncIterator[Dict]:
+        async for item in self._iterator:
+            yield item
+
+    async def _iter_events(self) -> AsyncIterator[ServerSentEvent]:
+        async for sse in self._decoder.aiter(self._async_stream_generator):
+            yield sse
+
+    async def __stream__(self) -> AsyncIterator[Dict]:
+        async for sse in self._iter_events():
+            if sse.data.startswith("[DONE]"):
+                break
+
+            if sse.event is None:
+                data = sse.json()
+                if isinstance(data, Dict) and data.get("error"):
+                    raise ApiException(
+                        status=400,  # or appropriate status code
+                        reason="An error occurred during streaming",
+                    )
+
+                yield data
+
+        # Ensure the entire stream is consumed
+        async for sse in self._iter_events():
+            ...
 
 class ServerSentEvent:
     def __init__(
@@ -88,7 +121,6 @@ class ServerSentEvent:
 
     def __repr__(self) -> str:
         return f"ServerSentEvent(event={self.event}, data={self.data}, id={self.id}, retry={self.retry})"
-
 
 class SSEDecoder:
     _data: list[str]

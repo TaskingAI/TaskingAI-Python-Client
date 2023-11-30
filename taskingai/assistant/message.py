@@ -5,6 +5,7 @@ from taskingai.client.models import Message, MessageRole, MessageContent, Messag
 from taskingai.client.models import MessageCreateRequest, MessageCreateResponse, \
     MessageUpdateRequest, MessageUpdateResponse, \
     MessageGetResponse, MessageListResponse, MessageGenerateRequest
+from taskingai.client.stream import Stream, AsyncStream
 
 __all__ = [
     "Message",
@@ -275,8 +276,9 @@ def generate_assistant_message(
     assistant_id: str,
     chat_id: str,
     system_prompt_variables: Optional[Dict] = None,
-    # todo: add stream and debug support
-) -> Message:
+    stream: bool = False,
+    debug: bool = False,
+) -> Message | Stream:
     """
     Generate a message.
 
@@ -289,23 +291,36 @@ def generate_assistant_message(
 
     api_instance = get_api_instance(ModuleType.assistant)
     body = MessageGenerateRequest(
-        options=MessageGenerationResponseOption(stream=False, debug=False),
-        system_prompt_variables=system_prompt_variables
+        options=MessageGenerationResponseOption(stream=stream, debug=debug),
+        system_prompt_variables=system_prompt_variables,
     )
-    response = api_instance.generate_assistant_message(
-        assistant_id=assistant_id,
-        chat_id=chat_id,
-        body=body
-    )
-    message: Message = Message(**response["data"])
-    return message
 
+    if not stream and not debug:
+        response = api_instance.generate_assistant_message(
+            assistant_id=assistant_id,
+            chat_id=chat_id,
+            body=body,
+            stream=False,
+        )
+        message: Message = Message(**response["data"])
+        return message
+    else:
+        response: Stream = api_instance.generate_assistant_message(
+            assistant_id=assistant_id,
+            chat_id=chat_id,
+            body=body,
+            stream=True,
+            _preload_content=False
+        )
+        return response
 
 async def a_generate_assistant_message(
     assistant_id: str,
     chat_id: str,
     system_prompt_variables: Optional[Dict] = None,
-) -> Message:
+    stream: bool = False,
+    debug: bool = False,
+) -> Message | AsyncStream:
     """
     Generate a message in async mode.
 
@@ -318,14 +333,27 @@ async def a_generate_assistant_message(
 
     api_instance = get_api_instance(ModuleType.assistant, async_client=True)
     body = MessageGenerateRequest(
-        options=MessageGenerationResponseOption(stream=False, debug=False),
+        options=MessageGenerationResponseOption(stream=stream, debug=debug),
         system_prompt_variables=system_prompt_variables
     )
-    response = await api_instance.generate_assistant_message(
-        assistant_id=assistant_id,
-        chat_id=chat_id,
-        body=body
-    )
-    message: Message = Message(**response["data"])
-    return message
+
+    if not stream and not debug:
+        response = await api_instance.generate_assistant_message(
+            assistant_id=assistant_id,
+            chat_id=chat_id,
+            body=body,
+            stream=False,
+        )
+        message: Message = Message(**response["data"])
+        return message
+    else:
+        response: AsyncStream = await api_instance.generate_assistant_message(
+            assistant_id=assistant_id,
+            chat_id=chat_id,
+            body=body,
+            stream=True,
+            _preload_content=False
+        )
+        return response
+
 

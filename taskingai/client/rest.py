@@ -18,7 +18,7 @@ import certifi
 # python 2 and python 3 compatibility library
 import httpx
 from httpx import HTTPError
-from .stream import Stream
+from .stream import Stream, AsyncStream
 
 logger = logging.getLogger(__name__)
 
@@ -232,7 +232,19 @@ class RESTAsyncClientObject(object):
             http1=True
         )
 
-    async def request(self, method, url, query_params=None, headers=None,
+    async def _async_stream_generator(self, method, url, query_params, headers, request_body, _request_timeout):
+        """Asynchronous generator function for streaming requests."""
+        async with self.client.stream(
+            method, url,
+            params=query_params,
+            headers=headers,
+            content=request_body,
+            timeout=_request_timeout
+        ) as response:
+            async for line in response.aiter_lines():
+                yield line
+
+    async def request(self, method, url, stream=False, query_params=None, headers=None,
                       body=None, post_params=None, _preload_content=True,
                       _request_timeout=None):
         """
@@ -270,13 +282,21 @@ class RESTAsyncClientObject(object):
         request_body = json.dumps(body) if body is not None else None
 
         try:
-            r = await self.client.request(
-                method, url,
-                params=query_params,
-                headers=headers,
-                content=request_body,
-                timeout=_request_timeout
-            )
+            if stream:
+                # Return an asynchronous stream generator
+                return AsyncStream(async_stream_generator=self._async_stream_generator(
+                    method, url, query_params, headers, request_body, _request_timeout
+                ))
+            else:
+                # For non-streaming requests
+                r = await self.client.request(
+                    method, url,
+                    params=query_params,
+                    headers=headers,
+                    content=request_body,
+                    timeout=_request_timeout
+                )
+
         except HTTPError as e:
             msg = "{0}\n{1}".format(type(e).__name__, str(e))
             raise ApiException(status=0, reason=msg)
@@ -289,25 +309,29 @@ class RESTAsyncClientObject(object):
 
         return r
 
-    async def GET(self, url, headers=None, query_params=None, _preload_content=True,
+
+    async def GET(self, url, stream=False, headers=None, query_params=None, _preload_content=True,
                   _request_timeout=None):
         return await self.request("GET", url,
+                                  stream=stream,
                                   headers=headers,
                                   _preload_content=_preload_content,
                                   _request_timeout=_request_timeout,
                                   query_params=query_params)
 
-    async def HEAD(self, url, headers=None, query_params=None, _preload_content=True,
+    async def HEAD(self, url, stream=False, headers=None, query_params=None, _preload_content=True,
                    _request_timeout=None):
         return await self.request("HEAD", url,
+                                  stream=stream,
                                   headers=headers,
                                   _preload_content=_preload_content,
                                   _request_timeout=_request_timeout,
                                   query_params=query_params)
 
-    async def OPTIONS(self, url, headers=None, query_params=None, post_params=None,
+    async def OPTIONS(self, url, stream=False, headers=None, query_params=None, post_params=None,
                       body=None, _preload_content=True, _request_timeout=None):
         return await self.request("OPTIONS", url,
+                                  stream=stream,
                                   headers=headers,
                                   query_params=query_params,
                                   post_params=post_params,
@@ -315,18 +339,20 @@ class RESTAsyncClientObject(object):
                                   _request_timeout=_request_timeout,
                                   body=body)
 
-    async def DELETE(self, url, headers=None, query_params=None, body=None,
+    async def DELETE(self, url, stream=False, headers=None, query_params=None, body=None,
                      _preload_content=True, _request_timeout=None):
         return await self.request("DELETE", url,
+                                  stream=stream,
                                   headers=headers,
                                   query_params=query_params,
                                   _preload_content=_preload_content,
                                   _request_timeout=_request_timeout,
                                   body=body)
 
-    async def POST(self, url, headers=None, query_params=None, post_params=None,
+    async def POST(self, url, stream=False, headers=None, query_params=None, post_params=None,
                    body=None, _preload_content=True, _request_timeout=None):
         return await self.request("POST", url,
+                                  stream=stream,
                                   headers=headers,
                                   query_params=query_params,
                                   post_params=post_params,
@@ -334,9 +360,10 @@ class RESTAsyncClientObject(object):
                                   _request_timeout=_request_timeout,
                                   body=body)
 
-    async def PUT(self, url, headers=None, query_params=None, post_params=None,
+    async def PUT(self, url, stream=False, headers=None, query_params=None, post_params=None,
                   body=None, _preload_content=True, _request_timeout=None):
         return await self.request("PUT", url,
+                                  stream=stream,
                                   headers=headers,
                                   query_params=query_params,
                                   post_params=post_params,
@@ -344,9 +371,10 @@ class RESTAsyncClientObject(object):
                                   _request_timeout=_request_timeout,
                                   body=body)
 
-    async def PATCH(self, url, headers=None, query_params=None, post_params=None,
+    async def PATCH(self, url, stream=False, headers=None, query_params=None, post_params=None,
                     body=None, _preload_content=True, _request_timeout=None):
         return await self.request("PATCH", url,
+                                  stream=stream,
                                   headers=headers,
                                   query_params=query_params,
                                   post_params=post_params,

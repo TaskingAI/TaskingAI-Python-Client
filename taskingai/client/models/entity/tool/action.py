@@ -1,6 +1,8 @@
 from typing import Dict, Any, Optional
 from enum import Enum
 from .._base import TaskingaiBaseModel
+from pydantic import Field
+
 
 __all__ = [
     "ActionAuthenticationType",
