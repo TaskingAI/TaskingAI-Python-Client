@@ -540,16 +540,10 @@ class AsyncAssistantApi(object):
             collection_formats=collection_formats)
 
 
-    async def generate_assistant_message(self, body, assistant_id, chat_id, **kwargs):  # noqa: E501
+    async def generate_assistant_message(self, body, stream, assistant_id, chat_id, **kwargs):  # noqa: E501
         """Generate assistant message  # noqa: E501
 
-        Generate a new message with the role of 'assistant'.  # noqa: E501
-        This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.generate_assistant_message(body, assistant_id, chat_id, async_req=True)
-        >>> result = thread.get()
-
-        :param async_req bool
+        Generate a new message with the role of 'assistant'.
         :param MessageGenerateRequest body: (required)
         :param object assistant_id: (required)
         :param object chat_id: (required)
@@ -558,14 +552,10 @@ class AsyncAssistantApi(object):
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
-        if kwargs.get('async_req'):
-            return await self.generate_assistant_message_with_http_info(body, assistant_id, chat_id, **kwargs)  # noqa: E501
-        else:
-            (data) = await self.generate_assistant_message_with_http_info(body, assistant_id, chat_id, **kwargs)  # noqa: E501
-            return data
+        return await self.generate_assistant_message_with_http_info(body, stream, assistant_id, chat_id, **kwargs)  # noqa: E501
 
 
-    async def generate_assistant_message_with_http_info(self, body, assistant_id, chat_id, **kwargs):  # noqa: E501
+    async def generate_assistant_message_with_http_info(self, body, stream, assistant_id, chat_id, **kwargs):  # noqa: E501
         """Generate assistant message  # noqa: E501
 
         Generate a new message with the role of 'assistant'.  # noqa: E501
@@ -656,7 +646,9 @@ class AsyncAssistantApi(object):
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
-            collection_formats=collection_formats)
+            collection_formats=collection_formats,
+            stream=stream
+        )
 
     async def get_assistant(self, assistant_id, **kwargs):  # noqa: E501
         """Get assistant  # noqa: E501

@@ -18,9 +18,9 @@ _parent_logger.setLevel(DEFAULT_PARENT_LOGGER_LEVEL)
 
 
 class ConfigBase(NamedTuple):
-    api_key: str = ""
-    host: str = ""
-    proxy: str = ""
+    api_key: str = None
+    host: str = None
+    proxy: str = None
     openapi_config: OpenApiConfiguration = None
 
 
@@ -53,7 +53,7 @@ class _CONFIG:
             kwargs.pop("host", None) or os.getenv("TASKINGAI_HOST") or "https://api.tasking.ai"
         )
         proxy = (
-            kwargs.pop("proxy", None) or os.getenv("TASKINGAI_PROXY") or ""
+            kwargs.pop("proxy", None) or os.getenv("TASKINGAI_PROXY")
         )
         config = config._replace(api_key=api_key, host=host, proxy=proxy)
 

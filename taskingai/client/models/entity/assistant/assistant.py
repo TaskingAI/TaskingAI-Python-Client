@@ -10,6 +10,7 @@ __all__ = [
     "AssistantRetrievalType",
 ]
 
+
 class AssistantToolType(str, Enum):
     action = "action"
     function = "function"
