@@ -96,12 +96,10 @@ def chat_completion(
         stream=stream
     )
     if not stream:
-        print("not streaming")
         response: ChatCompletionResponse = api_instance.chat_completion(body=body)
         chat_completion_result: ChatCompletion = ChatCompletion(**response["data"])
         return chat_completion_result
     else:
-        print("streaming")
         response: Stream = api_instance.chat_completion(body=body, stream=True)
         return response
 
