@@ -1,14 +1,28 @@
 from typing import Optional, List, Dict
 
 from taskingai.client.utils import get_api_instance, ModuleType
-from taskingai.client.models import Message, MessageRole, MessageContent, MessageGenerationResponseOption
-from taskingai.client.models import MessageCreateRequest, MessageCreateResponse, \
-    MessageUpdateRequest, MessageUpdateResponse, \
-    MessageGetResponse, MessageListResponse, MessageGenerateRequest
+from taskingai.client.models import (
+    Message,
+    MessageRole,
+    MessageContent,
+    MessageGenerationResponseOption,
+    MessageChunk,
+    MessageGenerationLog,
+)
+from taskingai.client.models import (
+    MessageCreateRequest,
+    MessageCreateResponse,
+    MessageUpdateRequest,
+    MessageUpdateResponse,
+    MessageGetResponse,
+    MessageListResponse,
+    MessageGenerateRequest
+)
 from taskingai.client.stream import Stream, AsyncStream
 
 __all__ = [
     "Message",
+    "MessageChunk",
     "get_message",
     "list_messages",
     "create_user_message",
