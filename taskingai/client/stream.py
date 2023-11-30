@@ -7,52 +7,28 @@ from typing import TYPE_CHECKING, Any, Dict, Iterator, AsyncIterator, Type
 import httpx
 
 from .models.entity._base import TaskingaiBaseModel
+
 from .exceptions import ApiException
-
-from .rest import RESTSyncClientObject, RESTAsyncClientObject
-
 
 class Stream(object):
     """Provides the core interface to iterate over a synchronous stream response."""
 
-    response: httpx.Response
-
-    def __init__(
-        self,
-        *,
-        cast_map: Dict[str, Type[TaskingaiBaseModel]],
-        response: httpx.Response,
-        client: RESTSyncClientObject,
-    ) -> None:
-        if not isinstance(response, httpx.Response):
-            raise TypeError("response must be an httpx.Response object")
-
-        self.response = response
-        self._cast_map = cast_map
-        self._client = client
+    def __init__(self, stream_generator):
+        self._stream_generator = stream_generator
         self._decoder = SSEDecoder()
         self._iterator = self.__stream__()
 
-    def __next__(self) -> TaskingaiBaseModel:
+    def __next__(self):
         return self._iterator.__next__()
 
-    def __iter__(self) -> Iterator[TaskingaiBaseModel]:
+    def __iter__(self):
         for item in self._iterator:
             yield item
 
-    def _iter_events(self) -> Iterator[ServerSentEvent]:
-        yield from self._decoder.iter(self.response.iter_lines())
+    def _iter_events(self):
+        yield from self._decoder.iter(self._stream_generator)
 
-    def _cast(self, obj_dict, class_type) -> TaskingaiBaseModel:
-        cast_map = self._cast_map
-        if class_type in cast_map:
-            return cast_map[class_type](**obj_dict)
-        else:
-            raise ValueError(f"No class found for type '{class_type}'")
-
-    def __stream__(self) -> Iterator[TaskingaiBaseModel]:
-        print("streaming...")
-        response = self.response
+    def __stream__(self):
         iterator = self._iter_events()
 
         for sse in iterator:
@@ -63,14 +39,11 @@ class Stream(object):
                 data = sse.json()
                 if isinstance(data, Dict) and data.get("error"):
                     raise ApiException(
-                        status=response.status_code,
-                        reason="An error ocurred during streaming",
-                        http_resp=response,
+                        status=400,  # or appropriate status code
+                        reason="An error occurred during streaming",
                     )
 
-                object_type = data.get("object")
-                # todo: raise valid format error
-                yield self._cast(data, object_type)
+                yield data
 
         # Ensure the entire stream is consumed
         for sse in iterator:

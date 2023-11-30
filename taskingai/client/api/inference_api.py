@@ -14,8 +14,6 @@ import re  # noqa: F401
 import six
 
 from ..api_client import SyncApiClient
-from ..stream import Stream
-from ..models import INFERENCE_CHAT_COMPLETION_STREAM_CAST_MAP
 
 class InferenceApi(object):
 
@@ -34,16 +32,7 @@ class InferenceApi(object):
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
-        cast_map = INFERENCE_CHAT_COMPLETION_STREAM_CAST_MAP
-        response = self.chat_completion_with_http_info(body, stream, **kwargs)
-        if not stream:
-            return response
-        else:
-            return Stream(
-                cast_map=cast_map,
-                response=response,
-                client=self.api_client
-            )
+        return self.chat_completion_with_http_info(body, stream, **kwargs)
 
     def chat_completion_with_http_info(self, body, stream, **kwargs):  # noqa: E501
         """Chat Completion  # noqa: E501
