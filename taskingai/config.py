@@ -94,6 +94,9 @@ class _CONFIG:
     def PROXY(self):
         return self._config.proxy
 
+    @property
+    def OPENAPI_CONFIG(self):
+        return self._config.openapi_config
 
 def init(
     api_key: str = None,
