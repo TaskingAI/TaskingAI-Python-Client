@@ -3,8 +3,33 @@ from __future__ import annotations
 
 import json
 from typing import Any, Dict, Iterator, AsyncIterator
+from .models import (
+    MessageChunk,
+    Message,
+    MessageGenerationLog,
+    ChatCompletion,
+    ChatCompletionChunk
+)
+
+from .models.entity._base import TaskingaiBaseModel
 
 from .exceptions import ApiException
+
+
+def _cast(item: Dict):
+    if item.get("object") == "ChatCompletion":
+        return ChatCompletion(**item)
+    elif item.get("object") == "ChatCompletionChunk":
+        return ChatCompletionChunk(**item)
+    elif item.get("object") == "Message":
+        return Message(**item)
+    elif item.get("object") == "MessageChunk":
+        return MessageChunk(**item)
+    elif item.get("object") == "MessageGenerationLog":
+        return MessageGenerationLog(**item)
+    else:
+        # cannot cast, keep the original dict
+        return item
 
 class Stream(object):
     """Provides the core interface to iterate over a synchronous stream response."""
@@ -39,7 +64,7 @@ class Stream(object):
                         reason="An error occurred during streaming",
                     )
 
-                yield data
+                yield _cast(data)
 
         # Ensure the entire stream is consumed
         for sse in iterator:
@@ -77,7 +102,7 @@ class AsyncStream(object):
                         reason="An error occurred during streaming",
                     )
 
-                yield data
+                yield _cast(data)
 
         # Ensure the entire stream is consumed
         async for sse in self._iter_events():

@@ -7,13 +7,15 @@ __all__ = [
     "Message",
     "MessageContent",
     "MessageRole",
-    "ChatLog",
-    "ChatLogType",
-    "LogContent",
-    "RetrievalLogContent",
-    "ToolLogContent",
+    "MessageGenerationLog",
+    "MessageGenerationLogType",
+    "MessageLogContent",
+    "MessageRetrievalLogContent",
+    "MessageToolLogContent",
     "MessageGenerationResponseOption",
+    "MessageChunk"
 ]
+
 
 class MessageGenerationResponseOption(TaskingaiBaseModel):
     stream: bool
@@ -25,22 +27,22 @@ class MessageRole(str, Enum):
     assistant = "assistant"
 
 
-class ChatLogType(str, Enum):
+class MessageGenerationLogType(str, Enum):
     retrieval = "retrieval"
     tool_call = "tool_call"
     tool_result = "tool_result"
 
 
-class LogContent(TaskingaiBaseModel):
+class MessageLogContent(TaskingaiBaseModel):
     pass
 
 
-class RetrievalLogContent(LogContent):
+class MessageRetrievalLogContent(MessageLogContent):
     query: str
     result: str
 
 
-class ToolLogContent(LogContent):
+class MessageToolLogContent(MessageLogContent):
     tool_id: str
     type: str
     name: str
@@ -48,13 +50,13 @@ class ToolLogContent(LogContent):
     output: Optional[str]
 
 
-class ChatLog(TaskingaiBaseModel):
+class MessageGenerationLog(TaskingaiBaseModel):
     object: str
-    type: ChatLogType
+    type: MessageGenerationLogType
     session_id: str
     created_timestamp: int
-    retrieval: Optional[RetrievalLogContent]
-    tool: Optional[ToolLogContent]
+    retrieval: Optional[MessageRetrievalLogContent]
+    tool: Optional[MessageToolLogContent]
 
 
 class MessageContent(TaskingaiBaseModel):
@@ -69,4 +71,12 @@ class Message(TaskingaiBaseModel):
     role: MessageRole
     content: MessageContent
     metadata: Dict[str, str]
+    created_timestamp: int
+
+
+class MessageChunk(TaskingaiBaseModel):
+    object: str
+    role: MessageRole
+    index: int
+    delta: str
     created_timestamp: int
