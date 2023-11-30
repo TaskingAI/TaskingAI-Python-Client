@@ -13,8 +13,9 @@ import re  # noqa: F401
 # python 2 and python 3 compatibility library
 import six
 
-from taskingai.client.api_client import SyncApiClient
-
+from ..api_client import SyncApiClient
+from ..stream import Stream
+from ..models import INFERENCE_CHAT_COMPLETION_STREAM_CAST_MAP
 
 class InferenceApi(object):
 
@@ -23,38 +24,31 @@ class InferenceApi(object):
             api_client = SyncApiClient()
         self.api_client = api_client
 
-    def chat_completion(self, body, **kwargs):  # noqa: E501
+    def chat_completion(self, body, stream = False, **kwargs):  # noqa: E501
         """Chat Completion  # noqa: E501
 
         Model inference for chat completion.  # noqa: E501
-        This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.chat_completion(body, async_req=True)
-        >>> result = thread.get()
-
-        :param async_req bool
         :param ChatCompletionRequest body: (required)
         :return: object
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
-        if kwargs.get('async_req'):
-            return self.chat_completion_with_http_info(body, **kwargs)  # noqa: E501
+        cast_map = INFERENCE_CHAT_COMPLETION_STREAM_CAST_MAP
+        response = self.chat_completion_with_http_info(body, stream, **kwargs)
+        if not stream:
+            return response
         else:
-            (data) = self.chat_completion_with_http_info(body, **kwargs)  # noqa: E501
-            return data
+            return Stream(
+                cast_map=cast_map,
+                response=response,
+                client=self.api_client
+            )
 
-    def chat_completion_with_http_info(self, body, **kwargs):  # noqa: E501
+    def chat_completion_with_http_info(self, body, stream, **kwargs):  # noqa: E501
         """Chat Completion  # noqa: E501
 
         Model inference for chat completion.  # noqa: E501
-        This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.chat_completion_with_http_info(body, async_req=True)
-        >>> result = thread.get()
-
-        :param async_req bool
         :param ChatCompletionRequest body: (required)
         :return: object
                  If the method is called asynchronously,
@@ -106,7 +100,7 @@ class InferenceApi(object):
         # Authentication setting
         auth_settings = []  # noqa: E501
 
-        return self.api_client.call_api(
+        response = self.api_client.call_api(
             '/v1/inference/chat_completion', 'POST',
             path_params,
             query_params,
@@ -119,7 +113,10 @@ class InferenceApi(object):
             _return_http_data_only=params.get('_return_http_data_only'),
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
-            collection_formats=collection_formats)
+            collection_formats=collection_formats,
+            stream=stream
+        )
+        return response
 
     def text_embedding(self, body, **kwargs):  # noqa: E501
         """Text Embedding  # noqa: E501
@@ -137,11 +134,8 @@ class InferenceApi(object):
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
-        if kwargs.get('async_req'):
-            return self.text_embedding_with_http_info(body, **kwargs)  # noqa: E501
-        else:
-            (data) = self.text_embedding_with_http_info(body, **kwargs)  # noqa: E501
-            return data
+        (data) = self.text_embedding_with_http_info(body, **kwargs)  # noqa: E501
+        return data
 
     def text_embedding_with_http_info(self, body, **kwargs):  # noqa: E501
         """Text Embedding  # noqa: E501

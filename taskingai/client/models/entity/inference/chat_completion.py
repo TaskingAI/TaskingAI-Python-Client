@@ -16,6 +16,8 @@ __all__ = [
     "ChatCompletionFunctionCall",
     "ChatCompletionFunction",
     "ChatCompletionFinishReason",
+    "ChatCompletionChunk",
+    "INFERENCE_CHAT_COMPLETION_STREAM_CAST_MAP"
 ]
 
 class ChatCompletionRole(str, Enum):
@@ -71,3 +73,17 @@ class ChatCompletion(TaskingaiBaseModel):
     finish_reason: ChatCompletionFinishReason
     message: ChatCompletionAssistantMessage
     created_timestamp: int
+
+
+class ChatCompletionChunk(TaskingaiBaseModel):
+    object: str
+    role: ChatCompletionRole
+    index: int
+    delta: str
+    created_timestamp: int
+
+
+INFERENCE_CHAT_COMPLETION_STREAM_CAST_MAP = {
+    "ChatCompletion": ChatCompletion,
+    "ChatCompletionChunk": ChatCompletionChunk
+}

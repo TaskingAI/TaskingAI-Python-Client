@@ -1,4 +1,5 @@
-from typing import Optional, List, Dict, Union
+from typing import Optional, List, Dict, Union, Any
+from ..client.stream import Stream
 
 from taskingai.client.utils import get_api_instance, ModuleType
 from taskingai.client.models import (
@@ -72,7 +73,8 @@ def chat_completion(
         configs: Optional[Dict] = None,
         function_call: Optional[str] = None,
         functions: Optional[List[Function]] = None,
-) -> ChatCompletion:
+        stream: bool = False
+) -> ChatCompletion | Stream:
     """
     Chat completion model inference.
 
@@ -91,11 +93,17 @@ def chat_completion(
         configs=configs,
         function_call=function_call,
         functions=functions,
-        stream=False
+        stream=stream
     )
-    response: ChatCompletionResponse = api_instance.chat_completion(body=body)
-    chat_completion_result: ChatCompletion = ChatCompletion(**response["data"])
-    return chat_completion_result
+    if not stream:
+        print("not streaming")
+        response: ChatCompletionResponse = api_instance.chat_completion(body=body)
+        chat_completion_result: ChatCompletion = ChatCompletion(**response["data"])
+        return chat_completion_result
+    else:
+        print("streaming")
+        response: Stream = api_instance.chat_completion(body=body, stream=True)
+        return response
 
 
 async def a_chat_completion(

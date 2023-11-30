@@ -437,7 +437,7 @@ class SyncApiClient(BaseApiClient):
             query_params=None, header_params=None, body=None, post_params=None,
             files=None, response_type=None, auth_settings=None,
             _return_http_data_only=None, collection_formats=None,
-            _preload_content=True, _request_timeout=None):
+            _preload_content=True, _request_timeout=None, stream=False):
 
         config = self.configuration
 
@@ -490,10 +490,14 @@ class SyncApiClient(BaseApiClient):
 
         # perform request and return response
         response_data = self.request(
-            method, url, query_params=query_params, headers=header_params,
+            method, url, stream=stream,
+            query_params=query_params, headers=header_params,
             post_params=post_params, body=body,
             _preload_content=_preload_content,
             _request_timeout=_request_timeout)
+
+        if stream:
+            return response_data
 
         self.last_response = response_data
 
@@ -517,7 +521,7 @@ class SyncApiClient(BaseApiClient):
                  body=None, post_params=None, files=None,
                  response_type=None, auth_settings=None,
                  _return_http_data_only=None, collection_formats=None,
-                 _preload_content=True, _request_timeout=None):
+                 _preload_content=True, _request_timeout=None, stream=False):
         """Makes the HTTP request (synchronous) and returns deserialized data.
 
         :param resource_path: Path to method endpoint.
@@ -551,27 +555,30 @@ class SyncApiClient(BaseApiClient):
                                body, post_params, files,
                                response_type, auth_settings,
                                _return_http_data_only, collection_formats,
-                               _preload_content, _request_timeout)
+                               _preload_content, _request_timeout, stream)
 
 
-    def request(self, method, url, query_params=None, headers=None,
+    def request(self, method, url, stream=False, query_params=None, headers=None,
                 post_params=None, body=None, _preload_content=True,
                 _request_timeout=None):
         """Makes the HTTP request using RESTClient."""
         if method == "GET":
             return self.rest_client.GET(url,
+                                        stream=stream,
                                         query_params=query_params,
                                         _preload_content=_preload_content,
                                         _request_timeout=_request_timeout,
                                         headers=headers)
         elif method == "HEAD":
             return self.rest_client.HEAD(url,
+                                        stream=stream,
                                          query_params=query_params,
                                          _preload_content=_preload_content,
                                          _request_timeout=_request_timeout,
                                          headers=headers)
         elif method == "OPTIONS":
             return self.rest_client.OPTIONS(url,
+                                        stream=stream,
                                             query_params=query_params,
                                             headers=headers,
                                             post_params=post_params,
@@ -580,6 +587,7 @@ class SyncApiClient(BaseApiClient):
                                             body=body)
         elif method == "POST":
             return self.rest_client.POST(url,
+                                        stream=stream,
                                          query_params=query_params,
                                          headers=headers,
                                          post_params=post_params,
@@ -588,6 +596,7 @@ class SyncApiClient(BaseApiClient):
                                          body=body)
         elif method == "PUT":
             return self.rest_client.PUT(url,
+                                        stream=stream,
                                         query_params=query_params,
                                         headers=headers,
                                         post_params=post_params,
@@ -596,6 +605,7 @@ class SyncApiClient(BaseApiClient):
                                         body=body)
         elif method == "PATCH":
             return self.rest_client.PATCH(url,
+                                          stream=stream,
                                           query_params=query_params,
                                           headers=headers,
                                           post_params=post_params,
@@ -604,6 +614,7 @@ class SyncApiClient(BaseApiClient):
                                           body=body)
         elif method == "DELETE":
             return self.rest_client.DELETE(url,
+                                           stream=stream,
                                            query_params=query_params,
                                            headers=headers,
                                            _preload_content=_preload_content,
