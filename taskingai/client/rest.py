@@ -41,19 +41,18 @@ class RESTResponse(io.IOBase):
 class RESTSyncClientObject(object):
 
     def __init__(self, configuration, pools_size=4, maxsize=None):
-        # 设置连接池的最大并发连接数
+        # set default user agent
         if maxsize is None:
             maxsize = configuration.connection_pool_maxsize if configuration.connection_pool_maxsize is not None else 4
 
-        # 设置连接限制
         limits = httpx.Limits(max_connections=maxsize, max_keepalive_connections=pools_size)
 
-        # 设置 SSL 配置
+        # SSL configuration
         verify = configuration.ssl_ca_cert or True  # 如果提供了自定义 CA 证书则使用，否则默认启用 SSL 验证
         if not configuration.verify_ssl:
             verify = False  # 如果明确指定不进行 SSL 验证，则设置为 False
 
-        # 设置代理
+        # proxy configuration
         proxies = None
         if configuration.proxy:
             proxies = {
@@ -61,20 +60,20 @@ class RESTSyncClientObject(object):
                 'https://': configuration.proxy,
             }
 
-        # 创建 httpx 客户端
+        # create httpx client
         self.client = httpx.Client(
             limits=limits,
             verify=verify,
             proxies=proxies,
         )
 
-        # 如果有提供客户端证书，设置之
+        # set client cert if provided
         if configuration.cert_file and configuration.key_file:
             self.client.cert = (configuration.cert_file, configuration.key_file)
 
-    def request(self, method, url, query_params=None, headers=None,
+    def request(self, method, url, stream = False, query_params=None, headers=None,
                 body=None, post_params=None, _preload_content=True,
-                _request_timeout=None):
+                _request_timeout=None) -> RESTResponse | httpx.Response:
         """
             Perform asynchronous HTTP requests.
 
@@ -110,13 +109,23 @@ class RESTSyncClientObject(object):
         request_body = json.dumps(body) if body is not None else None
 
         try:
-            r = self.client.request(
-                method, url,
-                params=query_params,
-                headers=headers,
-                content=request_body,
-                timeout=_request_timeout
-            )
+            if stream:
+                with self.client.stream(
+                        method, url,
+                        params=query_params,
+                        headers=headers,
+                        content=request_body,
+                        timeout=_request_timeout
+                ) as r:
+                    return r
+            else:
+                r = self.client.request(
+                    method, url,
+                    params=query_params,
+                    headers=headers,
+                    content=request_body,
+                    timeout=_request_timeout
+                )
         except HTTPError as e:
             msg = "{0}\n{1}".format(type(e).__name__, str(e))
             raise ApiException(status=0, reason=msg)
@@ -129,25 +138,28 @@ class RESTSyncClientObject(object):
 
         return r
 
-    def GET(self, url, headers=None, query_params=None, _preload_content=True,
+    def GET(self, url, stream=False, headers=None, query_params=None, _preload_content=True,
             _request_timeout=None):
         return self.request("GET", url,
+                            stream=stream,
                             headers=headers,
                             _preload_content=_preload_content,
                             _request_timeout=_request_timeout,
                             query_params=query_params)
 
-    def HEAD(self, url, headers=None, query_params=None, _preload_content=True,
+    def HEAD(self, url, stream=False, headers=None, query_params=None, _preload_content=True,
              _request_timeout=None):
         return self.request("HEAD", url,
+                            stream=stream,
                             headers=headers,
                             _preload_content=_preload_content,
                             _request_timeout=_request_timeout,
                             query_params=query_params)
 
-    def OPTIONS(self, url, headers=None, query_params=None, post_params=None,
+    def OPTIONS(self, url, stream=False, headers=None, query_params=None, post_params=None,
                 body=None, _preload_content=True, _request_timeout=None):
         return self.request("OPTIONS", url,
+                            stream=stream,
                             headers=headers,
                             query_params=query_params,
                             post_params=post_params,
@@ -155,18 +167,20 @@ class RESTSyncClientObject(object):
                             _request_timeout=_request_timeout,
                             body=body)
 
-    def DELETE(self, url, headers=None, query_params=None, body=None,
+    def DELETE(self, url, stream=False, headers=None, query_params=None, body=None,
                _preload_content=True, _request_timeout=None):
         return self.request("DELETE", url,
+                            stream=stream,
                             headers=headers,
                             query_params=query_params,
                             _preload_content=_preload_content,
                             _request_timeout=_request_timeout,
                             body=body)
 
-    def POST(self, url, headers=None, query_params=None, post_params=None,
+    def POST(self, url, stream=False, headers=None, query_params=None, post_params=None,
              body=None, _preload_content=True, _request_timeout=None):
         return self.request("POST", url,
+                            stream=stream,
                             headers=headers,
                             query_params=query_params,
                             post_params=post_params,
@@ -174,26 +188,27 @@ class RESTSyncClientObject(object):
                             _request_timeout=_request_timeout,
                             body=body)
 
-    def PUT(self, url, headers=None, query_params=None, post_params=None,
+    def PUT(self, url, stream=False, headers=None, query_params=None, post_params=None,
             body=None, _preload_content=True, _request_timeout=None):
         return self.request("PUT", url,
                             headers=headers,
+                            stream=stream,
                             query_params=query_params,
                             post_params=post_params,
                             _preload_content=_preload_content,
                             _request_timeout=_request_timeout,
                             body=body)
 
-    def PATCH(self, url, headers=None, query_params=None, post_params=None,
+    def PATCH(self, url, stream=False, headers=None, query_params=None, post_params=None,
               body=None, _preload_content=True, _request_timeout=None):
         return self.request("PATCH", url,
+                            stream=stream,
                             headers=headers,
                             query_params=query_params,
                             post_params=post_params,
                             _preload_content=_preload_content,
                             _request_timeout=_request_timeout,
                             body=body)
-
 
 class RESTAsyncClientObject(object):
 
