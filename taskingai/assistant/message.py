@@ -5,7 +5,6 @@ from taskingai.client.models import (
     Message,
     MessageRole,
     MessageContent,
-    MessageGenerationResponseOption,
     MessageChunk,
     MessageGenerationLog,
 )
@@ -23,6 +22,7 @@ from taskingai.client.stream import Stream, AsyncStream
 __all__ = [
     "Message",
     "MessageChunk",
+    "MessageGenerationLog",
     "get_message",
     "list_messages",
     "create_user_message",
@@ -305,8 +305,9 @@ def generate_assistant_message(
 
     api_instance = get_api_instance(ModuleType.assistant)
     body = MessageGenerateRequest(
-        options=MessageGenerationResponseOption(stream=stream, debug=debug),
         system_prompt_variables=system_prompt_variables,
+        stream=stream,
+        debug=debug,
     )
 
     if not stream and not debug:
@@ -347,8 +348,9 @@ async def a_generate_assistant_message(
 
     api_instance = get_api_instance(ModuleType.assistant, async_client=True)
     body = MessageGenerateRequest(
-        options=MessageGenerationResponseOption(stream=stream, debug=debug),
-        system_prompt_variables=system_prompt_variables
+        system_prompt_variables=system_prompt_variables,
+        stream=stream,
+        debug=debug,
     )
 
     if not stream and not debug:
