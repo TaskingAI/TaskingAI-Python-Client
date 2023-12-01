@@ -8,18 +8,8 @@ __all__ = [
     "MessageContent",
     "MessageRole",
     "MessageGenerationLog",
-    "MessageGenerationLogType",
-    "MessageLogContent",
-    "MessageRetrievalLogContent",
-    "MessageToolLogContent",
-    "MessageGenerationResponseOption",
     "MessageChunk"
 ]
-
-
-class MessageGenerationResponseOption(TaskingaiBaseModel):
-    stream: bool
-    debug: bool
 
 
 class MessageRole(str, Enum):
@@ -27,36 +17,12 @@ class MessageRole(str, Enum):
     assistant = "assistant"
 
 
-class MessageGenerationLogType(str, Enum):
-    retrieval = "retrieval"
-    tool_call = "tool_call"
-    tool_result = "tool_result"
-
-
-class MessageLogContent(TaskingaiBaseModel):
-    pass
-
-
-class MessageRetrievalLogContent(MessageLogContent):
-    query: str
-    result: str
-
-
-class MessageToolLogContent(MessageLogContent):
-    tool_id: str
-    type: str
-    name: str
-    input: str
-    output: Optional[str]
-
-
 class MessageGenerationLog(TaskingaiBaseModel):
     object: str
-    type: MessageGenerationLogType
+    type: str
     session_id: str
     created_timestamp: int
-    retrieval: Optional[MessageRetrievalLogContent]
-    tool: Optional[MessageToolLogContent]
+    content: Dict
 
 
 class MessageContent(TaskingaiBaseModel):
