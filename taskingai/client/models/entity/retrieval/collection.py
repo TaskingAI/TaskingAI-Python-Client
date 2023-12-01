@@ -1,4 +1,5 @@
-from typing import Dict
+from typing import Dict, Optional
+from pydantic import Field
 from .._base import TaskingaiBaseModel
 
 __all__ = [
@@ -7,9 +8,9 @@ __all__ = [
 ]
 
 class CollectionConfig(TaskingaiBaseModel):
-    chunk_size: int
-    chunk_overlap: int
-    metric: str
+    chunk_size: int = Field(200, ge=100, le=500)
+    chunk_overlap: int = Field(0, ge=0, le=100)
+    metric: str = Field("cosine")
 
 
 class Collection(TaskingaiBaseModel):

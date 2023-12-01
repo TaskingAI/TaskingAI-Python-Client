@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Union
 
 from taskingai.client.utils import get_api_instance, ModuleType
 from taskingai.client.models import (
@@ -292,7 +292,7 @@ def generate_assistant_message(
     system_prompt_variables: Optional[Dict] = None,
     stream: bool = False,
     debug: bool = False,
-) -> Message | Stream:
+) -> Union[Message, Stream]:
     """
     Generate a message.
 
@@ -335,7 +335,7 @@ async def a_generate_assistant_message(
     system_prompt_variables: Optional[Dict] = None,
     stream: bool = False,
     debug: bool = False,
-) -> Message | AsyncStream:
+) -> Union[Message, AsyncStream]:
     """
     Generate a message in async mode.
 

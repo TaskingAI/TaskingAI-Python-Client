@@ -19,6 +19,7 @@ import certifi
 import httpx
 from httpx import HTTPError
 from .stream import Stream, AsyncStream
+from typing import Union
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +87,7 @@ class RESTSyncClientObject(object):
 
     def request(self, method, url, stream=False, query_params=None, headers=None,
                 body=None, post_params=None, _preload_content=True,
-                _request_timeout=None) -> RESTResponse | Stream:
+                _request_timeout=None) -> Union[RESTResponse, Stream]:
         """
             Perform asynchronous HTTP requests.
 
