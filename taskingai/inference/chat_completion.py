@@ -76,7 +76,7 @@ def chat_completion(
         function_call: Optional[str] = None,
         functions: Optional[List[Function]] = None,
         stream: bool = False
-) -> ChatCompletion | Stream:
+) -> Union[ChatCompletion, Stream]:
     """
     Chat completion model inference.
 
@@ -118,7 +118,7 @@ async def a_chat_completion(
         function_call: Optional[str] = None,
         functions: Optional[List[Function]] = None,
         stream: bool = False
-) -> ChatCompletion | AsyncStream:
+) -> Union[ChatCompletion, AsyncStream]:
     """
     Chat completion model inference in async mode.
 

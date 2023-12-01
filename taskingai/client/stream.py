@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Dict, Iterator, AsyncIterator
+from typing import Any, Dict, Iterator, AsyncIterator, Optional
 from .models import (
     MessageChunk,
     Message,
@@ -112,10 +112,10 @@ class ServerSentEvent:
     def __init__(
         self,
         *,
-        event: str | None = None,
-        data: str | None = None,
-        id: str | None = None,
-        retry: int | None = None,
+        event: Optional[str] = None,
+        data: Optional[str] = None,
+        id: Optional[str] = None,
+        retry: Optional[int] = None,
     ) -> None:
         if data is None:
             data = ""
@@ -126,15 +126,15 @@ class ServerSentEvent:
         self._retry = retry
 
     @property
-    def event(self) -> str | None:
+    def event(self) -> Optional[str]:
         return self._event
 
     @property
-    def id(self) -> str | None:
+    def id(self) -> Optional[str]:
         return self._id
 
     @property
-    def retry(self) -> int | None:
+    def retry(self) -> Optional[int]:
         return self._retry
 
     @property
@@ -149,9 +149,9 @@ class ServerSentEvent:
 
 class SSEDecoder:
     _data: list[str]
-    _event: str | None
-    _retry: int | None
-    _last_event_id: str | None
+    _event: Optional[str]
+    _retry: Optional[int]
+    _last_event_id: Optional[str]
 
     def __init__(self) -> None:
         self._event = None
@@ -175,7 +175,7 @@ class SSEDecoder:
             if sse is not None:
                 yield sse
 
-    def decode(self, line: str) -> ServerSentEvent | None:
+    def decode(self, line: str) -> Optional[ServerSentEvent]:
         # See: https://html.spec.whatwg.org/multipage/server-sent-events.html#event-stream-interpretation  # noqa: E501
 
         if not line:
