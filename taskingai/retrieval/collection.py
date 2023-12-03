@@ -25,7 +25,6 @@ __all__ = [
 def list_collections(
         order: str = "desc",
         limit: int = 20,
-        offset: Optional[int] = None,
         after: Optional[str] = None,
         before: Optional[str] = None,
 ) -> List[Collection]:
@@ -34,21 +33,19 @@ def list_collections(
 
     :param order: The order of the collections. It can be "asc" or "desc".
     :param limit: The maximum number of collections to return.
-    :param offset: The offset of the collections.
     :param after: The cursor to get the next page of collections.
     :param before: The cursor to get the previous page of collections.
     :return: The list of collections.
     """
-    offset_params = [offset, after, before]
-    if sum([1 if param is not None else 0 for param in offset_params]) > 1:
-        raise ValueError("Only one of offset, after and before can be specified.")
+
+    if after and before:
+        raise ValueError("Only one of after and before can be specified.")
 
     api_instance = get_api_instance(ModuleType.retrieval)
     # only add non-None parameters
     params = {
         "order": order,
         "limit": limit,
-        "offset": offset,
         "after": after,
         "before": before,
     }
@@ -61,30 +58,27 @@ def list_collections(
 async def a_list_collections(
         order: str = "desc",
         limit: int = 20,
-        offset: Optional[int] = None,
         after: Optional[str] = None,
         before: Optional[str] = None,
 ) -> List[Collection]:
     """
-    List collections in async mode.
+    List collections.
 
     :param order: The order of the collections. It can be "asc" or "desc".
     :param limit: The maximum number of collections to return.
-    :param offset: The offset of the collections.
     :param after: The cursor to get the next page of collections.
     :param before: The cursor to get the previous page of collections.
     :return: The list of collections.
     """
-    offset_params = [offset, after, before]
-    if sum([1 if param is not None else 0 for param in offset_params]) > 1:
-        raise ValueError("Only one of offset, after and before can be specified.")
+
+    if after and before:
+        raise ValueError("Only one of after and before can be specified.")
 
     api_instance = get_api_instance(ModuleType.retrieval, async_client=True)
     # only add non-None parameters
     params = {
         "order": order,
         "limit": limit,
-        "offset": offset,
         "after": after,
         "before": before,
     }

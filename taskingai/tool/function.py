@@ -24,27 +24,26 @@ __all__ = [
 def list_functions(
         order: str = "desc",
         limit: int = 20,
-        offset: Optional[int] = None,
         after: Optional[str] = None,
         before: Optional[str] = None,
 ) -> List[Function]:
     """
     List functions.
 
-    :param order: The order of the functions. It ca be "asc" or "desc".
+    :param order: The order of the functions. It can be "asc" or "desc".
     :param limit: The maximum number of functions to return.
-    :param offset: The offset of the functions.
     :param after: The cursor to get the next page of functions.
     :param before: The cursor to get the previous page of functions.
     :return: The list of functions.
     """
-    # todo: verify only one of offset, after and before is not None
+    if after and before:
+        raise ValueError("Only one of after and before can be specified.")
+
     api_instance = get_api_instance(ModuleType.tool)
     # only add non-None parameters
     params = {
         "order": order,
         "limit": limit,
-        "offset": offset,
         "after": after,
         "before": before,
     }
@@ -57,26 +56,26 @@ def list_functions(
 async def a_list_functions(
         order: str = "desc",
         limit: int = 20,
-        offset: Optional[int] = None,
         after: Optional[str] = None,
         before: Optional[str] = None,
 ) -> List[Function]:
     """
     List functions in async mode.
 
-    :param order: The order of the functions. It ca be "asc" or "desc".
+    :param order: The order of the functions. It can be "asc" or "desc".
     :param limit: The maximum number of functions to return.
-    :param offset: The offset of the functions.
     :param after: The cursor to get the next page of functions.
     :param before: The cursor to get the previous page of functions.
     :return: The list of functions.
     """
+    if after and before:
+        raise ValueError("Only one of after and before can be specified.")
+
     api_instance = get_api_instance(ModuleType.tool, async_client=True)
     # only add non-None parameters
     params = {
         "order": order,
         "limit": limit,
-        "offset": offset,
         "after": after,
         "before": before,
     }

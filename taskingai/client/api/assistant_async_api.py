@@ -970,7 +970,6 @@ class AsyncAssistantApi(object):
         :param object order:
         :param object after:
         :param object before:
-        :param object offset:
         :return: AssistantListResponse
                  If the method is called asynchronously,
                  returns the request thread.
@@ -996,13 +995,12 @@ class AsyncAssistantApi(object):
         :param object order:
         :param object after:
         :param object before:
-        :param object offset:
         :return: AssistantListResponse
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['limit', 'order', 'after', 'before', 'offset']  # noqa: E501
+        all_params = ['limit', 'order', 'after', 'before']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1031,8 +1029,6 @@ class AsyncAssistantApi(object):
             query_params.append(('after', params['after']))  # noqa: E501
         if 'before' in params:
             query_params.append(('before', params['before']))  # noqa: E501
-        if 'offset' in params:
-            query_params.append(('offset', params['offset']))  # noqa: E501
 
         header_params = {}
 

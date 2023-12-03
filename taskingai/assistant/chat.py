@@ -37,6 +37,8 @@ def list_chats(
     :param before: The cursor to get the previous page of chats.
     :return: The list of chats.
     """
+    if after and before:
+        raise ValueError("Only one of after and before can be specified.")
 
     api_instance = get_api_instance(ModuleType.assistant)
     # only add non-None parameters
@@ -71,6 +73,8 @@ async def a_list_chats(
     :param before: The cursor to get the previous page of chats.
     :return: The list of chats.
     """
+    if after and before:
+        raise ValueError("Only one of after and before can be specified.")
 
     api_instance = get_api_instance(ModuleType.assistant, async_client=True)
     # only add non-None parameters

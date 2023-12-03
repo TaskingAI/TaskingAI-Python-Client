@@ -28,7 +28,6 @@ __all__ = [
 def list_assistants(
     order: str = "desc",
     limit: int = 20,
-    offset: Optional[int] = None,
     after: Optional[str] = None,
     before: Optional[str] = None,
 ) -> List[Assistant]:
@@ -38,22 +37,19 @@ def list_assistants(
 
     :param order: The order of the assistants. It can be "asc" or "desc".
     :param limit: The maximum number of assistants to return.
-    :param offset: The offset of the assistants.
     :param after: The cursor to get the next page of assistants.
     :param before: The cursor to get the previous page of assistants.
     :return: The list of assistants.
     """
-    # verify only one of offset, after and before is not None
-    offset_params = [offset, after, before]
-    if sum([1 if param is not None else 0 for param in offset_params]) > 1:
-        raise ValueError("Only one of offset, after and before can be specified.")
+
+    if after and before:
+        raise ValueError("Only one of after and before can be specified.")
 
     api_instance = get_api_instance(ModuleType.assistant)
     # only add non-None parameters
     params = {
         "order": order,
         "limit": limit,
-        "offset": offset,
         "after": after,
         "before": before,
     }
@@ -62,36 +58,31 @@ def list_assistants(
     assistants: List[Assistant] = [Assistant(**item) for item in response.data]
     return assistants
 
-async def a_list_assistants(
-    order: str = "desc",
-    limit: int = 20,
-    offset: Optional[int] = None,
-    after: Optional[str] = None,
-    before: Optional[str] = None,
-) -> List[Assistant]:
 
+async def a_list_assistants(
+        order: str = "desc",
+        limit: int = 20,
+        after: Optional[str] = None,
+        before: Optional[str] = None,
+) -> List[Assistant]:
     """
-    List assistants in async mode.
+    List assistants.
 
     :param order: The order of the assistants. It can be "asc" or "desc".
     :param limit: The maximum number of assistants to return.
-    :param offset: The offset of the assistants.
     :param after: The cursor to get the next page of assistants.
     :param before: The cursor to get the previous page of assistants.
     :return: The list of assistants.
     """
 
-    # verify only one of offset, after and before is not None
-    offset_params = [offset, after, before]
-    if sum([1 if param is not None else 0 for param in offset_params]) > 1:
-        raise ValueError("Only one of offset, after and before can be specified.")
+    if after and before:
+        raise ValueError("Only one of after and before can be specified.")
 
     api_instance = get_api_instance(ModuleType.assistant, async_client=True)
     # only add non-None parameters
     params = {
         "order": order,
         "limit": limit,
-        "offset": offset,
         "after": after,
         "before": before,
     }
