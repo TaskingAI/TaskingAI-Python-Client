@@ -35,7 +35,6 @@ __all__ = [
 def list_actions(
         order: str = "desc",
         limit: int = 20,
-        offset: Optional[int] = None,
         after: Optional[str] = None,
         before: Optional[str] = None,
 ) -> List[Action]:
@@ -44,18 +43,18 @@ def list_actions(
 
     :param order: The order of the actions. It can be "asc" or "desc".
     :param limit: The maximum number of actions to return.
-    :param offset: The offset of the actions.
     :param after: The cursor to get the next page of actions.
     :param before: The cursor to get the previous page of actions.
     :return: The list of actions.
     """
-    # todo: verify only one of offset, after and before is not None
+    if after and before:
+        raise ValueError("Only one of after and before can be specified.")
+
     api_instance = get_api_instance(ModuleType.tool)
     # only add non-None parameters
     params = {
         "order": order,
         "limit": limit,
-        "offset": offset,
         "after": after,
         "before": before,
     }
@@ -68,7 +67,6 @@ def list_actions(
 async def a_list_actions(
         order: str = "desc",
         limit: int = 20,
-        offset: Optional[int] = None,
         after: Optional[str] = None,
         before: Optional[str] = None,
 ) -> List[Action]:
@@ -77,17 +75,18 @@ async def a_list_actions(
 
     :param order: The order of the actions. It can be "asc" or "desc".
     :param limit: The maximum number of actions to return.
-    :param offset: The offset of the actions.
     :param after: The cursor to get the next page of actions.
     :param before: The cursor to get the previous page of actions.
     :return: The list of actions.
     """
+    if after and before:
+        raise ValueError("Only one of after and before can be specified.")
+
     api_instance = get_api_instance(ModuleType.tool, async_client=True)
     # only add non-None parameters
     params = {
         "order": order,
         "limit": limit,
-        "offset": offset,
         "after": after,
         "before": before,
     }

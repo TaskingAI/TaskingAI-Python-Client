@@ -50,9 +50,9 @@ class RESTSyncClientObject(object):
         limits = httpx.Limits(max_connections=maxsize, max_keepalive_connections=pools_size)
 
         # SSL configuration
-        verify = configuration.ssl_ca_cert or True  # 如果提供了自定义 CA 证书则使用，否则默认启用 SSL 验证
+        verify = configuration.ssl_ca_cert or True
         if not configuration.verify_ssl:
-            verify = False  # 如果明确指定不进行 SSL 验证，则设置为 False
+            verify = False
 
         # proxy configuration
         proxies = None

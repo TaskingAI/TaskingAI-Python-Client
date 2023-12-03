@@ -55,8 +55,7 @@ def list_messages(
     :param before: The cursor to get the previous page of messages.
     :return: The list of messages.
     """
-    offset_params = [after, before]
-    if sum([1 if param is not None else 0 for param in offset_params]) > 1:
+    if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
     api_instance = get_api_instance(ModuleType.assistant)
@@ -96,8 +95,7 @@ async def a_list_messages(
     :param before: The cursor to get the previous page of messages.
     :return: The list of messages.
     """
-    offset_params = [after, before]
-    if sum([1 if param is not None else 0 for param in offset_params]) > 1:
+    if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
     api_instance = get_api_instance(ModuleType.assistant, async_client=True)
