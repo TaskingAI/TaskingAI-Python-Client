@@ -28,7 +28,6 @@ class AssistantListResponse(object):
         'data': 'object',
         'has_more': 'object',
         'fetched_count': 'object',
-        'total_count': 'object'
     }
 
     attribute_map = {
@@ -36,22 +35,19 @@ class AssistantListResponse(object):
         'data': 'data',
         'has_more': 'has_more',
         'fetched_count': 'fetched_count',
-        'total_count': 'total_count'
     }
 
-    def __init__(self, status=None, data=None, has_more=None, fetched_count=None, total_count=None):  # noqa: E501
+    def __init__(self, status=None, data=None, has_more=None, fetched_count=None):  # noqa: E501
         """AssistantListResponse - a model defined in Swagger"""  # noqa: E501
         self._status = None
         self._data = None
         self._has_more = None
         self._fetched_count = None
-        self._total_count = None
         self.discriminator = None
         self.status = status
         self.data = data
         self.has_more = has_more
         self.fetched_count = fetched_count
-        self.total_count = total_count
 
     @property
     def status(self):
@@ -152,31 +148,6 @@ class AssistantListResponse(object):
             raise ValueError("Invalid value for `fetched_count`, must not be `None`")  # noqa: E501
 
         self._fetched_count = fetched_count
-
-    @property
-    def total_count(self):
-        """Gets the total_count of this AssistantListResponse.  # noqa: E501
-
-        The total number of assistants in the project.  # noqa: E501
-
-        :return: The total_count of this AssistantListResponse.  # noqa: E501
-        :rtype: object
-        """
-        return self._total_count
-
-    @total_count.setter
-    def total_count(self, total_count):
-        """Sets the total_count of this AssistantListResponse.
-
-        The total number of assistants in the project.  # noqa: E501
-
-        :param total_count: The total_count of this AssistantListResponse.  # noqa: E501
-        :type: object
-        """
-        if total_count is None:
-            raise ValueError("Invalid value for `total_count`, must not be `None`")  # noqa: E501
-
-        self._total_count = total_count
 
     def to_dict(self):
         """Returns the model properties as a dict"""

@@ -27,7 +27,6 @@ class CollectionListResponse(object):
         'status': 'object',
         'data': 'object',
         'fetched_count': 'object',
-        'total_count': 'object',
         'has_more': 'object'
     }
 
@@ -35,22 +34,19 @@ class CollectionListResponse(object):
         'status': 'status',
         'data': 'data',
         'fetched_count': 'fetched_count',
-        'total_count': 'total_count',
         'has_more': 'has_more'
     }
 
-    def __init__(self, status=None, data=None, fetched_count=None, total_count=None, has_more=None):  # noqa: E501
+    def __init__(self, status=None, data=None, fetched_count=None, has_more=None):  # noqa: E501
         """CollectionListResponse - a model defined in Swagger"""  # noqa: E501
         self._status = None
         self._data = None
         self._fetched_count = None
-        self._total_count = None
         self._has_more = None
         self.discriminator = None
         self.status = status
         self.data = data
         self.fetched_count = fetched_count
-        self.total_count = total_count
         self.has_more = has_more
 
     @property
@@ -127,31 +123,6 @@ class CollectionListResponse(object):
             raise ValueError("Invalid value for `fetched_count`, must not be `None`")  # noqa: E501
 
         self._fetched_count = fetched_count
-
-    @property
-    def total_count(self):
-        """Gets the total_count of this CollectionListResponse.  # noqa: E501
-
-        The total number of collections in the project.  # noqa: E501
-
-        :return: The total_count of this CollectionListResponse.  # noqa: E501
-        :rtype: object
-        """
-        return self._total_count
-
-    @total_count.setter
-    def total_count(self, total_count):
-        """Sets the total_count of this CollectionListResponse.
-
-        The total number of collections in the project.  # noqa: E501
-
-        :param total_count: The total_count of this CollectionListResponse.  # noqa: E501
-        :type: object
-        """
-        if total_count is None:
-            raise ValueError("Invalid value for `total_count`, must not be `None`")  # noqa: E501
-
-        self._total_count = total_count
 
     @property
     def has_more(self):
