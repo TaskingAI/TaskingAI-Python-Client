@@ -27,6 +27,8 @@ class ActionAuthentication(TaskingaiBaseModel):
 class Action(TaskingaiBaseModel):
     object: str
     action_id: str
+    name: str
+    description: str
     schema: Dict[str, Any]
     authentication: ActionAuthentication
     created_timestamp: int
