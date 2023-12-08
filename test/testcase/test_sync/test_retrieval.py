@@ -1,14 +1,13 @@
 import time
-
 import allure
 import pytest
 
 from taskingai.retrieval import list_collections, create_collection, get_collection, update_collection, delete_collection, list_records, create_text_record, get_record, update_record, delete_record, query_chunks
-from test.config import text_model_id
+from test.config import text_model_id, sleep_time
 from test.common.utils import logger
 
 
-@allure.epic("test_retrieval")
+@allure.epic("test_sync_retrieval")
 @allure.feature("test_collection")
 @pytest.mark.sync
 class TestCollection:
@@ -21,12 +20,13 @@ class TestCollection:
 
     @allure.story("test_create_collection")
     @pytest.mark.run(order=9)
-    def test_create_collection(self):
+    @pytest.mark.parametrize("sync_collection_num", (x+1 for x in range(10)))
+    def test_create_collection(self, sync_collection_num):
         # List collections.
-        old_res = list_collections()
+        old_res = list_collections(limit=100)
         old_nums = len(old_res)
         # Create a collection.
-        name = "test"
+        name = f"test{sync_collection_num}"
         description = "just for test"
         res = create_collection(name=name, description=description, embedding_model_id=text_model_id, capacity=1000)
         res_dict = res.to_dict()
@@ -40,7 +40,7 @@ class TestCollection:
         pytest.assume(res_dict["status"] == "creating")
 
         # Get a collection.
-        time.sleep(1)
+        time.sleep(sleep_time)
         collection_id = res_dict["collection_id"]
         get_res = get_collection(collection_id=collection_id)
         get_res_dict = get_res.to_dict()
@@ -53,16 +53,29 @@ class TestCollection:
         pytest.assume(get_res_dict["capacity"] == 1000)
         pytest.assume(get_res_dict["status"] == "ready")
         # List collections.
-        new_res = list_collections()
+        new_res = list_collections(limit=100)
         new_nums = len(new_res)
-        assert new_nums == old_nums + 1
+        pytest.assume(new_nums == old_nums + 1)
 
     @allure.story("test_list_collections")
     @pytest.mark.run(order=10)
     def test_list_collections(self,):
         # List collections.
-        res = list_collections(order="desc", limit=20, offset=None, after=None, before=None)
-        assert len(res) >= 0
+        nums_limit = 4
+        res = list_collections(limit=nums_limit)
+        pytest.assume(len(res) == nums_limit)
+        after_id = res[-1].collection_id
+        after_res = list_collections(limit=nums_limit, after=after_id)
+        pytest.assume(len(after_res) == nums_limit)
+        twice_nums_list = list_collections(limit=nums_limit * 2)
+        pytest.assume(len(twice_nums_list) == nums_limit * 2)
+        pytest.assume(after_res[-1] == twice_nums_list[-1])
+        pytest.assume(after_res[0] == twice_nums_list[nums_limit])
+        before_id = after_res[0].collection_id
+        before_res = list_collections(limit=nums_limit, before=before_id)
+        pytest.assume(len(before_res) == nums_limit)
+        pytest.assume(before_res[-1] == twice_nums_list[nums_limit - 1])
+        pytest.assume(before_res[0] == twice_nums_list[0])
 
     @allure.story("test_get_collection")
     @pytest.mark.run(order=11)
@@ -88,6 +101,7 @@ class TestCollection:
         pytest.assume(res_dict["description"] == description)
         pytest.assume(res_dict["status"] == "ready")
         # Get a collection.
+        time.sleep(sleep_time)
         get_res = get_collection(collection_id=collection_id)
         get_res_dict = get_res.to_dict()
         pytest.assume(get_res_dict.keys() == self.collection_keys)
@@ -100,22 +114,23 @@ class TestCollection:
     @pytest.mark.run(order=34)
     def test_delete_collection(self):
         # List collections.
-        old_res = list_collections(order="desc", limit=20, offset=None, after=None, before=None)
+        old_res = list_collections(order="desc", limit=100,  after=None, before=None)
         old_nums = len(old_res)
 
         for index, collection in enumerate(old_res):
             collection_id = collection.collection_id
             # Delete a collection.
             delete_collection(collection_id=collection_id)
-            new_collections = list_collections(order="desc", limit=20, offset=None, after=None, before=None)
+            time.sleep(sleep_time)
+            new_collections = list_collections(order="desc", limit=100,  after=None, before=None)
             # List collections.
             collection_ids = [collection.collection_id for collection in new_collections]
             pytest.assume(collection_id not in collection_ids)
             new_nums = len(new_collections)
-            assert new_nums == old_nums - 1 - index
+            pytest.assume( new_nums == old_nums - 1 - index)
 
 
-@allure.epic("test_retrieval")
+@allure.epic("test_sync_retrieval")
 @allure.feature("test_record")
 @pytest.mark.sync
 class TestRecord:
@@ -128,48 +143,69 @@ class TestRecord:
     
     @allure.story("test_create_text_record")
     @pytest.mark.run(order=13)
-    def test_create_text_record(self, collection_id):
+    @pytest.mark.parametrize("sync_record_num", (x+1 for x in range(10)))
+    def test_create_text_record(self, collection_id, sync_record_num):
         # List records.
         old_res = list_records(collection_id=collection_id)
         old_nums = len(old_res)
         # Create a text record.
-        text = "Machine learning is a subfield of artificial intelligence (AI) that involves the development of algorithms that allow computers to learn from and make decisions or predictions based on data."
+        text = f"{sync_record_num}Machine learning is a subfield of artificial intelligence (AI) that involves the development of algorithms that allow computers to learn from and make decisions or predictions based on data."
         res = create_text_record(collection_id=collection_id, text=text)
         res_dict = res.to_dict()
         pytest.assume(res_dict.keys() == self.record_keys)
         pytest.assume(res_dict["content"].keys() == self.record_content_keys)
         pytest.assume(res_dict["content"]["text"] == text)
         pytest.assume(res_dict["status"] == "creating")
-        # Get a record.
-        time.sleep(2)
-        record_id = res_dict["record_id"]
-        get_res = get_record(collection_id=collection_id, record_id=record_id)
-        get_res_dict = get_res.to_dict()
-        pytest.assume(get_res_dict.keys() == self.record_keys)
-        pytest.assume(get_res_dict["content"].keys() == self.record_content_keys)
-        pytest.assume(get_res_dict["content"]["text"] == text)
-        pytest.assume(get_res_dict["status"] == "ready")
+        # Get a record.  cost too many times, so do it in test_get_record
+        # time.sleep(sleep_time*8)
+        # record_id = res_dict["record_id"]
+        #
+        # get_res = get_record(collection_id=collection_id, record_id=record_id)
+        # logger.info(f'get record response: {get_res}')
+        # get_res_dict = get_res.to_dict()
+        # pytest.assume(get_res_dict.keys() == self.record_keys)
+        # pytest.assume(get_res_dict["content"].keys() == self.record_content_keys)
+        # pytest.assume(get_res_dict["content"]["text"] == text)
+        # pytest.assume(get_res_dict["status"] == "ready")
         # List records.
         new_res = list_records(collection_id=collection_id)
         new_nums = len(new_res)
-        assert new_nums == old_nums + 1
+        pytest.assume(new_nums == old_nums + 1)
 
     @allure.story("test_list_records")
     @pytest.mark.run(order=14)
     def test_list_records(self, collection_id):
         # List records.
-        res = list_records(collection_id=collection_id, order="desc", limit=20, offset=None, after=None, before=None)
-        assert len(res) >= 0
+        nums_limit = 4
+        res = list_records(limit=nums_limit, collection_id=collection_id)
+        pytest.assume(len(res) == nums_limit)
+        after_id = res[-1].record_id
+        after_res = list_records(limit=nums_limit, after=after_id, collection_id=collection_id)
+        pytest.assume(len(after_res) == nums_limit)
+        twice_nums_list = list_records(limit=nums_limit * 2, collection_id=collection_id)
+        pytest.assume(len(twice_nums_list) == nums_limit * 2)
+        pytest.assume(after_res[-1] == twice_nums_list[-1])
+        pytest.assume(after_res[0] == twice_nums_list[nums_limit])
+        before_id = after_res[0].record_id
+        before_res = list_records(limit=nums_limit, before=before_id, collection_id=collection_id)
+        pytest.assume(len(before_res) == nums_limit)
+        pytest.assume(before_res[-1] == twice_nums_list[nums_limit - 1])
+        pytest.assume(before_res[0] == twice_nums_list[0])
 
     @allure.story("test_get_record")
     @pytest.mark.run(order=15)
-    def test_get_record(self, collection_id, record_id):
-        # Get a record.
-        res = get_record(collection_id=collection_id, record_id=record_id)
-        res_dict = res.to_dict()
-        pytest.assume(res_dict.keys() == self.record_keys)
-        pytest.assume(res_dict["content"].keys() == self.record_content_keys)
-        pytest.assume(res_dict["status"] == "ready")
+    def test_get_record(self, collection_id):
+        # list records
+        time.sleep(sleep_time*15)
+        records = list_records(collection_id=collection_id)
+        for record in records:
+            record_id = record.record_id
+            res = get_record(collection_id=collection_id, record_id=record_id)
+            logger.info(f'get record response: {res}')
+            res_dict = res.to_dict()
+            pytest.assume(res_dict.keys() == self.record_keys)
+            pytest.assume(res_dict["content"].keys() == self.record_content_keys)
+            pytest.assume(res_dict["status"] == "ready")
 
     @allure.story("test_update_record")
     @pytest.mark.run(order=16)
@@ -182,18 +218,73 @@ class TestRecord:
         pytest.assume(res_dict["content"].keys() == self.record_content_keys)
         pytest.assume(res_dict["metadata"] == metadata)
         # Get a record.
+        time.sleep(sleep_time*4)
         get_res = get_record(collection_id=collection_id, record_id=record_id)
+        logger.info(f'get record response: {get_res}')
         get_res_dict = get_res.to_dict()
         pytest.assume(get_res_dict.keys() == self.record_keys)
         pytest.assume(get_res_dict["content"].keys() == self.record_content_keys)
         pytest.assume(get_res_dict["metadata"] == metadata)
         pytest.assume(get_res_dict["status"] == "ready")
 
+    @allure.story("test_create_record_in_nonexistent_collection")
+    @pytest.mark.run(order=17)
+    @pytest.mark.abnormal
+    def test_create_record_in_nonexistent_collection(self):
+        # Create collection.
+        name = "test"
+        description = "just for test"
+        collection_id = "nonexistent_collection_id"
+        # Create a record.
+        text = "Machine learning is a subfield of artificial intelligence (AI) that involves the development of algorithms that allow computers to learn from and make decisions or predictions based on data."
+        try:
+            res = create_text_record(collection_id=collection_id, text=text)
+        except Exception as e:
+            logger.info(f'test_create_record_in_creating_collection:{e}')
+            pytest.assume(f"Collection not found: {collection_id}" in str(e))
+
+    @allure.story("test_create_record_in_creating_collection")
+    @pytest.mark.run(order=17)
+    @pytest.mark.abnormal
+    def test_create_record_in_creating_collection(self):
+        # Create collection.
+        name = "test"
+        description = "just for test"
+        res = create_collection(name=name, description=description, embedding_model_id=text_model_id,
+                                        capacity=1000)
+        collection_id = res.collection_id
+        # Create a record.
+        text = "Machine learning is a subfield of artificial intelligence (AI) that involves the development of algorithms that allow computers to learn from and make decisions or predictions based on data."
+        try:
+            res = create_text_record(collection_id=collection_id, text=text)
+        except Exception as e:
+            logger.info(f'test_create_record_in_creating_collection:{e}')
+            pytest.assume(f"Collection {collection_id} is not ready." in str(e))
+
+    @allure.story("test_create_record_in_deleting_collection")
+    @pytest.mark.run(order=17)
+    @pytest.mark.abnormal
+    def test_create_record_in_deleting_collection(self):
+        # Create collection.
+        name = "test"
+        description = "just for test"
+        res = create_collection(name=name, description=description, embedding_model_id=text_model_id,
+                                        capacity=1000)
+        collection_id = res.collection_id
+        delete_collection(collection_id=collection_id)
+        # Create a record.
+        text = "Machine learning is a subfield of artificial intelligence (AI) that involves the development of algorithms that allow computers to learn from and make decisions or predictions based on data."
+        try:
+            res = create_text_record(collection_id=collection_id, text=text)
+        except Exception as e:
+            logger.info(f'test_create_record_in_creating_collection:{e}')
+            pytest.assume(f"Collection not found: {collection_id}" in str(e))
+
     @allure.story("test_delete_record")
     @pytest.mark.run(order=33)
     def test_delete_record(self, collection_id):
         # List records.
-        records = list_records(collection_id=collection_id, order="desc", limit=20, offset=None, after=None,
+        records = list_records(collection_id=collection_id, order="desc", limit=20,  after=None,
                                before=None)
         old_nums = len(records)
         for index, record in enumerate(records):
@@ -201,15 +292,15 @@ class TestRecord:
             # Delete a record.
             delete_record(collection_id=collection_id, record_id=record_id)
             # List records.
-            new_records = list_records(collection_id=collection_id, order="desc", limit=20, offset=None, after=None,
+            new_records = list_records(collection_id=collection_id, order="desc", limit=20,  after=None,
                                        before=None)
             record_ids = [record.record_id for record in new_records]
             pytest.assume(record_id not in record_ids)
             new_nums = len(new_records)
-            assert new_nums == old_nums - 1 - index
+            pytest.assume(new_nums == old_nums - 1 - index)
 
 
-@allure.epic("test_retrieval")
+@allure.epic("test_sync_retrieval")
 @allure.feature("test_chunk")
 @pytest.mark.sync
 class TestChunk:
@@ -220,12 +311,9 @@ class TestChunk:
     @allure.story("test_query_chunks")
     @pytest.mark.run(order=17)
     def test_query_chunks(self, collection_id):
-        # List chunks.
+        # Query chunks.
         query_text = "Machine learning"
         top_k = 5
-        text = "Machine learning is a subfield of artificial intelligence (AI) that involves the development of algorithms that allow computers to learn from and make decisions or predictions based on data."
-        for i in range(top_k):
-            create_text_record(collection_id=collection_id, text=text)
         res = query_chunks(collection_id=collection_id, query_text=query_text, top_k=top_k)
         pytest.assume(len(res) == top_k)
         for chunk in res:
@@ -234,4 +322,55 @@ class TestChunk:
             pytest.assume(query_text in chunk_dict["text"])
             pytest.assume(chunk_dict["score"] >= 0)
 
+    @allure.story("test_query_chunks_in_creating_collection")
+    @pytest.mark.run(order=17)
+    @pytest.mark.abnormal
+    def test_query_chunks_in_creating_collection(self):
+        # Create collection.
+        name = "test"
+        description = "just for test"
+        res = create_collection(name=name, description=description, embedding_model_id=text_model_id,
+                                        capacity=1000)
+        collection_id = res.collection_id
+        # Query chunks
+        query_text = "Machine learning"
+        top_k = 1
+        try:
+            res = query_chunks(collection_id=collection_id, query_text=query_text, top_k=top_k)
+        except Exception as e:
+            logger.info(f'test_query_chunks_in_creating_collection:{res}')
+            pytest.assume(f"Collection {collection_id} is not ready." in str(e))
 
+    @allure.story("test_query_chunks_in_deleting_collection")
+    @pytest.mark.run(order=17)
+    @pytest.mark.abnormal
+    def test_query_chunks_in_deleting_collection(self):
+        # Create collection.
+        name = "test"
+        description = "just for test"
+        collection_res = create_collection(name=name, description=description, embedding_model_id=text_model_id,
+                                                   capacity=1000)
+        collection_id = collection_res.collection_id
+        # delete collection
+        delete_collection(collection_id=collection_id)
+        # Query chunks
+        query_text = "Machine learning"
+        top_k = 1
+        try:
+            res = query_chunks(collection_id=collection_id, query_text=query_text, top_k=top_k)
+        except Exception as e:
+            logger.info(f'test_query_chunks_in_deleting_collection:{e}')
+            pytest.assume("Collections not found" in str(e))
+
+    @allure.story("test_query_chunks_in_nonexistent_collection")
+    @pytest.mark.run(order=17)
+    @pytest.mark.abnormal
+    def test_query_chunks_in_nonexistent_collection(self):
+        # Query chunks
+        query_text = "Machine learning"
+        top_k = 1
+        try:
+            res = query_chunks(collection_id="nonexistent_collection_id", query_text=query_text, top_k=top_k)
+        except Exception as e:
+            logger.info(f'test_query_chunks_in_nonexistent_collection:{e}')
+            pytest.assume('Collections not found' in str(e))

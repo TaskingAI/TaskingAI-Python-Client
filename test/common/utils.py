@@ -68,6 +68,8 @@ def assume_assistant(res, assistant_dict: Dict[str, Any]):
     for key, value in assistant_dict.items():
         if key == "error":
             pass
+        elif key == 'system_prompt_template' and isinstance(value, str):
+            pytest.assume(res[key] == [assistant_dict[key]])
         else:
             pytest.assume(res[key] == assistant_dict[key])
 

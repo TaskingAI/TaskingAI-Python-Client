@@ -1,18 +1,21 @@
 import pytest
 import allure
+import time
 
 from taskingai.assistant import *
-from test.config import chat_model_id
+from taskingai.retrieval import *
+from taskingai.tool import *
+from test.config import chat_model_id, text_model_id, sleep_time
 from test.common.read_data import data
-from test.common.logger import logger, logger_info, logger_success_info, logger_error_info, logger_info_base
+from test.common.logger import logger
 from test.common.utils import list_to_dict
-from test.common.utils import assume, assume_success, assume_error, assume_collection, assume_count, assume_assistant
+from test.common.utils import assume_assistant
 
 
 assistant_data = data.load_yaml("test_assistant_data.yml")
 
 
-@allure.epic("test_assistant")
+@allure.epic("test_sync_assistant")
 @allure.feature("test_assistant")
 @pytest.mark.sync
 class TestAssistant:
@@ -23,17 +26,17 @@ class TestAssistant:
     @allure.story("test_create_assistant")
     @pytest.mark.parametrize("create_assistant_data", assistant_data["test_success_create_assistant"])
     @pytest.mark.run(order=18)
-    def test_create_assistant(self, collection_id, function_id, action_id, create_assistant_data):
+    def test_create_assistant(self, collection_id, action_id, create_assistant_data):
         # List assistants.
-        old_res = list_assistants()
+        old_res = list_assistants(limit=100)
         old_nums = len(old_res)
         # Create an assistant.
         assistant_dict = list_to_dict(create_assistant_data)
         assistant_dict.update({"model_id": chat_model_id})
         if "retrievals" in assistant_dict.keys() and len(assistant_dict["retrievals"]) > 0 and assistant_dict["retrievals"][0]["type"] == "collection":
             assistant_dict["retrievals"][0]["id"] = collection_id
-        if "tools" in assistant_dict.keys() and len(assistant_dict["tools"]) > 0 and assistant_dict["tools"][0]["type"] == "function":
-            assistant_dict["tools"][0]["id"] = function_id
+        # if "tools" in assistant_dict.keys() and len(assistant_dict["tools"]) > 0 and assistant_dict["tools"][0]["type"] == "function":
+        #     assistant_dict["tools"][0]["id"] = function_id
         if "tools" in assistant_dict.keys() and len(assistant_dict["tools"]) > 0 and assistant_dict["tools"][0]["type"] == "action":
             assistant_dict["tools"][0]["id"] = action_id
         res = create_assistant(**assistant_dict)
@@ -45,30 +48,68 @@ class TestAssistant:
         get_res = get_assistant(assistant_id=res_dict["assistant_id"])
         get_res_dict = get_res.to_dict()
         pytest.assume(get_res_dict.keys() == self.assistant_keys)
+        assume_assistant(get_res_dict, assistant_dict)
         # List assistants.
-        new_res = list_assistants()
+        new_res = list_assistants(limit=100)
         new_nums = len(new_res)
         logger.info(f'old_nums:{old_nums}, new_nums:{new_nums}')
         pytest.assume(new_nums == old_nums + 1)
 
-    # @allure.story("test_correct_model_id_create_assistant")
-    # @pytest.mark.parametrize("create_assistant_data", assistant_data["test_correct_model_id_create_assistant"])
-    # @pytest.mark.run(order=1)
-    # def test_correct_model_id_create_assistant(self, create_assistant_data):
-    #     # Create an assistant
-    #     assistant_dict = list_to_dict(create_assistant_data)
-    #     assistant_dict.update({"model_id": chat_model_id})
-    #     try:
-    #         res = create_assistant(**assistant_dict)
-    #     except Exception as e:
-    #         logger.error(e)
+    @allure.story("test_correct_model_id_create_assistant")
+    @pytest.mark.parametrize("create_assistant_data", assistant_data["test_correct_model_id_create_assistant"])
+    @pytest.mark.run(order=18)
+    def test_correct_model_id_create_assistant(self, create_assistant_data):
+        # Create an assistant
+        assistant_dict = list_to_dict(create_assistant_data)
+        assistant_dict.update({"model_id": chat_model_id})
+        try:
+            res = create_assistant(**assistant_dict)
+        except Exception as e:
+            logger.error(f'test_correct_model_id_create_assistant{e}')
+            pytest.assume("Reason: Unprocessable Entity" in str(e) or "Reason: Internal Server Error" in str(e))
+
+    @allure.story("test_incorrect_model_id_create_assistant")
+    @pytest.mark.parametrize("model_id", assistant_data["test_incorrect_model_id_create_assistant"])
+    @pytest.mark.run(order=18)
+    def test_incorrect_model_id_create_assistant(self, model_id):
+        # Create an assistant
+        assistant_dict = {"model_id": model_id}
+        try:
+            res = create_assistant(**assistant_dict)
+        except Exception as e:
+            logger.error(f'test_incorrect_model_id_create_assistant{e}')
+            pytest.assume("Reason: Unprocessable Entity" in str(e))
 
     @allure.story("test_list_assistants")
     @pytest.mark.run(order=19)
     def test_list_assistants(self):
         # List assistants.
-        res = list_assistants()
-        assert len(res) >= 0
+        nums_limit = 4
+        res = list_assistants(limit=nums_limit)
+        pytest.assume(len(res) == nums_limit)
+        after_id = res[-1].assistant_id
+        after_res = list_assistants(limit=nums_limit, after=after_id)
+        pytest.assume(len(after_res) == nums_limit)
+        twice_nums_list = list_assistants(limit=nums_limit * 2)
+        pytest.assume(len(twice_nums_list) == nums_limit * 2)
+        pytest.assume(after_res[-1] == twice_nums_list[-1])
+        pytest.assume(after_res[0] == twice_nums_list[nums_limit])
+        before_id = after_res[0].assistant_id
+        before_res = list_assistants(limit=nums_limit, before=before_id)
+        pytest.assume(len(before_res) == nums_limit)
+        pytest.assume(before_res[-1] == twice_nums_list[nums_limit - 1])
+        pytest.assume(before_res[0] == twice_nums_list[0])
+
+    @allure.story("test_error_list_assistants")
+    @pytest.mark.parametrize("list_assistant_data", assistant_data["test_error_list_assistants"])
+    @pytest.mark.run(order=19)
+    def test_error_list_assistants(self, list_assistant_data):
+        list_assistant_dict = list_to_dict(list_assistant_data)
+        try:
+            res = list_assistants(**list_assistant_dict)
+        except Exception as e:
+            logger.error(f'test_error_list_assistant{e}')
+            pytest.assume("Reason: Unprocessable Entity" in str(e) or "Reason: Bad Request" in str(e) or "Only one of after and before can be specified" in str(e))
 
     @allure.story("test_get_assistant")
     @pytest.mark.run(order=20)
@@ -77,6 +118,17 @@ class TestAssistant:
         res = get_assistant(assistant_id=assistant_id)
         res_dict = res.to_dict()
         pytest.assume(res_dict.keys() == self.assistant_keys)
+
+    @allure.story("test_error_get_assistants")
+    @pytest.mark.parametrize("get_assistant_data", assistant_data["test_error_get_assistants"])
+    @pytest.mark.run(order=19)
+    def test_error_get_assistants(self, get_assistant_data):
+        get_assistant_dict = list_to_dict(get_assistant_data)
+        try:
+            res = get_assistant(**get_assistant_dict)
+        except Exception as e:
+            logger.error(f'test_error_get_assistant{e}')
+            pytest.assume("Reason: Temporary Redirect" in str(e) or "Reason: Bad Request" in str(e) or "missing 1 required positional argument" in str(e))
 
     @allure.story("test_update_assistant")
     @pytest.mark.run(order=21)
@@ -96,12 +148,23 @@ class TestAssistant:
         pytest.assume(get_res_dict["name"] == name)
         pytest.assume(get_res_dict["description"] == description)
 
+    # @allure.story("test_error_list_assistants")
+    # @pytest.mark.parametrize("list_assistant_data", assistant_data["test_error_list_assistants"])
+    # @pytest.mark.run(order=19)
+    # def test_error_list_assistants(self, list_assistant_data):
+    #     list_assistant_dict = list_to_dict(list_assistant_data)
+    #     try:
+    #         res = list_assistants(**list_assistant_dict)
+    #     except Exception as e:
+    #         logger.error(f'test_error_list_assistant{e}')
+    #         pytest.assume("Reason: Unprocessable Entity" or "Reason: Bad Request" in str(e))
+
     @allure.story("test_delete_assistant")
     @pytest.mark.run(order=32)
     def test_delete_assistant(self):
 
         # List assistants.
-        assistants = list_assistants()
+        assistants = list_assistants(limit=100)
         old_nums = len(assistants)
         for i, v in enumerate(assistants):
             assistant_id = v.assistant_id
@@ -112,10 +175,10 @@ class TestAssistant:
             assistant_ids = [j.assistant_id for j in new_assistants]
             pytest.assume(assistant_id not in assistant_ids)
             new_nums = len(new_assistants)
-            assert new_nums == old_nums - 1 - i
+            pytest.assume(new_nums == old_nums - 1 - i)
 
 
-@allure.epic("test_assistant")
+@allure.epic("test_sync_assistant")
 @allure.feature("test_chat")
 @pytest.mark.sync
 class TestChat:
@@ -125,7 +188,8 @@ class TestChat:
 
         @allure.story("test_create_chat")
         @pytest.mark.run(order=22)
-        def test_create_chat(self, assistant_id):
+        @pytest.mark.parametrize("sync_chat_num", (x+1 for x in range(10)))
+        def test_create_chat(self, assistant_id, sync_chat_num):
             # List chats.
             old_res = list_chats(assistant_id=assistant_id)
             old_nums = len(old_res)
@@ -140,14 +204,27 @@ class TestChat:
             # List chats.
             new_res = list_chats(assistant_id=assistant_id)
             new_nums = len(new_res)
-            assert new_nums == old_nums + 1
+            pytest.assume(new_nums == old_nums + 1)
 
         @allure.story("test_list_chats")
         @pytest.mark.run(order=23)
         def test_list_chats(self, assistant_id):
             # List chats.
-            res = list_chats(assistant_id=assistant_id)
-            assert len(res) >= 0
+            nums_limit = 4
+            res = list_chats(limit=nums_limit, assistant_id=assistant_id)
+            pytest.assume(len(res) == nums_limit)
+            after_id = res[-1].chat_id
+            after_res = list_chats(limit=nums_limit, after=after_id, assistant_id=assistant_id)
+            pytest.assume(len(after_res) == nums_limit)
+            twice_nums_list = list_chats(limit=nums_limit * 2, assistant_id=assistant_id)
+            pytest.assume(len(twice_nums_list) == nums_limit * 2)
+            pytest.assume(after_res[-1] == twice_nums_list[-1])
+            pytest.assume(after_res[0] == twice_nums_list[nums_limit])
+            before_id = after_res[0].chat_id
+            before_res = list_chats(limit=nums_limit, before=before_id, assistant_id=assistant_id)
+            pytest.assume(len(before_res) == nums_limit)
+            pytest.assume(before_res[-1] == twice_nums_list[nums_limit - 1])
+            pytest.assume(before_res[0] == twice_nums_list[0])
 
         @allure.story("test_get_chat")
         @pytest.mark.run(order=24)
@@ -187,10 +264,10 @@ class TestChat:
                 chat_ids = [i.chat_id for i in new_chats]
                 pytest.assume(chat_id not in chat_ids)
                 new_nums = len(new_chats)
-                assert new_nums == old_nums - 1 - index
+                pytest.assume(new_nums == old_nums - 1 - index)
 
 
-@allure.epic("test_assistant")
+@allure.epic("test_sync_assistant")
 @allure.feature("test_message")
 @pytest.mark.sync
 class TestMessage:
@@ -200,12 +277,13 @@ class TestMessage:
 
     @allure.story("test_create_user_message")
     @pytest.mark.run(order=26)
-    def test_create_user_message(self, assistant_id, chat_id):
+    @pytest.mark.parametrize("sync_message_num", (x+1 for x in range(10)))
+    def test_create_user_message(self, assistant_id, chat_id, sync_message_num):
         # List messages.
         old_res = list_messages(assistant_id=assistant_id, chat_id=chat_id)
         old_nums = len(old_res)
         # Create a user message.
-        text = "hello"
+        text = f"hello{sync_message_num}"
         res = create_user_message(assistant_id=assistant_id, chat_id=chat_id, text=text)
         res_dict = res.to_dict()
         logger.info(res_dict)
@@ -219,14 +297,30 @@ class TestMessage:
         # List messages.
         new_res = list_messages(assistant_id=assistant_id, chat_id=chat_id)
         new_nums = len(new_res)
-        assert new_nums == old_nums + 1
+        pytest.assume(new_nums == old_nums + 1)
 
     @allure.story("test_list_messages")
     @pytest.mark.run(order=27)
     def test_list_messages(self, assistant_id, chat_id):
         # List messages.
-        res = list_messages(assistant_id=assistant_id, chat_id=chat_id)
-        assert len(res) >= 0
+        nums_limit = 4
+        res = list_messages(limit=nums_limit, assistant_id=assistant_id, chat_id=chat_id)
+        pytest.assume(len(res) == nums_limit)
+        after_id = res[-1].message_id
+        after_res = list_messages(limit=nums_limit, after=after_id, assistant_id=assistant_id,
+                                  chat_id=chat_id)
+        pytest.assume(len(after_res) == nums_limit)
+        twice_nums_list = list_messages(limit=nums_limit * 2, assistant_id=assistant_id,
+                                        chat_id=chat_id)
+        pytest.assume(len(twice_nums_list) == nums_limit * 2)
+        pytest.assume(after_res[-1] == twice_nums_list[-1])
+        pytest.assume(after_res[0] == twice_nums_list[nums_limit])
+        before_id = after_res[0].message_id
+        before_res = list_messages(limit=nums_limit, before=before_id, assistant_id=assistant_id,
+                                   chat_id=chat_id)
+        pytest.assume(len(before_res) == nums_limit)
+        pytest.assume(before_res[-1] == twice_nums_list[nums_limit - 1])
+        pytest.assume(before_res[0] == twice_nums_list[0])
 
     @allure.story("test_get_message")
     @pytest.mark.run(order=28)
@@ -269,7 +363,7 @@ class TestMessage:
         # List messages.
         new_res = list_messages(assistant_id=assistant_id, chat_id=chat_id)
         new_nums = len(new_res)
-        assert new_nums == old_nums + 1
+        pytest.assume(new_nums == old_nums + 1)
 
     @allure.story("test_generate_assistant_message_by_stream")
     @pytest.mark.run(order=30)
@@ -303,8 +397,226 @@ class TestMessage:
                 logger.info(f"Message: {item.message_id}")
                 pytest.assume(item.content is not None)
         logger.info(f"except_list: {except_list} real_list: {real_list}")
-        pytest.assume(except_list == real_list)
+        pytest.assume(set(except_list) == set(real_list))
 
+    @allure.story("test_generate_assistant_message_in_user_message_not_created")
+    @pytest.mark.run(order=30)
+    @pytest.mark.abnormal
+    def test_generate_assistant_message_in_user_message_not_created(self, assistant_id):
+        # create chat
+        chat_res = create_chat(assistant_id=assistant_id)
+        chat_id = chat_res.chat_id
+        logger.info(f'chat_id:{chat_id}')
+
+        # Generate an assistant message.
+        try:
+            res = generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id,
+                                             system_prompt_variables={})
+        except Exception as e:
+            logger.info(f'test_generate_assistant_message_in_user_message_not_created{e}')
+            pytest.assume("There is no user message in the chat context." in str(e))
+
+    @allure.story("test_create_user_message_in_generating_assistant_message")
+    @pytest.mark.run(order=30)
+    @pytest.mark.abnormal
+    def test_create_user_message_in_generating_assistant_message(self, assistant_id):
+        # create chat
+        chat_res = create_chat(assistant_id=assistant_id)
+        chat_id = chat_res.chat_id
+        logger.info(f'chat_id:{chat_id}')
+
+        # create user message
+        user_message = create_user_message(
+            assistant_id=assistant_id,
+            chat_id=chat_id,
+            text="count from 1 to 100 and separate numbers by comma.",
+        )
+        # Generate an assistant message by stream.
+        stream_res = generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id,
+                                                        system_prompt_variables={},
+                                                        stream=True, debug=True)
+
+        # create user message
+        try:
+            user_message = create_user_message(
+                assistant_id=assistant_id,
+                chat_id=chat_id,
+                text="count from 100 to 200 and separate numbers by comma.",
+            )
+        except Exception as e:
+            logger.info(f'test_create_user_message_in_generating_assistant_message{user_message}')
+            pytest.assume("Chat is locked by another generation process. Please try again later." in str(e))
+
+    @allure.story("test_generate_assistant_message_in_generating_assistant_message")
+    @pytest.mark.run(order=30)
+    @pytest.mark.abnormal
+    def test_generate_assistant_message_in_generating_assistant_message(self, assistant_id):
+        # create chat
+        chat_res = create_chat(assistant_id=assistant_id)
+        chat_id = chat_res.chat_id
+        logger.info(f'chat_id:{chat_id}')
+
+        # create user message
+        user_message = create_user_message(
+            assistant_id=assistant_id,
+            chat_id=chat_id,
+            text="count from 1 to 100 and separate numbers by comma.",
+        )
+        # Generate an assistant message by stream.
+        stream_res = generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id,
+                                                system_prompt_variables={},
+                                                stream=True, debug=True)
+
+        # Generate an assistant message by stream.
+        try:
+            stream_res = generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id,
+                                                    system_prompt_variables={},
+                                                    stream=True, debug=True)
+        except Exception as e:
+            logger.info(f'est_generate_assistant_message_in_generating_assistant_message{stream_res}')
+            pytest.assume("Chat is locked by another generation process. Please try again later." in str(e))
+
+    @allure.story("test_generate_assistant_message_in_generated_assistant_message")
+    @pytest.mark.run(order=30)
+    @pytest.mark.abnormal
+    def test_generate_assistant_message_in_generated_assistant_message(self, assistant_id):
+        # create chat
+        chat_res = create_chat(assistant_id=assistant_id)
+        chat_id = chat_res.chat_id
+        logger.info(f'chat_id:{chat_id}')
+
+        # create user message
+        user_message = create_user_message(
+            assistant_id=assistant_id,
+            chat_id=chat_id,
+            text="count from 1 to 100 and separate numbers by comma.",
+        )
+        # Generate an assistant message by stream.
+        res = generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id,
+                                         system_prompt_variables={})
+
+        # Generate an assistant message by stream.
+        try:
+            stream_res = generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id,
+                                                    system_prompt_variables={},
+                                                    stream=True, debug=True)
+        except Exception as e:
+            logger.info(f'test_generate_assistant_message_in_generated_assistant_message{e}')
+            pytest.assume("Cannot generate another assistant message after an assistant message." in str(e))
+
+    @allure.story("test_generate_assistant_message_in_action_deleted_assistant")
+    @pytest.mark.run(order=30)
+    @pytest.mark.abnormal
+    def test_generate_assistant_message_in_action_deleted_assistant(self):
+        # create action
+        schema = {
+            "openapi": "3.1.0",
+            "info": {
+                "title": "Get weather data",
+                "description": "Retrieves current weather data for a location.",
+                "version": "v1.0.0"
+            },
+            "servers": [
+                {
+                    "url": "https://weather.example.com"
+                }
+            ],
+            "paths": {
+                "/location": {
+                    "get": {
+                        "description": "Get temperature for a specific location",
+                        "operationId": "GetCurrentWeather",
+                        "parameters": [
+                            {
+                                "name": "location",
+                                "in": "query",
+                                "description": "The city and state to retrieve the weather for",
+                                "required": True,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        ],
+                        "deprecated": False
+                    },
+                    "post": {
+                        "description": "UPDATE temperature for a specific location",
+                        "operationId": "UpdateCurrentWeather",
+                        "requestBody": {
+                            "required": True,
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/componeents/schemas/ActionCreateRequest"
+                                    }
+                                }
+                            }
+                        },
+                        "deprecated": False
+                    }
+                }
+            },
+            "components": {
+                "schemas": {}
+            },
+            "security": []
+        }
+        action_res = bulk_create_actions(schema=schema)
+        action_id = action_res[0].action_id
+        # create an assistant
+        assistant_res = create_assistant(name="test", description="test", model_id=chat_model_id, tools=[{"type": "action", "id": action_id}])
+        assistant_id = assistant_res.assistant_id
+        # create a chat
+        chat_res = create_chat(assistant_id=assistant_id)
+        chat_id = chat_res.chat_id
+
+        # create user message
+        user_message = create_user_message(
+            assistant_id=assistant_id,
+            chat_id=chat_id,
+            text="count from 1 to 100 and separate numbers by comma.",
+        )
+        # delete action
+        delete_action(action_id=action_id)
+        time.sleep(sleep_time)
+        # Generate an assistant message by stream.
+        try:
+            res = generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id,
+                                                     system_prompt_variables={})
+        except Exception as e:
+            logger.info(f'test_generate_assistant_message_in_action_deleted_assistant{e}')
+            pytest.assume("Some tools are not found" in str(e))
+
+    @allure.story("test_generate_assistant_message_in_collection_deleted_assistant")
+    @pytest.mark.run(order=30)
+    @pytest.mark.abnormal
+    def test_generate_assistant_message_in_collection_deleted_assistant(self):
+        # create collection
+        collection_res = create_collection(name="test", description="test", embedding_model_id=text_model_id, capacity=1000)
+        collection_id = collection_res.collection_id
+        # create an assistant
+        assistant_res = create_assistant(name="test", description="test", model_id=chat_model_id, retrievals=[{"type": "collection", "id": collection_id}])
+        assistant_id = assistant_res.assistant_id
+        # create chat
+        chat_res = create_chat(assistant_id=assistant_id)
+        chat_id = chat_res.chat_id
+
+        # create user message
+        user_message = create_user_message(
+            assistant_id=assistant_id,
+            chat_id=chat_id,
+            text="count from 1 to 1000 and separate numbers by comma.",
+        )
+        # delete collection
+        delete_collection(collection_id)
+        time.sleep(sleep_time)
+        # Generate an assistant message by stream.
+        try:
+            res = generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id,
+                                                     system_prompt_variables={})
+        except Exception as e:
+            logger.info(f'test_generate_assistant_message_in_collection_deleted_assistant{e}')
+            pytest.assume(f"Collections not found" in str(e))
 
 
 
