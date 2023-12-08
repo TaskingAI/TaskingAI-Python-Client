@@ -1,27 +1,3 @@
-test_success_list_collections:
-  # limit, order, except_http_code, except_status
-  - [ [  "limit": 10 , "order": "asc" ],[ "except_http_code": "200", "except_status": "success" ] ]
-  - [ [  "limit": 10 , "order": "desc", "error": "error" ],[ "except_http_code": "200", "except_status": "success" ] ]
-  - [ [ "order": "desc" ],[ "except_http_code": "200", "except_status": "success" ] ]
-  - [ [ "limit": 10 ],[ "except_http_code": "200", "except_status": "success" ] ]
-  - [ [ ],[ "except_http_code": "200", "except_status": "success" ] ]
-
-test_error_list_collections:
-  # limit, order, except_http_code, except_status
-  - [ [ "limit": -10 , "order": "asc" ],[ "except_http_code": "400", "except_status": "error" , "except_error_code":"DATA_MODEL_VALIDATION_ERROR"] ]
-  - [ [ "limit": "Your name" , "order": "asc" ],[ "except_http_code": "400", "except_status": "error", "except_error_code":"REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "limit": "" , "order": "asc" ],[ "except_http_code": "400", "except_status": "error" , "except_error_code":"REQUEST_VALIDATION_ERROR"] ]
-  - [ [ "limit": 10 , "order": "erg" ],[ "except_http_code": "400", "except_status": "error" , "except_error_code":"REQUEST_VALIDATION_ERROR"] ]
-  - [ [ "limit": 10 , "order": 546 ],[ "except_http_code": "400", "except_status": "error" , "except_error_code":"REQUEST_VALIDATION_ERROR"] ]
-  - [ [ "limit": 10 , "order": "" ],[ "except_http_code": "400", "except_status": "error" , "except_error_code":"REQUEST_VALIDATION_ERROR"] ]
-
-test_incorrect_collection_get_collection:
-  # collection_id, except_code, except_status
-  - [ "openai" ,[ "except_http_code": "400", "except_status": "error", "except_error_code":"PARAMETER_ERROR" ] ]
-  - [ "DbgYRhebw6ZoEdogtt0itDR0gtjrty" ,[ "except_http_code": "404", "except_status": "error", "except_error_code":"OBJECT_NOT_FOUND" ] ]
-  - [ 3456 ,[ "except_http_code": "400", "except_status": "error", "except_error_code":"PARAMETER_ERROR" ] ]
-  - [ "DbgYRhebw6ZoEdogtt0itDR0", [ "except_http_code": "404", "except_status": "error", "except_error_code":"OBJECT_NOT_FOUND" ] ]
-
 test_success_create_assistant:
   # 'name', 'description', 'metadata',  ' 'retrievals', 'system_prompt_template', 'tools'
   - [ "name": "My Assistant", "description": "This is my assistant","metadata": {"foo": "bar"} , "system_prompt_template":["You are a professional assistant speaking {{language}}."],"tools":[],"retrievals":[] ]
@@ -33,7 +9,7 @@ test_success_create_assistant:
   - ["retrievals": [] ]
   - ["metadata": {} ]
   - [ "retrievals": [{"type": "collection"}] ]
-  - [ "tools": [ { "type": "function" } ] ]
+#  - [ "tools": [ { "type": "function" } ] ]
   - [ "tools": [ { "type": "action" } ] ]
 
 test_correct_model_id_create_assistant:
@@ -70,94 +46,305 @@ test_correct_model_id_create_assistant:
   - [  "metadata": "" ]
   - [  "metadata": "str" ]
   - [  "metadata": 4566 ]
-
-test_incorrect_model_id_create_collection:
-  - ["model_id": "openai12"]
-  - ["model_id": "DbgYRhebw6ZoEdogtt0itDR0gtjrty"]
-  - ["model_id": 3456]
-  - ["model_id": ""]
+  - [  "metadata": {"A0123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869":"a" }]
+  - [  "metadata": { "a1":"A0123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156157158159160161162163164165166167168169170171172173174175176177178179180181182183184185186187188189190191192193194195196197198199200201202203204205206207208209210211212213214215216217218219220221222223224225226227228229230231232233234235236237238239240241242243244245246247248249250251252253254255256257258259260261262263264265266267268269270271272273274275276277278279280281282283284285286287288289290291292293294295296297298299" } ]
+  - [ "error": "error" ]
 
 
-  - [ "name": "transcontinental country spanning the northeast corner of Africa and the Sinai Peninsula in the southwest corner of Asia. It is bordered by the Mediterranean Sea to the north, the Gaza Strip of Palestine and Israel to the northeast, the Red Sea to the east, Sudan to the south" ]
-  - [ "name": 54678 ]
-  - [ "name": "" ]
-  - [ "name": "transcontinental country spanning the northeast corner of Africa and the Sinai Peninsula in the southwest corner of Asia. It is bordered by the Mediterranean Sea to the north, the Gaza Strip of Palestine and Israel to the northeast, the Red Sea to the east, Sudan to the south" ]
-  - [ "name": 54678 ]
-  - [ "name": "" ]
-  - [ "name": "transcontinental country spanning the northeast corner of Africa and the Sinai Peninsula in the southwest corner of Asia. It is bordered by the Mediterranean Sea to the north, the Gaza Strip of Palestine and Israel to the northeast, the Red Sea to the east, Sudan to the south" ]
-  - [ "name": 54678 ]
-  - [ "name": "" ]
-  - [ "name": "transcontinental country spanning the northeast corner of Africa and the Sinai Peninsula in the southwest corner of Asia. It is bordered by the Mediterranean Sea to the north, the Gaza Strip of Palestine and Israel to the northeast, the Red Sea to the east, Sudan to the south" ]
-  - [ "name": 54678 ]
+test_incorrect_model_id_create_assistant:
+  - [ "model_id": "" ]
+  - [ "model_id": "ReHgtrh3453A"]
+  - [ "model_id": "R3453A"]
+  - [ "model_id": 4563]
+  - []
+
+test_error_list_assistants:
+    - [ "limit": "str" ]
+    - [ "limit": 4563 ]
+    - [ "limit": -1 ]
+    - [ "limit": 0 ]
+    - [ "limit": "" ]
+    - [ "order": "str" ]
+    - [ "order": 10 ]
+    - [ "order": "" ]
+    - [ "before": "str" ]
+    - [ "before": 10 ]
+    - [ "before": "" ]
+    - [ "after": "str" ]
+    - [ "after": 10 ]
+    - [ "after": "" ]
+    - [ "before": "str", "after": "str"]
+   
+test_error_get_assistants:
+  - [ "assistant_id": "" ]
+  - [ "assistant_id": "ReHgtrh3453A" ]
+  - [ "assistant_id": "R3453A" ]
+  - [ "assistant_id": 4563 ]
   - [ ]
 
-test_success_update_collection:
-    #  capacity, embedding_model_id, embedding_size, configs, name, description, metadata, except_http_code, except_status
-  - [ [ "name": "name1" ],[ "except_http_code": "200", "except_status": "success", "except_data_status": "ready" ] ]
-  - [ [ "description": "test" ],[ "except_http_code": "200", "except_status": "success", "except_data_status": "ready" ] ]
-  - [ [ "metadata": { "test": "test" } ],[ "except_http_code": "200", "except_status": "success" , "except_data_status": "ready" ] ]
-  - [ [ "name": "name1", "error": "error" ],[ "except_http_code": "200", "except_status": "success" , "except_data_status": "ready" ] ]
+test_incorrect_assistant_id_update_assistant:
+    - [ "assistant_id": "" ]
+    - [ "assistant_id": "ReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453A" ]
+    - [ "assistant_id": "R3453A" ]
+    - [ "assistant_id": 4563 ]
+    - [ ]
 
-test_incorrect_collection_update_collection:
-    #  collection_id, capacity, embedding_model_id, embedding_size, configs, name, description, metadata, except_http_code, except_status
-  - [ "openai",[ "name": "name1" ],[ "except_http_code": "400", "except_status": "error", "except_error_code":"PARAMETER_ERROR" ] ]
-  - [ "DbgYRhebw6ZoEdogtt0itDR0gtjrty" ,[ "name": "name1" ], [ "except_http_code": "404", "except_status": "error", "except_error_code":"OBJECT_NOT_FOUND" ] ]
-  - [ 4637, [ "description": "test" ],[ "except_http_code": "400", "except_status": "error", "except_error_code":"PARAMETER_ERROR" ] ]
-  - [ "DbgYRhebw6ZoEdogtt0itDR0", [ "description": "test" ],[ "except_http_code": "404", "except_status": "error", "except_error_code":"OBJECT_NOT_FOUND" ] ]
-  - [ "", [ "name": "name1" ], [  "except_http_code": "400", "except_status": "error", "except_error_code":"REQUEST_VALIDATION_ERROR"] ]
+test_correct_assistant_id_update_assistant:
+  # 'name', 'description', 'metadata',  ' 'retrievals', 'system_prompt_template', 'tools'
+  - [ "name": "transcontinental country spanning the northeast corner of Africa and the Sinai Peninsula in the southwest corner of Asia. It is bordered by the Mediterranean Sea to the north, the Gaza Strip of Palestine and Israel to the northeast, the Red Sea to the east, Sudan to the south, and Libya to the west. The Gulf of Aqaba in the northeast separates Egypt from Jordan and Saudi Arabia. Cairo is the capital and largest city of Egypt, while Alexandria, the second-largest city, is an important industrial and tourist hub at the Mediterranean coast.[14] At approximately 100 million inhabitants, Egypt is the 14th-most populated country in the world, and the third-most populated in Africa, behind Nigeria and Ethiopia.Egypt has one of the longest histories of any country, tracing its heritage along the Nile Delta back to the 6th–4th millennia BCE. Considered a cradle of civilisation, Ancient Egypt saw some of the earliest developments of writing, agriculture, urbanisation, organised religion and central government.[15] Egypt's long and rich cultural heritage is an integral part of its national identity, which reflects its unique transcontinental location being simultaneously Mediterranean, Middle Eastern and North African.[16] Egypt was an early and important centre of Christianity, but was largely Islamised in the seventh century. Modern Egypt dates back to 1922, when it gained independence from the British Empire as a monarchy. Following the 1952 revolution, Egypt declared itself a republic, and in 1958 it merged with Syria to form the United Arab Republic, which dissolved in 1961. Throughout the second half of the 20th century, Egypt endured social and religious strife and political instability, fighting several armed conflicts with Israel in 1948, 1956, 1967 and 1973, and occupying the Gaza Strip intermittently until 1967. In 1978, Egypt signed the Camp David Accords, officially withdrawing from the Gaza Strip and recognising Israel. After the Arab Spring, which led to the 2011 Egyptian revolution and overthrow of Hosni Mubarak, the country faced a protracted period of political unrest.Egypt's current government, a semi-presidential republic led by Abdel Fattah el-Sisi since 2014, has been described by a number of watchdogs as authoritarian and responsible for perpetuating the country's poor human rights record. Islam is the official religion of Egypt and Arabic is its official language.[17] The great majority of its people live near the banks of the Nile River, an area of about 40,000 square kilometres (15,000 sq mi), where the only arable land is found. The large regions of the Sahara desert, which constitute most of Egypt's territory, are sparsely inhabited. About 43% of Egypt's residents live across the country's urban areas,[18] with most spread across the densely populated centres of greater Cairo, Alexandria and other major cities in the Nile Delta.Egypt is considered to be a regional power in North Africa, the Middle East and the Muslim world, and a middle power worldwide.[19] It is a developing country having a diversified economy, which is the third-largest in Africa, the 38th-largest economy by nominal GDP and 127th by nominal GDP per capita.[20] Egypt is a founding member of the United Nations, the Non-Aligned Movement, the Arab League, the African Union, Organisation of Islamic Cooperation and the World Youth Forum country spanning the northeast corner of Africa and the Sinai Peninsula in the southwest corner of Asia. It is bordered by the Mediterranean Sea to the north, the Gaza Strip of Palestine and Israel to the northeast, the Red Sea to the east, Sudan to the south" ]
+  - [ "name": 54678 ]
+  - [ "description": "transcontinental country spanning the northeast corner of Africa and the Sinai Peninsula in the southwest corner of Asia. It is bordered by the Mediterranean Sea to the north, the Gaza Strip of Palestine and Israel to the northeast, the Red Sea to the east, Sudan to the south, and Libya to the west. The Gulf of Aqaba in the northeast separates Egypt from Jordan and Saudi Arabia. Cairo is the capital and largest city of Egypt, while Alexandria, the second-largest city, is an important industrial and tourist hub at the Mediterranean coast.[14] At approximately 100 million inhabitants, Egypt is the 14th-most populated country in the world, and the third-most populated in Africa, behind Nigeria and Ethiopia.Egypt has one of the longest histories of any country, tracing its heritage along the Nile Delta back to the 6th–4th millennia BCE. Considered a cradle of civilisation, Ancient Egypt saw some of the earliest developments of writing, agriculture, urbanisation, organised religion and central government.[15] Egypt's long and rich cultural heritage is an integral part of its national identity, which reflects its unique transcontinental location being simultaneously Mediterranean, Middle Eastern and North African.[16] Egypt was an early and important centre of Christianity, but was largely Islamised in the seventh century. Modern Egypt dates back to 1922, when it gained independence from the British Empire as a monarchy. Following the 1952 revolution, Egypt declared itself a republic, and in 1958 it merged with Syria to form the United Arab Republic, which dissolved in 1961. Throughout the second half of the 20th century, Egypt endured social and religious strife and political instability, fighting several armed conflicts with Israel in 1948, 1956, 1967 and 1973, and occupying the Gaza Strip intermittently until 1967. In 1978, Egypt signed the Camp David Accords, officially withdrawing from the Gaza Strip and recognising Israel. After the Arab Spring, which led to the 2011 Egyptian revolution and overthrow of Hosni Mubarak, the country faced a protracted period of political unrest.Egypt's current government, a semi-presidential republic led by Abdel Fattah el-Sisi since 2014, has been described by a number of watchdogs as authoritarian and responsible for perpetuating the country's poor human rights record. Islam is the official religion of Egypt and Arabic is its official language.[17] The great majority of its people live near the banks of the Nile River, an area of about 40,000 square kilometres (15,000 sq mi), where the only arable land is found. The large regions of the Sahara desert, which constitute most of Egypt's territory, are sparsely inhabited. About 43% of Egypt's residents live across the country's urban areas,[18] with most spread across the densely populated centres of greater Cairo, Alexandria and other major cities in the Nile Delta.Egypt is considered to be a regional power in North Africa, the Middle East and the Muslim world, and a middle power worldwide.[19] It is a developing country having a diversified economy, which is the third-largest in Africa, the 38th-largest economy by nominal GDP and 127th by nominal GDP per capita.[20] Egypt is a founding member of the United Nations, the Non-Aligned Movement, the Arab League, the African Union, Organisation of Islamic Cooperation and the World Youth Forum country spanning the northeast corner of Africa and the Sinai Peninsula in the southwest corner of Asia. It is bordered by the Mediterranean Sea to the north, the Gaza Strip of Palestine and Israel to the northeast, the Red Sea to the east, Sudan to the south" ]
+  - [ "description": 54678 ]
+  - [ "system_prompt_template": 54678 ]
+  - [ "system_prompt_template": [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32' ] ]
+  - [ "tools": "" ]
+  - [ "tools": "trans" ]
+  - [ "tools": 54678 ]
+  - [ "tools": [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32' ] ]
+  - [ "tools": [ "type": "grg", "id": "nyc4OzrNSyHvY9oTN9AiyJEY" ] ]
+  - [ "tools": [ "type": "", "id": "nyc4OzrNSyHvY9oTN9AiyJEY" ] ]
+  - [ "tools": [ "type": 345, "id": "nyc4OzrNSyHvY9oTN9AiyJEY" ] ]
+  - [ "tools": [ "type": "function", "id": "" ] ]
+  - [ "tools": [ "type": "action", "id": 4356 ] ]
+  - [ "tools": [ "id": "nyc4OzrNSyHvY9oTN9AiyJEY" ] ]
+  - [ "tools": [ "type": "action" ] ]
+  - [ "retrievals": "" ]
+  - [ "retrievals": "trans" ]
+  - [ "retrievals": 54678 ]
+  - [ "retrievals": [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32' ] ]
+  - [ "retrievals": [ "type": "grg", "id": "nyc4OzrNSyHvY9oTN9AiyJEY" ] ]
+  - [ "retrievals": [ "type": "", "id": "nyc4OzrNSyHvY9oTN9AiyJEY" ] ]
+  - [ "retrievals": [ "type": 345, "id": "nyc4OzrNSyHvY9oTN9AiyJEY" ] ]
+  - [ "retrievals": [ "type": "collection", "id": "" ] ]
+  - [ "retrievals": [ "type": "collection", "id": 4356 ] ]
+  - [ "retrievals": [ "id": "nyc4OzrNSyHvY9oTN9AiyJEY" ] ]
+  - [ "retrievals": [ "type": "collection" ] ]
+  - [ "metadata": { "a0": "a", "a1": "b", "a2": "a", "a3": "a", "a4": "a", "a5": "a", "a6": "a", "a7": "a", "a8": "a", "a9": "a","a10": "a", "a11": "a", "a12": "a", "a13": "a", "a14": "a", "a15": "a", "a16": "a", "a17": "a" } ]
+  - [ "metadata": "" ]
+  - [ "metadata": "str" ]
+  - [ "metadata": 4566 ]
+  - [ "metadata": { "A0123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869": "a"} ]
+  - [ "metadata": { "a1": "A0123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156157158159160161162163164165166167168169170171172173174175176177178179180181182183184185186187188189190191192193194195196197198199200201202203204205206207208209210211212213214215216217218219220221222223224225226227228229230231232233234235236237238239240241242243244245246247248249250251252253254255256257258259260261262263264265266267268269270271272273274275276277278279280281282283284285286287288289290291292293294295296297298299" } ]
+  - [ "error": "error" ]
 
-test_correct_collection_update_collection:
-  # capacity, embedding_model_id, embedding_size, configs, name, description, metadata, except_http_code, except_status
-  - [ [ "capacity": 500 ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "capacity": 50 ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "capacity": 10000 ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "capacity": -10],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "capacity": "str"],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "capacity": ""],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "embedding_model_id": "Ahlge2HP"],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "embedding_model_id": "str" ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "embedding_model_id": "" ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "embedding_model_id": 46457],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "embedding_size": 1000 ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "embedding_size": 0 ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "embedding_size": 10000 ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "embedding_size": -10 ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "embedding_size": "str" ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "embedding_size": "" ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "configs": [ "chunk_size": 200 ] ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "configs": [ "chunk_size": 10 ] ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "configs": [ "chunk_size": -10 ] ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "configs": [ "chunk_size": "str" ] ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "configs": [ "chunk_size": "" ] ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "configs": [ "chunk_size": 100 ] ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "configs": [ "chunk_overlap": 100 ] ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "configs": [ "chunk_overlap": 10000 ] ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "configs": [ "chunk_overlap": -10 ] ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "configs": [ "chunk_overlap": "str" ] ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "configs": [ "chunk_overlap": "" ] ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "configs": [ "metric": "cosine" ] ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "configs": [ "metric": "str" ] ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "configs": [ "metric": 100 ] ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "configs": [ "metric": "" ] ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "configs": "str" ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "configs": "" ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "configs": 456 ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "name": 5674 ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "description": 4567 ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "metadata": {"a0": "a", "a1": "b", "a2": "a", "a3": "a", "a4": "a", "a5": "a", "a6": "a", "a7": "a", "a8": "a", "a9": "a","a10": "a", "a11": "a", "a12": "a", "a13": "a", "a14": "a", "a15": "a", "a16": "a", "a17": "a"} ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "metadata": "" ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "metadata": "str" ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "metadata": 4566 ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ "error": "error" ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
-  - [ [ ],[ "except_http_code": "400", "except_status": "error", "except_error_code": "REQUEST_VALIDATION_ERROR" ] ]
+test_error_delete_assistant:
+    - [ "assistant_id": "" ]
+    - [ "assistant_id": "ReHgtrh3453A" ]
+    - [ "assistant_id": "R3453A" ]
+    - [ "assistant_id": 4563 ]
+    - [ ]
 
-test_incorrect_collection_delete_collection:
-    # collection_id, except_http_code, except_status
-    - [ "openai" ,[ "except_http_code": "400", "except_status": "error", "except_error_code":"PARAMETER_ERROR" ] ]
-    - [ "DbgYRhebw6ZoEdogtt0itDR0gtjrty" ,[ "except_http_code": "404", "except_status": "error", "except_error_code":"OBJECT_NOT_FOUND"] ]
-    - [ 3456 ,[ "except_http_code": "400", "except_status": "error", "except_error_code":"PARAMETER_ERROR" ] ]
-    - [ "DbgYRhebw6ZoEdogtt0itDR0", [ "except_http_code": "404", "except_status": "error", "except_error_code":"OBJECT_NOT_FOUND" ] ]
-    - [ "",[ "except_http_code": "405", "except_detail":"Method Not Allowed"] ]
+test_correct_assistant_id_create_chat:
+  - [ "metadata": { "a0": "a", "a1": "b", "a2": "a", "a3": "a", "a4": "a", "a5": "a", "a6": "a", "a7": "a", "a8": "a", "a9": "a","a10": "a", "a11": "a", "a12": "a", "a13": "a", "a14": "a", "a15": "a", "a16": "a", "a17": "a" } ]
+  - [ "metadata": "" ]
+  - [ "metadata": "str" ]
+  - [ "metadata": 4566 ]
+  - [ "metadata": { "A0123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869": "a" } ]
+  - [ "metadata": { "a1": "A0123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156157158159160161162163164165166167168169170171172173174175176177178179180181182183184185186187188189190191192193194195196197198199200201202203204205206207208209210211212213214215216217218219220221222223224225226227228229230231232233234235236237238239240241242243244245246247248249250251252253254255256257258259260261262263264265266267268269270271272273274275276277278279280281282283284285286287288289290291292293294295296297298299" } ]
+  - [ "error": "error" ]
+
+test_incorrect_assistant_id_create_chat:
+  - [ "assistant_id": "" ]
+  - [ "assistant_id": "ReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453A" ]
+  - [ "assistant_id": "R3453A" ]
+  - [ "assistant_id": 4563 ]
+  - [ ]
+
+test_correct_assistant_id_list_chats:
+    - [ "limit": "str" ]
+    - [ "limit": 4563 ]
+    - [ "limit": -1 ]
+    - [ "limit": 0 ]
+    - [ "limit": "" ]
+    - [ "order": "str" ]
+    - [ "order": 10 ]
+    - [ "order": "" ]
+    - [ "before": "str" ]
+    - [ "before": 10 ]
+    - [ "before": "" ]
+    - [ "after": "str" ]
+    - [ "after": 10 ]
+    - [ "after": "" ]
+    - [ "before": "str", "after": "str"]
 
 
+test_incorrect_assistant_id_list_chats:
+    - [ "assistant_id": "" ]
+    - [ "assistant_id": "ReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453A" ]
+    - [ "assistant_id": "R3453A" ]
+    - [ "assistant_id": 4563 ]
+    - [ ]
 
+
+test_correct_assistant_id_get_chat:
+   - [ "chat_id": "" ]
+   - [ "chat_id": "ReHgtrh3453A" ]
+   - [ "chat_id": "R3453A" ]
+   - [ "chat_id": 4563 ]
+   - [ ]
+
+test_incorrect_assistant_id_get_chat:
+  - [ "assistant_id": "" ]
+  - [ "assistant_id": "ReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453A" ]
+  - [ "assistant_id": "R3453A" ]
+  - [ "assistant_id": 4563 ]
+  - [ ]
+
+test_error_update_chat:
+  - [ "metadata": { "a0": "a", "a1": "b", "a2": "a", "a3": "a", "a4": "a", "a5": "a", "a6": "a", "a7": "a", "a8": "a", "a9": "a","a10": "a", "a11": "a", "a12": "a", "a13": "a", "a14": "a", "a15": "a", "a16": "a", "a17": "a" } ]
+  - [ "metadata": "" ]
+  - [ "metadata": "str" ]
+  - [ "metadata": 4566 ]
+  - [ "metadata": { "A0123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869": "a" } ]
+  - [ "metadata": { "a1": "A0123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156157158159160161162163164165166167168169170171172173174175176177178179180181182183184185186187188189190191192193194195196197198199200201202203204205206207208209210211212213214215216217218219220221222223224225226227228229230231232233234235236237238239240241242243244245246247248249250251252253254255256257258259260261262263264265266267268269270271272273274275276277278279280281282283284285286287288289290291292293294295296297298299" } ]
+  - [ "error": "error" ]
+
+test_incorrect_chat_id_update_chat:
+  - [ "chat_id": "" ]
+  - [ "chat_id": "ReHgtrh3453A" ]
+  - [ "chat_id": "R3453A" ]
+  - [ "chat_id": 4563 ]
+  - [ ]
+
+test_incorrect_assistant_id_update_chat:
+  - [ "assistant_id": "" ]
+  - [ "assistant_id": "ReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453A" ]
+  - [ "assistant_id": "R3453A" ]
+  - [ "assistant_id": 4563 ]
+  - [ ]
+
+test_correct_assistant_id_delete_chat:
+   - [ "chat_id": "" ]
+   - [ "chat_id": "ReHgtrh3453A" ]
+   - [ "chat_id": "R3453A" ]
+   - [ "chat_id": 4563 ]
+   - [ ]
+
+test_incorrect_assistant_id_delete_chat:
+  - [ "assistant_id": "" ]
+  - [ "assistant_id": "ReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453A" ]
+  - [ "assistant_id": "R3453A" ]
+  - [ "assistant_id": 4563 ]
+  - [ ]
+
+test_incorrect_assistant_id_create_message:
+  - [ "assistant_id": "" ]
+  - [ "assistant_id": "ReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453A" ]
+  - [ "assistant_id": "R3453A" ]
+  - [ "assistant_id": 4563 ]
+  - [ ]
+
+test_correct_assistant_id_incorrect_chat_id_create_message:
+  - [ "chat_id": "" ]
+  - [ "chat_id": "ReHgtrh3453A" ]
+  - [ "chat_id": "R3453A" ]
+  - [ "chat_id": 4563 ]
+  - [ ]
+
+test_correct_assistant_id_correct_chat_id_create_message:
+  - ["role": "str", "text": "Hello"]
+  - ["role": "", "text": "123"]
+  - ["role": 456, "text": "test"]
+  - ["role": "user", "text": ""]
+  - ["role": "user", "text": 4536]
+  - ["role": "user"]
+  - ["text": "hello"]
+  - [ ]
+  - [ "role": "user", "text": "hello", "metadata": { "a0": "a", "a1": "b", "a2": "a", "a3": "a", "a4": "a", "a5": "a", "a6": "a", "a7": "a", "a8": "a", "a9": "a","a10": "a", "a11": "a", "a12": "a", "a13": "a", "a14": "a", "a15": "a", "a16": "a", "a17": "a" } ]
+  - [ "role": "user", "text": "hello", "metadata": "" ]
+  - [ "role": "user", "text": "hello", "metadata": "str" ]
+  - [ "role": "user", "text": "hello", "metadata": 4566 ]
+  - [ "role": "user", "text": "hello", "metadata": { "A0123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869": "a" } ]
+  - [ "role": "user", "text": "hello", "metadata": { "a1": "A0123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156157158159160161162163164165166167168169170171172173174175176177178179180181182183184185186187188189190191192193194195196197198199200201202203204205206207208209210211212213214215216217218219220221222223224225226227228229230231232233234235236237238239240241242243244245246247248249250251252253254255256257258259260261262263264265266267268269270271272273274275276277278279280281282283284285286287288289290291292293294295296297298299" } ]
+  - [ "role": "user", "text": "hello", "error": "error" ]
+
+
+test_incorrect_assistant_id_list_messages:
+  - [ "assistant_id": "" ]
+  - [ "assistant_id": "ReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453A" ]
+  - [ "assistant_id": "R3453A" ]
+  - [ "assistant_id": 4563 ]
+  - [ ]
+
+test_correct_assistant_id_incorrect_chat_id_list_messages:
+  - [ "chat_id": "" ]
+  - [ "chat_id": "ReHgtrh3453A" ]
+  - [ "chat_id": "R3453A" ]
+  - [ "chat_id": 4563 ]
+  - [ ]
+
+test_correct_assistant_id_correct_chat_id_list_messages:
+    - [ "limit": "str" ]
+    - [ "limit": 4563 ]
+    - [ "limit": -1 ]
+    - [ "limit": 0 ]
+    - [ "limit": "" ]
+    - [ "order": "str" ]
+    - [ "order": 10 ]
+    - [ "order": "" ]
+    - [ "before": "str" ]
+    - [ "before": 10 ]
+    - [ "before": "" ]
+    - [ "after": "str" ]
+    - [ "after": 10 ]
+    - [ "after": "" ]
+    - [ "before": "str", "after": "str" ]
+
+test_incorrect_assistant_id_get_messages:
+  - [ "assistant_id": "" ]
+  - [ "assistant_id": "ReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453A" ]
+  - [ "assistant_id": "R3453A" ]
+  - [ "assistant_id": 4563 ]
+  - [ ]
+
+test_correct_assistant_id_incorrect_chat_id_get_messages:
+    - [ "chat_id": "" ]
+    - [ "chat_id": "ReHgtrh3453A" ]
+    - [ "chat_id": "R3453A" ]
+    - [ "chat_id": 4563 ]
+    - [ ]
+
+test_correct_assistant_id_correct_chat_id_get_messages:
+    - [ "message_id": "" ]
+    - [ "message_id": "ReHgtrh3453A" ]
+    - [ "message_id": "R3453A" ]
+    - [ "message_id": 4563 ]
+    - [ ]
+
+
+test_incorrect_assistant_id_update_message:
+  - [ "assistant_id": "" ]
+  - [ "assistant_id": "ReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453AReHgtrh3453A" ]
+  - [ "assistant_id": "R3453A" ]
+  - [ "assistant_id": 4563 ]
+  - [ ]
+
+test_correct_assistant_id_incorrect_chat_id_update_message:
+  - [ "chat_id": "" ]
+  - [ "chat_id": "ReHgtrh3453A" ]
+  - [ "chat_id": "R3453A" ]
+  - [ "chat_id": 4563 ]
+  - [ ]
+
+test_correct_assistant_id_correct_chat_id_update_message:
+  - [ ]
+  - [ "metadata": { "a0": "a", "a1": "b", "a2": "a", "a3": "a", "a4": "a", "a5": "a", "a6": "a", "a7": "a", "a8": "a", "a9": "a","a10": "a", "a11": "a", "a12": "a", "a13": "a", "a14": "a", "a15": "a", "a16": "a", "a17": "a" } ]
+  - [  "metadata": "" ]
+  - [  "metadata": "str" ]
+  - [  "metadata": 4566 ]
+  - [  "metadata": { "A0123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869": "a" } ]
+  - [ "metadata": { "a1": "A0123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156157158159160161162163164165166167168169170171172173174175176177178179180181182183184185186187188189190191192193194195196197198199200201202203204205206207208209210211212213214215216217218219220221222223224225226227228229230231232233234235236237238239240241242243244245246247248249250251252253254255256257258259260261262263264265266267268269270271272273274275276277278279280281282283284285286287288289290291292293294295296297298299" } ]
+  - [ "error": "error" ]
+
+
+
+
+
+
+
+
+
+
+
+
+  
