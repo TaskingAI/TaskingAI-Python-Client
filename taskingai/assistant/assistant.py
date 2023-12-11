@@ -1,10 +1,23 @@
 from typing import Optional, List, Dict
 
 from taskingai.client.utils import get_api_instance, ModuleType
-from taskingai.client.models import Assistant, AssistantRetrieval, AssistantTool, AssistantToolType, AssistantRetrievalType
-from taskingai.client.models import AssistantCreateRequest, AssistantCreateResponse,\
-    AssistantUpdateRequest, AssistantUpdateResponse,\
-    AssistantGetResponse, AssistantListResponse
+from taskingai.client.models import (
+    Assistant,
+    AssistantMemory,
+    AssistantRetrieval,
+    AssistantTool,
+    AssistantToolType,
+    AssistantRetrievalType
+)
+
+from taskingai.client.models import (
+    AssistantCreateRequest,
+    AssistantCreateResponse,
+    AssistantUpdateRequest,
+    AssistantUpdateResponse,
+    AssistantGetResponse,
+    AssistantListResponse,
+)
 
 __all__ = [
     "Assistant",
@@ -121,6 +134,7 @@ async def a_get_assistant(assistant_id: str) -> Assistant:
 
 def create_assistant(
     model_id: str,
+    memory: AssistantMemory,
     name: Optional[str] = None,
     description: Optional[str] = None,
     system_prompt_template: Optional[List[str]] = None,
@@ -130,8 +144,9 @@ def create_assistant(
 ) -> Assistant:
     """
     Create an assistant.
-    
+
     :param model_id: The ID of an available chat completion model in your project.
+    :param memory: The assistant memory.
     :param name: The assistant name.
     :param description: The assistant description.
     :param system_prompt_template: A list of system prompt chunks where prompt variables are wrapped by curly brackets, e.g. {{variable}}.
@@ -142,10 +157,12 @@ def create_assistant(
     """
 
     api_instance = get_api_instance(ModuleType.assistant)
+    memory_dict = memory.model_dump()
     body = AssistantCreateRequest(
         model_id=model_id,
         name=name,
         description=description,
+        memory=memory_dict,
         system_prompt_template=system_prompt_template,
         tools=tools,
         retrievals=retrievals,
@@ -158,6 +175,7 @@ def create_assistant(
 
 async def a_create_assistant(
     model_id: str,
+    memory: AssistantMemory,
     name: Optional[str] = None,
     description: Optional[str] = None,
     system_prompt_template: Optional[List[str]] = None,
@@ -169,6 +187,7 @@ async def a_create_assistant(
     Create an assistant in async mode.
 
     :param model_id: The ID of an available chat completion model in your project.
+    :param memory: The assistant memory.
     :param name: The assistant name.
     :param description: The assistant description.
     :param system_prompt_template: A list of system prompt chunks where prompt variables are wrapped by curly brackets, e.g. {{variable}}.
@@ -179,10 +198,12 @@ async def a_create_assistant(
     """
 
     api_instance = get_api_instance(ModuleType.assistant, async_client=True)
+    memory_dict = memory.model_dump()
     body = AssistantCreateRequest(
         model_id=model_id,
         name=name,
         description=description,
+        memory=memory_dict,
         system_prompt_template=system_prompt_template,
         tools=tools,
         retrievals=retrievals,
@@ -199,6 +220,7 @@ def update_assistant(
     name: Optional[str] = None,
     description: Optional[str] = None,
     system_prompt_template: Optional[List[str]] = None,
+    memory: Optional[AssistantMemory] = None,
     tools: Optional[List[AssistantTool]] = None,
     retrievals: Optional[List[AssistantRetrieval]] = None,
     metadata: Optional[Dict[str, str]] = None,
@@ -211,6 +233,7 @@ def update_assistant(
     :param name: The assistant name.
     :param description: The assistant description.
     :param system_prompt_template: A list of system prompt chunks where prompt variables are wrapped by curly brackets, e.g. {{variable}}.
+    :param memory: The assistant memory.
     :param tools: The assistant tools.
     :param retrievals: The assistant retrievals.
     :param metadata: The assistant metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
@@ -223,6 +246,7 @@ def update_assistant(
         name=name,
         description=description,
         system_prompt_template=system_prompt_template,
+        memory=memory,
         tools=tools,
         retrievals=retrievals,
         metadata=metadata,
@@ -238,6 +262,7 @@ async def a_update_assistant(
     name: Optional[str] = None,
     description: Optional[str] = None,
     system_prompt_template: Optional[List[str]] = None,
+    memory: Optional[AssistantMemory] = None,
     tools: Optional[List[AssistantTool]] = None,
     retrievals: Optional[List[AssistantRetrieval]] = None,
     metadata: Optional[Dict[str, str]] = None,
@@ -250,6 +275,7 @@ async def a_update_assistant(
     :param name: The assistant name.
     :param description: The assistant description.
     :param system_prompt_template: A list of system prompt chunks where prompt variables are wrapped by curly brackets, e.g. {{variable}}.
+    :param memory: The assistant memory.
     :param tools: The assistant tools.
     :param retrievals: The assistant retrievals.
     :param metadata: The assistant metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
@@ -262,6 +288,7 @@ async def a_update_assistant(
         name=name,
         description=description,
         system_prompt_template=system_prompt_template,
+        memory=memory,
         tools=tools,
         retrievals=retrievals,
         metadata=metadata,

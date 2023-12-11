@@ -28,6 +28,7 @@ class AssistantCreateRequest(object):
         'name': 'object',
         'description': 'object',
         'system_prompt_template': 'object',
+        'memory': 'object',
         'tools': 'object',
         'retrievals': 'object',
         'metadata': 'object'
@@ -38,22 +39,25 @@ class AssistantCreateRequest(object):
         'name': 'name',
         'description': 'description',
         'system_prompt_template': 'system_prompt_template',
+        'memory': 'memory',
         'tools': 'tools',
         'retrievals': 'retrievals',
         'metadata': 'metadata'
     }
 
-    def __init__(self, model_id=None, name=None, description=None, system_prompt_template=None, tools=None, retrievals=None, metadata=None):  # noqa: E501
+    def __init__(self, model_id=None, name=None, description=None, system_prompt_template=None, memory=None, tools=None, retrievals=None, metadata=None):  # noqa: E501
         """AssistantCreateRequest - a model defined in Swagger"""  # noqa: E501
         self._model_id = None
         self._name = None
         self._description = None
         self._system_prompt_template = None
+        self._memory = None
         self._tools = None
         self._retrievals = None
         self._metadata = None
         self.discriminator = None
         self.model_id = model_id
+        self.memory = memory
         if name is not None:
             self.name = name
         if description is not None:
@@ -160,6 +164,29 @@ class AssistantCreateRequest(object):
         """
 
         self._system_prompt_template = system_prompt_template
+
+    @property
+    def memory(self):
+        """Gets the memory of this AssistantCreateRequest.  # noqa: E501
+
+        A list of system prompt chunks where prompt variables are wrapped by curly brackets, e.g. `{{variable}}`.  # noqa: E501
+
+        :return: The memory of this AssistantCreateRequest.  # noqa: E501
+        :rtype: object
+        """
+        return self._memory
+
+    @memory.setter
+    def memory(self, memory):
+        """Sets the memory of this AssistantCreateRequest.
+
+        A list of system prompt chunks where prompt variables are wrapped by curly brackets, e.g. `{{variable}}`.  # noqa: E501
+
+        :param memory: The memory of this AssistantCreateRequest.  # noqa: E501
+        :type: object
+        """
+
+        self._memory = memory
 
     @property
     def tools(self):
