@@ -1,10 +1,7 @@
 from typing import Dict, Any
-import asyncio
 import random
 import string
 import pytest
-
-from test.common.logger import logger
 
 
 class ResponseWrapper:
@@ -25,17 +22,6 @@ def list_to_dict(data: list):
         else:
             d.update(i)
     return d
-
-
-def get_random_email():
-    domain = ["163.com", "126.com", "yeah.net", "vip.163.com", "vip.126.com", "188.com", "vip.188.com", "qq.com",
-              "gmail.com", "yahoo.com", "sina.com", "sina.cn", "sohu.com", "sogou.com", "outlook.com", "189.com",
-              "wo.cn", "139.com", "ailiyun.com", "icloud.com", "tianya.cn", "renren.com", "tom.com"]
-    username_length = random.randint(5, 10)
-    username = ''.join(random.choices(string.ascii_lowercase, k=username_length))
-    domain_name = random.choice(domain)
-    email = username + "@" + domain_name
-    return email
 
 
 def get_password():
@@ -103,92 +89,9 @@ def assume_chunk(res, chunk_dict: Dict[str, Any]):
             pytest.assume(len(res.json()["data"]) == res.json()["fetched_count"] == chunk_dict["top_k"])
 
 
-async def mq_execute_create_collection(n, func,  *args, **kwargs):
-    if n == 10:
-        logger.info(func+"timeout")
-        pytest.assume(False)
-    else:
-        from test.retrieval_service.collection import get_collection
-        res = await get_collection(*args, **kwargs)
-        if res.json()["data"]["status"] == "ready" and res.json()["data"]["num_records"] >= 0 and res.json()["data"]["num_chunks"] >= 0:
-            return
-        else:
-            await asyncio.sleep(1)
-            logger.info(f"collection status is {res.json()['data']['status']}")
-            logger.info(f"collection num_records is {res.json()['data']['num_records']}")
-            logger.info(f"collection num_chunks is {res.json()['data']['num_chunks']}")
-            await mq_execute_create_collection(n+1, func, *args, **kwargs)
-
-
-async def mq_execute_delete_collection(n, func,  *args, **kwargs):
-    if n == 10:
-        logger.info(func + "timeout")
-        pytest.assume(False)
-    else:
-        from test.retrieval_service.collection import get_collection
-        res = await get_collection(*args, **kwargs)
-        if res.status_code == 404:
-            logger.info(f"project[{args[0]}]collection[{args[1]}] is deleted")
-            return
-        else:
-            await asyncio.sleep(1)
-            await mq_execute_delete_collection(n+1, func, *args, **kwargs)
-
-
-async def mq_execute_create_record(n, func, *args, **kwargs):
-    if n == 10:
-        logger.info(func + "timeout")
-        pytest.assume(False)
-    else:
-        from test.retrieval_service.record import get_record
-        res = await get_record(*args, **kwargs)
-        if res.json()["data"]["status"] == "ready" and res.json()["data"]["num_chunks"] >= 0:
-            logger.info(f"project[{args[0]}]collection[{args[1]}]record[{args[2]}] status is ready")
-            return
-        elif res.json()["data"]["status"] == "partial" and res.json()["data"]["num_chunks"] >= 0:
-            logger.info(f"project[{args[0]}]collection[{args[1]}]record[{args[2]}] is partial")
-            return
-        else:
-            await asyncio.sleep(1)
-            logger.info(f"record status is {res.json()['data']['status']}")
-            logger.info(f"record num_chunks is {res.json()['data']['num_chunks']}")
-            await mq_execute_create_record(n + 1, func, *args, **kwargs)
-
-
-async def mq_execute_delete_record(n, func, *args, **kwargs):
-    if n == 10:
-        logger.info(func + "timeout")
-        pytest.assume(False)
-    else:
-        from test.retrieval_service.record import get_record
-        res = await get_record(*args, **kwargs)
-        if res.status_code == 404:
-            logger.info(f"project[{args[0]}]collection[{args[1]}]record[{args[2]}] is deleted")
-            return
-        else:
-            await asyncio.sleep(1)
-            await mq_execute_delete_record(n + 1, func, *args, **kwargs)
-
-
-async def mq_execute_delete_project(n, func, *args, **kwargs):
-    if n == 10:
-        logger.info(func + "timeout")
-        pytest.assume(False)
-    else:
-        from test.retrieval_service.collection import list_collections
-        collections_res = await list_collections(*args, **kwargs)
-        if collections_res.status_code == 400:
-            return
-        else:
-            await asyncio.sleep(1)
-            await mq_execute_delete_project(n + 1, func, *args, **kwargs)
-
-
 def get_random():
     return ''.join(random.choices(string.ascii_letters, k=7))+str(random.randint(0, 9))
 
 
 def get_project_id(i: int):
     return (get_random() for j in range(i))
-
-

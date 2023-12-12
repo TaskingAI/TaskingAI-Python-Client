@@ -1,6 +1,6 @@
 from taskingai.assistant import a_list_assistants, a_list_chats, a_list_messages
 from taskingai.retrieval import a_list_collections, a_list_records
-from taskingai.tool import a_list_functions, a_list_actions
+from taskingai.tool import a_list_actions
 
 import pytest
 import asyncio
@@ -44,20 +44,6 @@ async def a_record_id(a_collection_id):
     return record_id
 
 
-# @pytest.fixture(scope="function")
-# async def a_function_id():
-#     res = await a_list_functions()
-#     function_id = res[0].function_id
-#     return function_id
-
-
-# @pytest.fixture(scope="function")
-# async def a_function():
-#     res = await a_list_functions()
-#     function = res[0]
-#     return function
-
-
 @pytest.fixture(scope="function")
 async def a_action_id():
     res = await a_list_actions()
@@ -65,11 +51,9 @@ async def a_action_id():
     return action_id
 
 
-@pytest.yield_fixture(scope="session")
+@pytest.fixture(scope="session")
 def event_loop(request):
     """Create an instance of the default event loop for each test case."""
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()
-
-
