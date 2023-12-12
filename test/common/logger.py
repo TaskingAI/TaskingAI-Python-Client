@@ -56,6 +56,3 @@ def logger_success_info(http_code: str, http_status: str, data_status, res):
 def logger_error_info(http_code: str, http_status: str, data_status, res):
     logger_info_base(http_code, http_status, res)
     logger.info("data_status ==>> except_res：{}， real_res：【 {} 】".format(data_status, res.json()["error"]["code"]))
-
-
-
