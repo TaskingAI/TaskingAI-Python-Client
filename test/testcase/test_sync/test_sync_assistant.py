@@ -245,7 +245,7 @@ class TestMessage:
     message_keys = set(message_list)
 
     @pytest.mark.run(order=26)
-    def test_create_user_message(self, assistant_id, chat_id):
+    def test_create_message(self, assistant_id, chat_id):
 
         # List messages.
 
@@ -256,7 +256,7 @@ class TestMessage:
             # Create a user message.
 
             text = "hello"
-            res = create_user_message(assistant_id=assistant_id, chat_id=chat_id, text=text)
+            res = create_message(assistant_id=assistant_id, chat_id=chat_id, text=text)
             res_dict = res.to_dict()
             logger.info(res_dict)
             pytest.assume(res_dict.keys() == self.message_keys)
@@ -327,7 +327,7 @@ class TestMessage:
         pytest.assume(get_res_dict["metadata"] == metadata)
 
     @pytest.mark.run(order=30)
-    def test_generate_assistant_message(self, assistant_id, chat_id):
+    def test_generate_message(self, assistant_id, chat_id):
 
         # List messages.
 
@@ -336,7 +336,7 @@ class TestMessage:
 
         # Generate an assistant message by no stream.
 
-        res = generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id, system_prompt_variables={})
+        res = generate_message(assistant_id=assistant_id, chat_id=chat_id, system_prompt_variables={})
         res_dict = res.to_dict()
         pytest.assume(res_dict.keys() == self.message_keys)
         pytest.assume(res_dict["role"] == "assistant")
@@ -354,7 +354,7 @@ class TestMessage:
         pytest.assume(new_nums == old_nums + 1)
 
     @pytest.mark.run(order=30)
-    def test_generate_assistant_message_by_stream(self):
+    def test_generate_message_by_stream(self):
 
         # List assistants.
 
@@ -370,14 +370,14 @@ class TestMessage:
 
         # create user message
 
-        user_message: Message = create_user_message(
+        user_message: Message = create_message(
             assistant_id=assistant_id,
             chat_id=chat_id,
             text="count from 1 to 100 and separate numbers by comma.")
 
         # Generate an assistant message by stream.
 
-        stream_res = generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id, system_prompt_variables={}, stream=True, debug=True)
+        stream_res = generate_message(assistant_id=assistant_id, chat_id=chat_id, system_prompt_variables={}, stream=True)
         except_list = [i + 1 for i in range(100)]
         real_list = []
         for item in stream_res:
@@ -393,7 +393,7 @@ class TestMessage:
 
     @pytest.mark.run(order=30)
     @pytest.mark.test_abnormal
-    def test_generate_assistant_message_in_user_message_not_created(self, assistant_id):
+    def test_generate_message_in_user_message_not_created(self, assistant_id):
 
         # create chat
 
@@ -404,15 +404,15 @@ class TestMessage:
         # Generate an assistant message.
 
         try:
-            res = generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id,
-                                             system_prompt_variables={})
+            res = generate_message(assistant_id=assistant_id, chat_id=chat_id,
+                                   system_prompt_variables={})
         except Exception as e:
-            logger.info(f'test_generate_assistant_message_in_user_message_not_created{e}')
+            logger.info(f'test_generate_message_in_user_message_not_created{e}')
             pytest.assume("There is no user message in the chat context." in str(e))
 
     @pytest.mark.run(order=30)
     @pytest.mark.test_abnormal
-    def test_create_user_message_in_generating_assistant_message(self, assistant_id):
+    def test_create_message_in_generating_assistant_message(self, assistant_id):
 
         # create chat
 
@@ -422,7 +422,7 @@ class TestMessage:
 
         # create user message
 
-        user_message = create_user_message(
+        user_message = create_message(
             assistant_id=assistant_id,
             chat_id=chat_id,
             text="count from 1 to 100 and separate numbers by comma.",
@@ -430,24 +430,24 @@ class TestMessage:
 
         # Generate an assistant message by stream.
 
-        stream_res = generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id,
-                                                system_prompt_variables={}, stream=True, debug=True)
+        stream_res = generate_message(assistant_id=assistant_id, chat_id=chat_id,
+                                      system_prompt_variables={}, stream=True)
 
         # create user message
 
         try:
-            user_message = create_user_message(
+            user_message = create_message(
                 assistant_id=assistant_id,
                 chat_id=chat_id,
                 text="count from 100 to 200 and separate numbers by comma.",
             )
         except Exception as e:
-            logger.info(f'test_create_user_message_in_generating_assistant_message{user_message}')
+            logger.info(f'test_create_message_in_generating_assistant_message{user_message}')
             pytest.assume("Chat is locked by another generation process. Please try again later." in str(e))
 
     @pytest.mark.run(order=30)
     @pytest.mark.test_abnormal
-    def test_generate_assistant_message_in_generating_assistant_message(self, assistant_id):
+    def test_generate_message_in_generating_assistant_message(self, assistant_id):
 
         # create chat
 
@@ -457,7 +457,7 @@ class TestMessage:
 
         # create user message
 
-        user_message = create_user_message(
+        user_message = create_message(
             assistant_id=assistant_id,
             chat_id=chat_id,
             text="count from 1 to 100 and separate numbers by comma.",
@@ -465,23 +465,23 @@ class TestMessage:
 
         # Generate an assistant message by stream.
 
-        stream_res = generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id,
-                                                system_prompt_variables={},
-                                                stream=True, debug=True)
+        stream_res = generate_message(assistant_id=assistant_id, chat_id=chat_id,
+                                      system_prompt_variables={},
+                                      stream=True)
 
         # Generate an assistant message by stream.
 
         try:
-            stream_res = generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id,
-                                                    system_prompt_variables={},
-                                                    stream=True, debug=True)
+            stream_res = generate_message(assistant_id=assistant_id, chat_id=chat_id,
+                                          system_prompt_variables={},
+                                          stream=True)
         except Exception as e:
-            logger.info(f'est_generate_assistant_message_in_generating_assistant_message{stream_res}')
+            logger.info(f'est_generate_message_in_generating_assistant_message{stream_res}')
             pytest.assume("Chat is locked by another generation process. Please try again later." in str(e))
 
     @pytest.mark.run(order=30)
     @pytest.mark.test_abnormal
-    def test_generate_assistant_message_in_generated_assistant_message(self, assistant_id):
+    def test_generate_message_in_generated_assistant_message(self, assistant_id):
 
         # create chat
 
@@ -491,7 +491,7 @@ class TestMessage:
 
         # create user message
 
-        user_message = create_user_message(
+        user_message = create_message(
             assistant_id=assistant_id,
             chat_id=chat_id,
             text="count from 1 to 100 and separate numbers by comma.",
@@ -499,22 +499,22 @@ class TestMessage:
 
         # Generate an assistant message by stream.
 
-        res = generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id,
-                                         system_prompt_variables={})
+        res = generate_message(assistant_id=assistant_id, chat_id=chat_id,
+                               system_prompt_variables={})
 
         # Generate an assistant message by stream.
 
         try:
-            stream_res = generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id,
-                                                    system_prompt_variables={},
-                                                    stream=True, debug=True)
+            stream_res = generate_message(assistant_id=assistant_id, chat_id=chat_id,
+                                          system_prompt_variables={},
+                                          stream=True)
         except Exception as e:
-            logger.info(f'test_generate_assistant_message_in_generated_assistant_message{e}')
+            logger.info(f'test_generate_message_in_generated_assistant_message{e}')
             pytest.assume("Cannot generate another assistant message after an assistant message." in str(e))
 
     @pytest.mark.run(order=30)
     @pytest.mark.test_abnormal
-    def test_generate_assistant_message_in_action_deleted_assistant(self):
+    def test_generate_message_in_action_deleted_assistant(self):
 
         # create action
 
@@ -585,7 +585,7 @@ class TestMessage:
 
         # create user message
 
-        user_message = create_user_message(
+        user_message = create_message(
             assistant_id=assistant_id,
             chat_id=chat_id,
             text="count from 1 to 100 and separate numbers by comma.",
@@ -599,15 +599,15 @@ class TestMessage:
         # Generate an assistant message by stream.
 
         try:
-            res = generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id,
-                                                     system_prompt_variables={})
+            res = generate_message(assistant_id=assistant_id, chat_id=chat_id,
+                                   system_prompt_variables={})
         except Exception as e:
-            logger.info(f'test_generate_assistant_message_in_action_deleted_assistant{e}')
+            logger.info(f'test_generate_message_in_action_deleted_assistant{e}')
             pytest.assume("Some tools are not found" in str(e))
 
     @pytest.mark.run(order=30)
     @pytest.mark.test_abnormal
-    def test_generate_assistant_message_in_collection_deleted_assistant(self):
+    def test_generate_message_in_collection_deleted_assistant(self):
 
         # create collection
 
@@ -626,7 +626,7 @@ class TestMessage:
 
         # create user message
 
-        user_message = create_user_message(
+        user_message = create_message(
             assistant_id=assistant_id,
             chat_id=chat_id,
             text="count from 1 to 1000 and separate numbers by comma.",
@@ -640,10 +640,10 @@ class TestMessage:
         # Generate an assistant message by stream.
 
         try:
-            res = generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id,
-                                                     system_prompt_variables={})
+            res = generate_message(assistant_id=assistant_id, chat_id=chat_id,
+                                   system_prompt_variables={})
         except Exception as e:
-            logger.info(f'test_generate_assistant_message_in_collection_deleted_assistant{e}')
+            logger.info(f'test_generate_message_in_collection_deleted_assistant{e}')
             pytest.assume(f"Collections not found" in str(e))
 
 
