@@ -32,27 +32,22 @@ class MessageGenerateRequest(object):
     swagger_types = {
         'system_prompt_variables': 'object',
         'stream': 'object',
-        'debug': 'object'
     }
 
     attribute_map = {
         'system_prompt_variables': 'system_prompt_variables',
         'stream': 'stream',
-        'debug': 'debug'
     }
 
-    def __init__(self, system_prompt_variables=None, stream=None, debug=None):  # noqa: E501
+    def __init__(self, system_prompt_variables=None, stream=None):  # noqa: E501
         """MessageGenerateRequest - a model defined in Swagger"""  # noqa: E501
         self._system_prompt_variables = None
         self._stream = None
-        self._debug = None
         self.discriminator = None
         if system_prompt_variables is not None:
             self.system_prompt_variables = system_prompt_variables
         if stream is not None:
             self.stream = stream
-        if debug is not None:
-            self.debug = debug
 
     @property
     def system_prompt_variables(self):
@@ -100,28 +95,6 @@ class MessageGenerateRequest(object):
 
         self._stream = stream
 
-    @property
-    def debug(self):
-        """Gets the debug of this MessageGenerateRequest.  # noqa: E501
-
-        Whether to include the debug information in the response. When this option is turned on, the response data will be returned in SSE format.  # noqa: E501
-
-        :return: The debug of this MessageGenerateRequest.  # noqa: E501
-        :rtype: object
-        """
-        return self._debug
-
-    @debug.setter
-    def debug(self, debug):
-        """Sets the debug of this MessageGenerateRequest.
-
-        Whether to include the debug information in the response. When this option is turned on, the response data will be returned in SSE format.  # noqa: E501
-
-        :param debug: The debug of this MessageGenerateRequest.  # noqa: E501
-        :type: object
-        """
-
-        self._debug = debug
 
     def to_dict(self):
         """Returns the model properties as a dict"""

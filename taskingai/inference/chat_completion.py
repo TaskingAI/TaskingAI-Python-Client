@@ -47,19 +47,19 @@ class UserMessage(ChatCompletionUserMessage):
 
 
 class AssistantMessage(ChatCompletionAssistantMessage):
-    def __init__(self, content: str = None, function_call: Optional[FunctionCall] = None):
+    def __init__(self, content: str = None, function_calls: Optional[List[FunctionCall]] = None):
         super().__init__(
             role=ChatCompletionRole.assistant,
             content=content,
-            function_call=function_call
+            function_calls=function_calls
         )
 
 
 class FunctionMessage(ChatCompletionFunctionMessage):
-    def __init__(self, name: str, content: str):
+    def __init__(self, id: str, content: str):
         super().__init__(
             role=ChatCompletionRole.function,
-            name=name,
+            id=id,
             content=content
         )
 
