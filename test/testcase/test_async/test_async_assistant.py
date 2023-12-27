@@ -266,7 +266,7 @@ class TestMessage(Base):
 
     @pytest.mark.run(order=26)
     @pytest.mark.asyncio
-    async def test_a_create_user_message(self):
+    async def test_a_create_message(self):
 
         # List messages.
 
@@ -278,7 +278,7 @@ class TestMessage(Base):
             # Create a user message.
 
             text = f"hello test{x}"
-            res = await a_create_user_message(assistant_id=self.assistant_id, chat_id=self.chat_id, text=text)
+            res = await a_create_message(assistant_id=self.assistant_id, chat_id=self.chat_id, text=text)
             res_dict = res.to_dict()
             logger.info(res_dict)
             pytest.assume(res_dict.keys() == self.message_keys)
@@ -360,7 +360,7 @@ class TestMessage(Base):
 
     @pytest.mark.run(order=30)
     @pytest.mark.asyncio
-    async def test_a_generate_assistant_message(self):
+    async def test_a_generate_message(self):
 
         # List messages.
 
@@ -369,8 +369,8 @@ class TestMessage(Base):
 
         # Generate an assistant message.
 
-        res = await a_generate_assistant_message(assistant_id=self.assistant_id, chat_id=self.chat_id,
-                                                 system_prompt_variables={})
+        res = await a_generate_message(assistant_id=self.assistant_id, chat_id=self.chat_id,
+                                       system_prompt_variables={})
         res_dict = res.to_dict()
         pytest.assume(res_dict.keys() == self.message_keys)
         pytest.assume(res_dict["role"] == "assistant")
@@ -389,7 +389,7 @@ class TestMessage(Base):
 
     @pytest.mark.run(order=30)
     @pytest.mark.asyncio
-    async def test_a_generate_assistant_message_by_stream(self):
+    async def test_a_generate_message_by_stream(self):
 
         # create chat
 
@@ -399,7 +399,7 @@ class TestMessage(Base):
 
         # create user message
 
-        user_message = await a_create_user_message(
+        user_message = await a_create_message(
             assistant_id=self.assistant_id,
             chat_id=chat_id,
             text="count from 1 to 100 and separate numbers by comma.",
@@ -407,8 +407,8 @@ class TestMessage(Base):
 
         # Generate an assistant message by stream.
 
-        stream_res = await a_generate_assistant_message(assistant_id=self.assistant_id, chat_id=chat_id,
-                                                        system_prompt_variables={}, stream=True, debug=True)
+        stream_res = await a_generate_message(assistant_id=self.assistant_id, chat_id=chat_id,
+                                              system_prompt_variables={}, stream=True)
         except_list = [i + 1 for i in range(100)]
         real_list = []
         real_str = ''
@@ -429,7 +429,7 @@ class TestMessage(Base):
     @pytest.mark.run(order=30)
     @pytest.mark.asyncio
     @pytest.mark.test_abnormal
-    async def test_a_generate_assistant_message_in_user_message_not_created(self):
+    async def test_a_generate_message_in_user_message_not_created(self):
 
         # create chat
 
@@ -440,16 +440,16 @@ class TestMessage(Base):
         # Generate an assistant message.
 
         try:
-            res = await a_generate_assistant_message(assistant_id=self.assistant_id, chat_id=chat_id,
-                                                     system_prompt_variables={})
+            res = await a_generate_message(assistant_id=self.assistant_id, chat_id=chat_id,
+                                           system_prompt_variables={})
         except Exception as e:
-            logger.info(f'test_a_generate_assistant_message_in_user_message_not_created{e}')
+            logger.info(f'test_a_generate_message_in_user_message_not_created{e}')
             pytest.assume("There is no user message in the chat context." in str(e))
 
     @pytest.mark.run(order=30)
     @pytest.mark.asyncio
     @pytest.mark.test_abnormal
-    async def test_a_create_user_message_in_generating_assistant_message(self):
+    async def test_a_create_message_in_generating_assistant_message(self):
 
         # create chat
 
@@ -459,7 +459,7 @@ class TestMessage(Base):
 
         # create user message
 
-        user_message = await a_create_user_message(
+        user_message = await a_create_message(
             assistant_id=self.assistant_id,
             chat_id=chat_id,
             text="count from 1 to 100 and separate numbers by comma.",
@@ -467,26 +467,26 @@ class TestMessage(Base):
 
         # Generate an assistant message by stream.
 
-        await a_generate_assistant_message(assistant_id=self.assistant_id, chat_id=chat_id,
-                                                        system_prompt_variables={},
-                                                        stream=True, debug=True)
+        await a_generate_message(assistant_id=self.assistant_id, chat_id=chat_id,
+                                 system_prompt_variables={},
+                                 stream=True)
 
         # create user message
 
         try:
-            user_message = await a_create_user_message(
+            user_message = await a_create_message(
                 assistant_id=self.assistant_id,
                 chat_id=chat_id,
                 text="count from 100 to 200 and separate numbers by comma.",
             )
         except Exception as e:
-            logger.info(f'test_a_create_user_message_in_generating_assistant_message{user_message}')
+            logger.info(f'test_a_create_message_in_generating_assistant_message{user_message}')
             pytest.assume("Chat is locked by another generation process. Please try again later." in str(e))
 
     @pytest.mark.run(order=30)
     @pytest.mark.asyncio
     @pytest.mark.test_abnormal
-    async def test_a_generate_assistant_message_in_generating_assistant_message(self):
+    async def test_a_generate_message_in_generating_assistant_message(self):
 
         # create chat
 
@@ -496,7 +496,7 @@ class TestMessage(Base):
 
         # create user message
 
-        await a_create_user_message(
+        await a_create_message(
             assistant_id=self.assistant_id,
             chat_id=chat_id,
             text="count from 1 to 100 and separate numbers by comma.",
@@ -504,24 +504,24 @@ class TestMessage(Base):
 
         # Generate an assistant message by stream.
 
-        stream_res = await a_generate_assistant_message(assistant_id=self.assistant_id, chat_id=chat_id,
-                                                        system_prompt_variables={},
-                                                        stream=True, debug=True)
+        stream_res = await a_generate_message(assistant_id=self.assistant_id, chat_id=chat_id,
+                                              system_prompt_variables={},
+                                              stream=True)
 
         # Generate an assistant message by stream.
 
         try:
-            stream_res = await a_generate_assistant_message(assistant_id=self.assistant_id, chat_id=chat_id,
-                                                            system_prompt_variables={},
-                                                            stream=True, debug=True)
+            stream_res = await a_generate_message(assistant_id=self.assistant_id, chat_id=chat_id,
+                                                  system_prompt_variables={},
+                                                  stream=True)
         except Exception as e:
-            logger.info(f'test_a_generate_assistant_message_in_generating_assistant_message{stream_res}')
+            logger.info(f'test_a_generate_message_in_generating_assistant_message{stream_res}')
             pytest.assume("Chat is locked by another generation process. Please try again later." in str(e))
 
     @pytest.mark.run(order=30)
     @pytest.mark.asyncio
     @pytest.mark.test_abnormal
-    async def test_a_generate_assistant_message_in_generated_assistant_message(self):
+    async def test_a_generate_message_in_generated_assistant_message(self):
 
         # create chat
 
@@ -531,7 +531,7 @@ class TestMessage(Base):
 
         # create user message
 
-        user_message = await a_create_user_message(
+        user_message = await a_create_message(
             assistant_id=self.assistant_id,
             chat_id=chat_id,
             text="count from 1 to 100 and separate numbers by comma.",
@@ -539,23 +539,23 @@ class TestMessage(Base):
 
         # Generate an assistant message by stream.
 
-        res = await a_generate_assistant_message(assistant_id=self.assistant_id, chat_id=chat_id,
-                                                 system_prompt_variables={})
+        res = await a_generate_message(assistant_id=self.assistant_id, chat_id=chat_id,
+                                       system_prompt_variables={})
 
         # Generate an assistant message by stream.
 
         try:
-            stream_res = await a_generate_assistant_message(assistant_id=self.assistant_id, chat_id=chat_id,
-                                                            system_prompt_variables={},
-                                                            stream=True, debug=True)
+            stream_res = await a_generate_message(assistant_id=self.assistant_id, chat_id=chat_id,
+                                                  system_prompt_variables={},
+                                                  stream=True)
         except Exception as e:
-            logger.info(f'test_a_generate_assistant_message_in_generated_assistant_message{e}')
+            logger.info(f'test_a_generate_message_in_generated_assistant_message{e}')
             pytest.assume("Cannot generate another assistant message after an assistant message." in str(e))
 
     @pytest.mark.run(order=30)
     @pytest.mark.asyncio
     @pytest.mark.test_abnormal
-    async def test_a_generate_assistant_message_in_action_deleted_assistant(self):
+    async def test_a_generate_message_in_action_deleted_assistant(self):
 
         # create action
 
@@ -626,7 +626,7 @@ class TestMessage(Base):
 
         # create user message
 
-        user_message = await a_create_user_message(
+        user_message = await a_create_message(
             assistant_id=assistant_id,
             chat_id=chat_id,
             text="count from 1 to 100 and separate numbers by comma.",
@@ -640,16 +640,16 @@ class TestMessage(Base):
         # Generate an assistant message by stream.
 
         try:
-            res = await a_generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id,
-                                                     system_prompt_variables={})
+            res = await a_generate_message(assistant_id=assistant_id, chat_id=chat_id,
+                                           system_prompt_variables={})
         except Exception as e:
-            logger.info(f'test_a_generate_assistant_message_in_action_deleted_assistant{e}')
+            logger.info(f'test_a_generate_message_in_action_deleted_assistant{e}')
             pytest.assume("Some tools are not found" in str(e))
 
     @pytest.mark.run(order=30)
     @pytest.mark.asyncio
     @pytest.mark.test_abnormal
-    async def test_a_generate_assistant_message_in_collection_deleted_assistant(self):
+    async def test_a_generate_message_in_collection_deleted_assistant(self):
 
         # create collection
 
@@ -668,7 +668,7 @@ class TestMessage(Base):
 
         # create user message
 
-        user_message = await a_create_user_message(
+        user_message = await a_create_message(
             assistant_id=assistant_id,
             chat_id=chat_id,
             text="count from 1 to 1000 and separate numbers by comma.",
@@ -682,8 +682,8 @@ class TestMessage(Base):
         # Generate an assistant message by stream.
 
         try:
-            res = await a_generate_assistant_message(assistant_id=assistant_id, chat_id=chat_id,
-                                                     system_prompt_variables={})
+            res = await a_generate_message(assistant_id=assistant_id, chat_id=chat_id,
+                                           system_prompt_variables={})
         except Exception as e:
-            logger.info(f'test_a_generate_assistant_message_in_collection_deleted_assistant{e}')
+            logger.info(f'test_a_generate_message_in_collection_deleted_assistant{e}')
             pytest.assume(f"Collections not found" in str(e))

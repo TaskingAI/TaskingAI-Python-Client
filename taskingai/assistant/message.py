@@ -25,14 +25,14 @@ __all__ = [
     "MessageGenerationLog",
     "get_message",
     "list_messages",
-    "create_user_message",
+    "create_message",
     "update_message",
-    "generate_assistant_message",
+    "generate_message",
     "a_get_message",
     "a_list_messages",
-    "a_create_user_message",
+    "a_create_message",
     "a_update_message",
-    "a_generate_assistant_message",
+    "a_generate_message",
 ]
 
 
@@ -163,7 +163,7 @@ async def a_get_message(
 
 
 
-def create_user_message(
+def create_message(
     assistant_id: str,
     chat_id: str,
     text: str,
@@ -194,7 +194,7 @@ def create_user_message(
     return message
 
 
-async def a_create_user_message(
+async def a_create_message(
     assistant_id: str,
     chat_id: str,
     text: str,
@@ -284,12 +284,11 @@ async def a_update_message(
 
 
 
-def generate_assistant_message(
+def generate_message(
     assistant_id: str,
     chat_id: str,
     system_prompt_variables: Optional[Dict] = None,
     stream: bool = False,
-    debug: bool = False,
 ) -> Union[Message, Stream]:
     """
     Generate a message.
@@ -305,11 +304,10 @@ def generate_assistant_message(
     body = MessageGenerateRequest(
         system_prompt_variables=system_prompt_variables,
         stream=stream,
-        debug=debug,
     )
 
-    if not stream and not debug:
-        response = api_instance.generate_assistant_message(
+    if not stream:
+        response = api_instance.generate_message(
             assistant_id=assistant_id,
             chat_id=chat_id,
             body=body,
@@ -318,7 +316,7 @@ def generate_assistant_message(
         message: Message = Message(**response["data"])
         return message
     else:
-        response: Stream = api_instance.generate_assistant_message(
+        response: Stream = api_instance.generate_message(
             assistant_id=assistant_id,
             chat_id=chat_id,
             body=body,
@@ -327,12 +325,11 @@ def generate_assistant_message(
         )
         return response
 
-async def a_generate_assistant_message(
+async def a_generate_message(
     assistant_id: str,
     chat_id: str,
     system_prompt_variables: Optional[Dict] = None,
     stream: bool = False,
-    debug: bool = False,
 ) -> Union[Message, AsyncStream]:
     """
     Generate a message in async mode.
@@ -348,11 +345,10 @@ async def a_generate_assistant_message(
     body = MessageGenerateRequest(
         system_prompt_variables=system_prompt_variables,
         stream=stream,
-        debug=debug,
     )
 
-    if not stream and not debug:
-        response = await api_instance.generate_assistant_message(
+    if not stream:
+        response = await api_instance.generate_message(
             assistant_id=assistant_id,
             chat_id=chat_id,
             body=body,
@@ -361,7 +357,7 @@ async def a_generate_assistant_message(
         message: Message = Message(**response["data"])
         return message
     else:
-        response: AsyncStream = await api_instance.generate_assistant_message(
+        response: AsyncStream = await api_instance.generate_message(
             assistant_id=assistant_id,
             chat_id=chat_id,
             body=body,

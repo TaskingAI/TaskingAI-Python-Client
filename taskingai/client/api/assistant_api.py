@@ -539,7 +539,7 @@ class AssistantApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def generate_assistant_message(self, body, stream, assistant_id, chat_id, **kwargs):  # noqa: E501
+    def generate_message(self, body, stream, assistant_id, chat_id, **kwargs):  # noqa: E501
         """Generate assistant message  # noqa: E501
 
         Generate a new message with the role of 'assistant'.
@@ -551,15 +551,15 @@ class AssistantApi(object):
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
-        return self.generate_assistant_message_with_http_info(body, stream, assistant_id, chat_id, **kwargs)  # noqa: E501
+        return self.generate_message_with_http_info(body, stream, assistant_id, chat_id, **kwargs)  # noqa: E501
 
-    def generate_assistant_message_with_http_info(self, body, stream, assistant_id, chat_id, **kwargs):  # noqa: E501
+    def generate_message_with_http_info(self, body, stream, assistant_id, chat_id, **kwargs):  # noqa: E501
         """Generate assistant message  # noqa: E501
 
         Generate a new message with the role of 'assistant'.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.generate_assistant_message_with_http_info(body, assistant_id, chat_id, async_req=True)
+        >>> thread = api.generate_message_with_http_info(body, assistant_id, chat_id, async_req=True)
         >>> result = thread.get()
 
         :param async_req bool
@@ -582,7 +582,7 @@ class AssistantApi(object):
             if key not in all_params:
                 raise TypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method generate_assistant_message" % key
+                    " to method generate_message" % key
                 )
             params[key] = val
         del params['kwargs']
@@ -590,17 +590,17 @@ class AssistantApi(object):
         if ('body' not in params or
                 params['body'] is None):
             raise ValueError(
-                "Missing the required parameter `body` when calling `generate_assistant_message`")  # noqa: E501
+                "Missing the required parameter `body` when calling `generate_message`")  # noqa: E501
         # verify the required parameter 'assistant_id' is set
         if ('assistant_id' not in params or
                 params['assistant_id'] is None):
             raise ValueError(
-                "Missing the required parameter `assistant_id` when calling `generate_assistant_message`")  # noqa: E501
+                "Missing the required parameter `assistant_id` when calling `generate_message`")  # noqa: E501
         # verify the required parameter 'chat_id' is set
         if ('chat_id' not in params or
                 params['chat_id'] is None):
             raise ValueError(
-                "Missing the required parameter `chat_id` when calling `generate_assistant_message`")  # noqa: E501
+                "Missing the required parameter `chat_id` when calling `generate_message`")  # noqa: E501
 
         collection_formats = {}
 
