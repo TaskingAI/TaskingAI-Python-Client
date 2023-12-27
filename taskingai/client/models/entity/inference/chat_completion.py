@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Any
+from typing import Dict, Optional, Any, List
 from pydantic import Field
 from .._base import TaskingaiBaseModel
 from enum import Enum
@@ -20,6 +20,7 @@ __all__ = [
     "INFERENCE_CHAT_COMPLETION_STREAM_CAST_MAP"
 ]
 
+
 class ChatCompletionRole(str, Enum):
     system = "system"
     assistant = "assistant"
@@ -28,6 +29,7 @@ class ChatCompletionRole(str, Enum):
 
 
 class ChatCompletionFunctionCall(TaskingaiBaseModel):
+    id: str
     arguments: Dict[str, Any]
     name: str
 
@@ -52,18 +54,19 @@ class ChatCompletionUserMessage(ChatCompletionMessage):
 
 class ChatCompletionAssistantMessage(ChatCompletionMessage):
     role: ChatCompletionRole = Field(Literal[ChatCompletionRole.assistant])
-    function_call: Optional[ChatCompletionFunctionCall]
+    function_calls: Optional[List[ChatCompletionFunctionCall]]
 
 
 class ChatCompletionFunctionMessage(ChatCompletionMessage):
     role: ChatCompletionRole = Field(Literal[ChatCompletionRole.function])
-    name: str
+    id: str
 
 
 class ChatCompletionFinishReason(str, Enum):
     stop = "stop"
     length = "length"
-    function_calls = "function_call"
+    function_calls = "function_calls"
+    recitation = "recitation"
     error = "error"
     unknown = "unknown"
 
