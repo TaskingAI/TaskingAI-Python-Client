@@ -9,7 +9,7 @@
 from setuptools import setup, find_packages  # noqa: H301
 import taskingai
 
-NAME = "client"
+NAME = "taskingai"
 VERSION = taskingai.__version__
 # To install the library, run the following
 #
@@ -18,7 +18,14 @@ VERSION = taskingai.__version__
 # prerequisite: setuptools
 # http://pypi.python.org/pypi/setuptools
 
-REQUIRES = ["httpx >= 0.23.0", "six >= 1.10", "certifi", "python-dateutil"]
+REQUIRES = [
+    "certifi>=14.05.14",
+    "six>=1.10",
+    "python_dateutil>=2.5.3",
+    "setuptools>=21.0.0",
+    "httpx>=0.23.0",
+    "pydantic>=2.5.0",
+]
 
 setup(
     name=NAME,
