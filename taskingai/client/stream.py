@@ -6,7 +6,6 @@ from typing import Any, Dict, Iterator, AsyncIterator, Optional
 from .models import (
     MessageChunk,
     Message,
-    MessageGenerationLog,
     ChatCompletion,
     ChatCompletionChunk
 )
@@ -25,8 +24,6 @@ def _cast(item: Dict):
         return Message(**item)
     elif item.get("object") == "MessageChunk":
         return MessageChunk(**item)
-    elif item.get("object") == "MessageGenerationLog":
-        return MessageGenerationLog(**item)
     else:
         # cannot cast, keep the original dict
         return item
