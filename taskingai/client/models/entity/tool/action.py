@@ -29,7 +29,10 @@ class Action(TaskingaiBaseModel):
     action_id: str
     name: str
     description: str
-    schema: Dict[str, Any]
+    schema: Dict[str, Any] = Field(..., alias='schema')
     authentication: ActionAuthentication
     created_timestamp: int
+
+    class Config:
+        allow_population_by_field_name = True
 

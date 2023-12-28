@@ -6,7 +6,6 @@ from taskingai.client.models import (
     MessageRole,
     MessageContent,
     MessageChunk,
-    MessageGenerationLog,
 )
 from taskingai.client.models import (
     MessageCreateRequest,
@@ -22,7 +21,6 @@ from taskingai.client.stream import Stream, AsyncStream
 __all__ = [
     "Message",
     "MessageChunk",
-    "MessageGenerationLog",
     "get_message",
     "list_messages",
     "create_message",
