@@ -7,7 +7,6 @@ __all__ = [
     "Message",
     "MessageContent",
     "MessageRole",
-    "MessageGenerationLog",
     "MessageChunk"
 ]
 
@@ -15,14 +14,6 @@ __all__ = [
 class MessageRole(str, Enum):
     user = "user"
     assistant = "assistant"
-
-
-class MessageGenerationLog(TaskingaiBaseModel):
-    object: str
-    type: str
-    session_id: str
-    created_timestamp: int
-    content: Dict
 
 
 class MessageContent(TaskingaiBaseModel):
