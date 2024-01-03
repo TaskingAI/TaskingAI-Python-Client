@@ -12,10 +12,10 @@ __all__ = [
 
 
 class ActionAuthenticationType(str, Enum):
-    basic = "basic"
-    bearer = "bearer"
-    custom = "custom"
-    none = "none"
+    BASIC = "basic"
+    BEARER = "bearer"
+    CUSTOM = "custom"
+    NONE = "none"
 
 
 class ActionAuthentication(TaskingaiBaseModel):
