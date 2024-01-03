@@ -5,9 +5,9 @@ from typing import Optional, Dict
 
 
 class AssistantMemoryType(str, Enum):
-    zero = "zero"
-    naive = "naive"
-    message_window = "message_window"
+    ZERO = "zero"
+    NAIVE = "naive"
+    MESSAGE_WINDOW = "message_window"
 
 
 class AssistantMemory(BaseModel, ABC):
@@ -15,17 +15,17 @@ class AssistantMemory(BaseModel, ABC):
 
 
 class AssistantMessageWindowMemory(AssistantMemory):
-    type: AssistantMemoryType = Field(AssistantMemoryType.message_window, Literal=AssistantMemoryType.message_window)
+    type: AssistantMemoryType = Field(AssistantMemoryType.MESSAGE_WINDOW, Literal=AssistantMemoryType.MESSAGE_WINDOW)
     max_messages: int = Field(...)
     max_tokens: int = Field(...)
 
 
 class AssistantNaiveMemory(AssistantMemory):
-    type: AssistantMemoryType = Field(AssistantMemoryType.naive, Literal=AssistantMemoryType.naive)
+    type: AssistantMemoryType = Field(AssistantMemoryType.NAIVE, Literal=AssistantMemoryType.NAIVE)
 
 
 class AssistantZeroMemory(AssistantMemory):
-    type: AssistantMemoryType = Field(AssistantMemoryType.zero, Literal=AssistantMemoryType.zero)
+    type: AssistantMemoryType = Field(AssistantMemoryType.ZERO, Literal=AssistantMemoryType.ZERO)
 
 
 def build_assistant_memory(memory_dict: Dict) -> Optional[AssistantMemory]:
@@ -35,15 +35,15 @@ def build_assistant_memory(memory_dict: Dict) -> Optional[AssistantMemory]:
 
     memory_type = memory_dict['type']
 
-    if memory_type == AssistantMemoryType.zero.value:
+    if memory_type == AssistantMemoryType.ZERO.value:
         # For zero memory, no additional information is needed
         return AssistantZeroMemory()
 
-    elif memory_type == AssistantMemoryType.naive.value:
+    elif memory_type == AssistantMemoryType.NAIVE.value:
         # For naive memory, no additional configuration is needed
         return AssistantNaiveMemory()
 
-    elif memory_type == AssistantMemoryType.message_window.value:
+    elif memory_type == AssistantMemoryType.MESSAGE_WINDOW.value:
         # For message window memory, additional configuration is needed
         max_messages = memory_dict.get('max_messages')
         max_tokens = memory_dict.get('max_tokens')
