@@ -33,7 +33,7 @@ __all__ = [
 class SystemMessage(ChatCompletionSystemMessage):
     def __init__(self, content: str):
         super().__init__(
-            role=ChatCompletionRole.system,
+            role=ChatCompletionRole.SYSTEM,
             content=content
         )
 
@@ -41,7 +41,7 @@ class SystemMessage(ChatCompletionSystemMessage):
 class UserMessage(ChatCompletionUserMessage):
     def __init__(self, content: str):
         super().__init__(
-            role=ChatCompletionRole.user,
+            role=ChatCompletionRole.USER,
             content=content
         )
 
@@ -49,7 +49,7 @@ class UserMessage(ChatCompletionUserMessage):
 class AssistantMessage(ChatCompletionAssistantMessage):
     def __init__(self, content: str = None, function_calls: Optional[List[FunctionCall]] = None):
         super().__init__(
-            role=ChatCompletionRole.assistant,
+            role=ChatCompletionRole.ASSISTANT,
             content=content,
             function_calls=function_calls
         )
@@ -58,7 +58,7 @@ class AssistantMessage(ChatCompletionAssistantMessage):
 class FunctionMessage(ChatCompletionFunctionMessage):
     def __init__(self, id: str, content: str):
         super().__init__(
-            role=ChatCompletionRole.function,
+            role=ChatCompletionRole.FUNCTION,
             id=id,
             content=content
         )
@@ -87,7 +87,7 @@ def chat_completion(
     :param functions: The list of functions.
     :return: The list of assistants.
     """
-    api_instance = get_api_instance(ModuleType.inference)
+    api_instance = get_api_instance(ModuleType.INFERENCE)
     # only add non-None parameters
     body = ChatCompletionRequest(
         model_id=model_id,
@@ -129,7 +129,7 @@ async def a_chat_completion(
     :param functions: The list of functions.
     :return: The list of assistants.
     """
-    api_instance = get_api_instance(ModuleType.inference, async_client=True)
+    api_instance = get_api_instance(ModuleType.INFERENCE, async_client=True)
     # only add non-None parameters
     body = ChatCompletionRequest(
         model_id=model_id,

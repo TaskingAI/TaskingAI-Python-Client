@@ -25,17 +25,17 @@ def get_user_agent():
     return user_agent
 
 sync_api_instance_dict = {
-    ModuleType.assistant: None,
-    ModuleType.tool: None,
-    ModuleType.retrieval: None,
-    ModuleType.inference: None
+    ModuleType.ASSISTANT: None,
+    ModuleType.TOOL: None,
+    ModuleType.RETRIEVAL: None,
+    ModuleType.INFERENCE: None
 }
 
 async_api_instance_dict = {
-    ModuleType.assistant: None,
-    ModuleType.tool: None,
-    ModuleType.retrieval: None,
-    ModuleType.inference: None
+    ModuleType.ASSISTANT: None,
+    ModuleType.TOOL: None,
+    ModuleType.RETRIEVAL: None,
+    ModuleType.INFERENCE: None
 }
 
 def get_api_instance(module: ModuleType, async_client=False):
@@ -50,13 +50,13 @@ def get_api_instance(module: ModuleType, async_client=False):
         api_client.user_agent = get_user_agent()
 
         if async_api_instance_dict.get(module) is None:
-            if module == ModuleType.assistant:
+            if module == ModuleType.ASSISTANT:
                 async_api_instance_dict[module] = AsyncAssistantApi(api_client)
-            elif module == ModuleType.tool:
+            elif module == ModuleType.TOOL:
                 async_api_instance_dict[module] = AsyncToolApi(api_client)
-            elif module == ModuleType.retrieval:
+            elif module == ModuleType.RETRIEVAL:
                 async_api_instance_dict[module] = AsyncRetrievalApi(api_client)
-            elif module == ModuleType.inference:
+            elif module == ModuleType.INFERENCE:
                 async_api_instance_dict[module] = AsyncInferenceApi(api_client)
 
         api_instance = async_api_instance_dict[module]
@@ -67,13 +67,13 @@ def get_api_instance(module: ModuleType, async_client=False):
 
         if sync_api_instance_dict.get(module) is None:
 
-            if module == ModuleType.assistant:
+            if module == ModuleType.ASSISTANT:
                 sync_api_instance_dict[module] = AssistantApi(api_client)
-            elif module == ModuleType.tool:
+            elif module == ModuleType.TOOL:
                 sync_api_instance_dict[module] = ToolApi(api_client)
-            elif module == ModuleType.retrieval:
+            elif module == ModuleType.RETRIEVAL:
                 sync_api_instance_dict[module] = RetrievalApi(api_client)
-            elif module == ModuleType.inference:
+            elif module == ModuleType.INFERENCE:
                 sync_api_instance_dict[module] = InferenceApi(api_client)
 
         api_instance = sync_api_instance_dict[module]

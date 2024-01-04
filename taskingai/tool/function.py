@@ -39,7 +39,7 @@ def list_functions(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.tool)
+    api_instance = get_api_instance(ModuleType.TOOL)
     # only add non-None parameters
     params = {
         "order": order,
@@ -71,7 +71,7 @@ async def a_list_functions(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.tool, async_client=True)
+    api_instance = get_api_instance(ModuleType.TOOL, async_client=True)
     # only add non-None parameters
     params = {
         "order": order,
@@ -93,7 +93,7 @@ def get_function(function_id: str) -> Function:
     :param function_id: The ID of the function.
     """
 
-    api_instance = get_api_instance(ModuleType.tool)
+    api_instance = get_api_instance(ModuleType.TOOL)
     response: FunctionGetResponse = api_instance.get_function(function_id=function_id)
     function: Function = Function(**response.data)
     return function
@@ -106,7 +106,7 @@ async def a_get_function(function_id: str) -> Function:
     :param function_id: The ID of the function.
     """
 
-    api_instance = get_api_instance(ModuleType.tool, async_client=True)
+    api_instance = get_api_instance(ModuleType.TOOL, async_client=True)
     response: FunctionGetResponse = await api_instance.get_function(function_id=function_id)
     function: Function = Function(**response.data)
     return function
@@ -127,7 +127,7 @@ def create_function(
     """
 
     # todo verify parameters
-    api_instance = get_api_instance(ModuleType.tool)
+    api_instance = get_api_instance(ModuleType.TOOL)
     body = FunctionCreateRequest(
         name=name,
         description=description,
@@ -153,7 +153,7 @@ async def a_create_function(
     """
 
     # todo verify parameters
-    api_instance = get_api_instance(ModuleType.tool, async_client=True)
+    api_instance = get_api_instance(ModuleType.TOOL, async_client=True)
     body = FunctionCreateRequest(
         name=name,
         description=description,
@@ -179,7 +179,7 @@ def update_function(
     :return: The updated function object.
     """
     #todo: verify schema
-    api_instance = get_api_instance(ModuleType.tool)
+    api_instance = get_api_instance(ModuleType.TOOL)
     body = FunctionUpdateRequest(
         name=name,
         description=description,
@@ -207,7 +207,7 @@ async def a_update_function(
     :param authentication: The function API authentication.
     :return: The updated function object.
     """
-    api_instance = get_api_instance(ModuleType.tool, async_client=True)
+    api_instance = get_api_instance(ModuleType.TOOL, async_client=True)
     body = FunctionUpdateRequest(
         name=name,
         description=description,
@@ -228,7 +228,7 @@ def delete_function(function_id: str) -> None:
     :param function_id: The ID of the function.
     """
 
-    api_instance = get_api_instance(ModuleType.tool)
+    api_instance = get_api_instance(ModuleType.TOOL)
     api_instance.delete_function(function_id=function_id)
 
 
@@ -239,7 +239,7 @@ async def a_delete_function(function_id: str) -> None:
     :param function_id: The ID of the function.
     """
 
-    api_instance = get_api_instance(ModuleType.tool, async_client=True)
+    api_instance = get_api_instance(ModuleType.TOOL, async_client=True)
     await api_instance.delete_function(function_id=function_id)
 
 

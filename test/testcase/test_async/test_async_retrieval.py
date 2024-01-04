@@ -2,7 +2,7 @@ import asyncio
 import pytest
 
 from taskingai.retrieval import a_list_collections, a_create_collection, a_get_collection, a_update_collection, a_delete_collection, a_list_records, a_create_text_record, a_get_record, a_update_record, a_delete_record, a_query_chunks
-from test.config import text_model_id, sleep_time
+from test.config import embedding_model_id, sleep_time
 from test.common.logger import logger
 from test.testcase.test_async.base import Base
 
@@ -31,14 +31,14 @@ class TestCollection(Base):
 
             name = f"test{x}"
             description = "just for test"
-            res = await a_create_collection(name=name, description=description, embedding_model_id=text_model_id, capacity=1000)
+            res = await a_create_collection(name=name, description=description, embedding_model_id=embedding_model_id, capacity=1000)
             res_dict = res.to_dict()
             logger.info(res_dict)
             pytest.assume(res_dict.keys() == self.collection_keys)
             pytest.assume(res_dict["configs"].keys() == self.collection_configs_keys)
             pytest.assume(res_dict["name"] == name)
             pytest.assume(res_dict["description"] == description)
-            pytest.assume(res_dict["embedding_model_id"] == text_model_id)
+            pytest.assume(res_dict["embedding_model_id"] == embedding_model_id)
             pytest.assume(res_dict["capacity"] == 1000)
             pytest.assume(res_dict["status"] == "creating")
 
@@ -53,7 +53,7 @@ class TestCollection(Base):
             pytest.assume(get_res_dict["configs"].keys() == self.collection_configs_keys)
             pytest.assume(get_res_dict["name"] == name)
             pytest.assume(get_res_dict["description"] == description)
-            pytest.assume(get_res_dict["embedding_model_id"] == text_model_id)
+            pytest.assume(get_res_dict["embedding_model_id"] == embedding_model_id)
             pytest.assume(get_res_dict["capacity"] == 1000)
             pytest.assume(get_res_dict["status"] == "ready")
 
@@ -285,7 +285,7 @@ class TestRecord(Base):
 
         name = "test"
         description = "just for test"
-        res = await a_create_collection(name=name, description=description, embedding_model_id=text_model_id,
+        res = await a_create_collection(name=name, description=description, embedding_model_id=embedding_model_id,
                                         capacity=1000)
         collection_id = res.collection_id
 
@@ -307,7 +307,7 @@ class TestRecord(Base):
 
         name = "test"
         description = "just for test"
-        res = await a_create_collection(name=name, description=description, embedding_model_id=text_model_id,
+        res = await a_create_collection(name=name, description=description, embedding_model_id=embedding_model_id,
                                         capacity=1000)
         collection_id = res.collection_id
         await a_delete_collection(collection_id=collection_id)
@@ -378,7 +378,7 @@ class TestChunk(Base):
 
         name = "test"
         description = "just for test"
-        res = await a_create_collection(name=name, description=description, embedding_model_id=text_model_id,
+        res = await a_create_collection(name=name, description=description, embedding_model_id=embedding_model_id,
                                         capacity=1000)
         collection_id = res.collection_id
 
@@ -401,7 +401,7 @@ class TestChunk(Base):
 
         name = "test"
         description = "just for test"
-        collection_res = await a_create_collection(name=name, description=description, embedding_model_id=text_model_id,
+        collection_res = await a_create_collection(name=name, description=description, embedding_model_id=embedding_model_id,
                                         capacity=1000)
         collection_id = collection_res.collection_id
 

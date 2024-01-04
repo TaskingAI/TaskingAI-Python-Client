@@ -19,12 +19,12 @@ __all__ = [
 
 
 class AssistantToolType(str, Enum):
-    action = "action"
-    function = "function"
+    ACTION = "action"
+    FUNCTION = "function"
 
 
 class AssistantRetrievalType(str, Enum):
-    collection = "collection"
+    COLLECTION = "collection"
 
 
 class AssistantRetrieval(TaskingaiBaseModel):
