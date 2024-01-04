@@ -1,7 +1,7 @@
 import pytest
 
 from taskingai.inference import *
-from test.config import text_model_id, chat_model_id
+from test.config import embedding_model_id, chat_completion_model_id
 from test.common.logger import logger
 
 
@@ -15,7 +15,7 @@ class TestChatCompletion:
         # normal chat completion.
 
         normal_res = await a_chat_completion(
-            model_id=chat_model_id,
+            model_id=chat_completion_model_id,
             messages=[
                 SystemMessage("You are a professional assistant."),
                 UserMessage("Hi"),
@@ -29,7 +29,7 @@ class TestChatCompletion:
         # multi round chat completion.
 
         multi_round_res = await a_chat_completion(
-            model_id=chat_model_id,
+            model_id=chat_completion_model_id,
             messages=[
                 SystemMessage("You are a professional assistant."),
                 UserMessage("Hi"),
@@ -49,7 +49,7 @@ class TestChatCompletion:
         # config max tokens chat completion.
 
         max_tokens_res = await a_chat_completion(
-            model_id=chat_model_id,
+            model_id=chat_completion_model_id,
             messages=[
                 SystemMessage("You are a professional assistant."),
                 UserMessage("Hi"),
@@ -70,7 +70,7 @@ class TestChatCompletion:
 
         # chat completion with stream.
 
-        stream_res = await a_chat_completion(model_id=chat_model_id,
+        stream_res = await a_chat_completion(model_id=chat_completion_model_id,
                                              messages=[
                                                  SystemMessage("You are a professional assistant."),
                                                  UserMessage("count from 1 to 50 and separate numbers by comma."),
@@ -100,7 +100,7 @@ class TestTextEmbedding:
         # Text embedding with str.
 
         input_str = "Machine learning is a subfield of artificial intelligence (AI) that involves the development of algorithms that allow computers to learn from and make decisions or predictions based on data."
-        str_res = await a_text_embedding(model_id=text_model_id, input=input_str)
+        str_res = await a_text_embedding(model_id=embedding_model_id, input=input_str)
         pytest.assume(len(str_res) > 0)
         for score in str_res:
             pytest.assume(float(-1) <= score <= float(1))
@@ -109,7 +109,7 @@ class TestTextEmbedding:
 
         input_list = ["hello", "world"]
         input_list_length = len(input_list)
-        list_res = await a_text_embedding(model_id=text_model_id, input=input_list)
+        list_res = await a_text_embedding(model_id=embedding_model_id, input=input_list)
         pytest.assume(len(list_res) == input_list_length)
         for str_res in list_res:
             pytest.assume(len(str_res) > 0)

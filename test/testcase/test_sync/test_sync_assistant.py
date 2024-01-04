@@ -4,7 +4,7 @@ import time
 from taskingai.assistant import *
 from taskingai.retrieval import *
 from taskingai.tool import *
-from test.config import chat_model_id, text_model_id, sleep_time
+from test.config import chat_completion_model_id, embedding_model_id, sleep_time
 from test.common.read_data import data
 from test.common.logger import logger
 from test.common.utils import list_to_dict
@@ -31,7 +31,7 @@ class TestAssistant:
         # Create an assistant.
 
         assistant_dict = list_to_dict(create_assistant_data)
-        assistant_dict.update({"model_id": chat_model_id})
+        assistant_dict.update({"model_id": chat_completion_model_id})
         if "retrievals" in assistant_dict.keys() and len(assistant_dict["retrievals"]) > 0 and assistant_dict["retrievals"][0]["type"] == "collection":
             assistant_dict["retrievals"][0]["id"] = collection_id
         if "tools" in assistant_dict.keys() and len(assistant_dict["tools"]) > 0 and assistant_dict["tools"][0]["type"] == "action":
@@ -575,7 +575,7 @@ class TestMessage:
 
         # create an assistant
 
-        assistant_res = create_assistant(name="test", description="test", model_id=chat_model_id, tools=[{"type": "action", "id": action_id}])
+        assistant_res = create_assistant(name="test", description="test", model_id=chat_completion_model_id, tools=[{"type": "action", "id": action_id}])
         assistant_id = assistant_res.assistant_id
 
         # create a chat
@@ -611,12 +611,12 @@ class TestMessage:
 
         # create collection
 
-        collection_res = create_collection(name="test", description="test", embedding_model_id=text_model_id, capacity=1000)
+        collection_res = create_collection(name="test", description="test", embedding_model_id=embedding_model_id, capacity=1000)
         collection_id = collection_res.collection_id
 
         # create an assistant
 
-        assistant_res = create_assistant(name="test", description="test", model_id=chat_model_id, retrievals=[{"type": "collection", "id": collection_id}])
+        assistant_res = create_assistant(name="test", description="test", model_id=chat_completion_model_id, retrievals=[{"type": "collection", "id": collection_id}])
         assistant_id = assistant_res.assistant_id
 
         # create chat

@@ -12,8 +12,8 @@ __all__ = [
 
 
 class MessageRole(str, Enum):
-    user = "user"
-    assistant = "assistant"
+    USER = "user"
+    ASSISTANT = "assistant"
 
 
 class MessageContent(TaskingaiBaseModel):

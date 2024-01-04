@@ -56,7 +56,7 @@ def list_messages(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.assistant)
+    api_instance = get_api_instance(ModuleType.ASSISTANT)
     # only add non-None parameters
     params = {
         "order": order,
@@ -96,7 +96,7 @@ async def a_list_messages(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.assistant, async_client=True)
+    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
     # only add non-None parameters
     params = {
         "order": order,
@@ -127,7 +127,7 @@ def get_message(
     :param message_id: The ID of the message.
     """
 
-    api_instance = get_api_instance(ModuleType.assistant)
+    api_instance = get_api_instance(ModuleType.ASSISTANT)
     response: MessageGetResponse = api_instance.get_message(
         assistant_id=assistant_id,
         chat_id=chat_id,
@@ -150,7 +150,7 @@ async def a_get_message(
     :param message_id: The ID of the message.
     """
 
-    api_instance = get_api_instance(ModuleType.assistant, async_client=True)
+    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
     response: MessageGetResponse = await api_instance.get_message(
         assistant_id=assistant_id,
         chat_id=chat_id,
@@ -177,9 +177,9 @@ def create_message(
     :return: The created message object.
     """
 
-    api_instance = get_api_instance(ModuleType.assistant)
+    api_instance = get_api_instance(ModuleType.ASSISTANT)
     body = MessageCreateRequest(
-        role=MessageRole.user,
+        role=MessageRole.USER,
         content=MessageContent(text=text),
         metadata=metadata,
     )
@@ -208,9 +208,9 @@ async def a_create_message(
     :return: The created message object.
     """
 
-    api_instance = get_api_instance(ModuleType.assistant, async_client=True)
+    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
     body = MessageCreateRequest(
-        role=MessageRole.user,
+        role=MessageRole.USER,
         content=MessageContent(text=text),
         metadata=metadata,
     )
@@ -238,7 +238,7 @@ def update_message(
     :return: The updated message object.
     """
 
-    api_instance = get_api_instance(ModuleType.assistant)
+    api_instance = get_api_instance(ModuleType.ASSISTANT)
     body = MessageUpdateRequest(
         metadata=metadata,
     )
@@ -267,7 +267,7 @@ async def a_update_message(
     :return: The updated message object.
     """
 
-    api_instance = get_api_instance(ModuleType.assistant, async_client=True)
+    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
     body = MessageUpdateRequest(
         metadata=metadata,
     )
@@ -298,7 +298,7 @@ def generate_message(
     :return: The generated message object.
     """
 
-    api_instance = get_api_instance(ModuleType.assistant)
+    api_instance = get_api_instance(ModuleType.ASSISTANT)
     body = MessageGenerateRequest(
         system_prompt_variables=system_prompt_variables,
         stream=stream,
@@ -339,7 +339,7 @@ async def a_generate_message(
     :return: The generated message object.
     """
 
-    api_instance = get_api_instance(ModuleType.assistant, async_client=True)
+    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
     body = MessageGenerateRequest(
         system_prompt_variables=system_prompt_variables,
         stream=stream,

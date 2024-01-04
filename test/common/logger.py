@@ -33,26 +33,26 @@ logger = Logger().logger
 
 
 def logger_info_base(http_code: str, http_status: str, res):
-    logger.info("http_code ==>> except_res：{}， real_res：【 {} 】".format(http_code, res.status_code))
-    logger.info("http_status ==>> except_res：{}， real_res：【 {} 】".format(http_status, res.json()["status"]))
+    logger.info("http_code ==>> except_res：{}， real_res： {}".format(http_code, res.status_code))
+    logger.info("http_status ==>> except_res：{}， real_res： {}".format(http_status, res.json()["status"]))
 
 
 def logger_info(http_code: str, http_status: str, res):
     logger_info_base(http_code, http_status, res)
-    logger.info("total_count ==>> real_res：【 {} 】".format(res.json()["total_count"]))
-    logger.info("fetched_count ==>> real_res：【 {} 】".format(res.json()["fetched_count"]))
+    logger.info("total_count ==>> real_res： {}".format(res.json()["total_count"]))
+    logger.info("fetched_count ==>> real_res： {}".format(res.json()["fetched_count"]))
 
 
 def logger_ready_or_creating_info(http_code: str, http_status: str, res):
     logger_info_base(http_code, http_status, res)
-    logger.info("data_status ==>> real_res：【 {} 】".format(res.json()["data"]["status"]))
+    logger.info("data_status ==>> real_res： {}".format(res.json()["data"]["status"]))
 
 
 def logger_success_info(http_code: str, http_status: str, data_status, res):
     logger_info_base(http_code, http_status, res)
-    logger.info("data_status ==>> except_res：{}， real_res：【 {} 】".format(data_status, res.json()["data"]["status"]))
+    logger.info("data_status ==>> except_res：{}， real_res： {}".format(data_status, res.json()["data"]["status"]))
 
 
 def logger_error_info(http_code: str, http_status: str, data_status, res):
     logger_info_base(http_code, http_status, res)
-    logger.info("data_status ==>> except_res：{}， real_res：【 {} 】".format(data_status, res.json()["error"]["code"]))
+    logger.info("data_status ==>> except_res：{}， real_res： {}".format(data_status, res.json()["error"]["code"]))

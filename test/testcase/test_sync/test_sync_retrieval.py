@@ -2,7 +2,7 @@ import time
 import pytest
 
 from taskingai.retrieval import list_collections, create_collection, get_collection, update_collection, delete_collection, list_records, create_text_record, get_record, update_record, delete_record, query_chunks
-from test.config import text_model_id, sleep_time
+from test.config import embedding_model_id, sleep_time
 from test.common.logger import logger
 
 
@@ -28,14 +28,14 @@ class TestCollection:
         name = "test"
         description = "just for test"
         for x in range(4):
-            res = create_collection(name=name, description=description, embedding_model_id=text_model_id, capacity=1000)
+            res = create_collection(name=name, description=description, embedding_model_id=embedding_model_id, capacity=1000)
             res_dict = res.to_dict()
             logger.info(res_dict)
             pytest.assume(res_dict.keys() == self.collection_keys)
             pytest.assume(res_dict["configs"].keys() == self.collection_configs_keys)
             pytest.assume(res_dict["name"] == name)
             pytest.assume(res_dict["description"] == description)
-            pytest.assume(res_dict["embedding_model_id"] == text_model_id)
+            pytest.assume(res_dict["embedding_model_id"] == embedding_model_id)
             pytest.assume(res_dict["capacity"] == 1000)
             pytest.assume(res_dict["status"] == "creating")
 
@@ -50,7 +50,7 @@ class TestCollection:
             pytest.assume(get_res_dict["configs"].keys() == self.collection_configs_keys)
             pytest.assume(get_res_dict["name"] == name)
             pytest.assume(get_res_dict["description"] == description)
-            pytest.assume(get_res_dict["embedding_model_id"] == text_model_id)
+            pytest.assume(get_res_dict["embedding_model_id"] == embedding_model_id)
             pytest.assume(get_res_dict["capacity"] == 1000)
             pytest.assume(get_res_dict["status"] == "ready")
 
@@ -277,7 +277,7 @@ class TestRecord:
 
         name = "test"
         description = "just for test"
-        res = create_collection(name=name, description=description, embedding_model_id=text_model_id,
+        res = create_collection(name=name, description=description, embedding_model_id=embedding_model_id,
                                         capacity=1000)
         collection_id = res.collection_id
 
@@ -298,7 +298,7 @@ class TestRecord:
 
         name = "test"
         description = "just for test"
-        res = create_collection(name=name, description=description, embedding_model_id=text_model_id,
+        res = create_collection(name=name, description=description, embedding_model_id=embedding_model_id,
                                         capacity=1000)
         collection_id = res.collection_id
         delete_collection(collection_id=collection_id)
@@ -366,7 +366,7 @@ class TestChunk:
 
         name = "test"
         description = "just for test"
-        res = create_collection(name=name, description=description, embedding_model_id=text_model_id,
+        res = create_collection(name=name, description=description, embedding_model_id=embedding_model_id,
                                         capacity=1000)
         collection_id = res.collection_id
 
@@ -388,7 +388,7 @@ class TestChunk:
 
         name = "test"
         description = "just for test"
-        collection_res = create_collection(name=name, description=description, embedding_model_id=text_model_id,
+        collection_res = create_collection(name=name, description=description, embedding_model_id=embedding_model_id,
                                                    capacity=1000)
         collection_id = collection_res.collection_id
 

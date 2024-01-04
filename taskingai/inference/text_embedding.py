@@ -25,7 +25,7 @@ def text_embedding(
     :param input: The input text or list of input texts.
     :return: The list of assistants.
     """
-    api_instance = get_api_instance(ModuleType.inference)
+    api_instance = get_api_instance(ModuleType.INFERENCE)
     # only add non-None parameters
     body = TextEmbeddingRequest(
         model_id=model_id,
@@ -54,7 +54,7 @@ async def a_text_embedding(
     :param input: The input text or list of input texts.
     :return: The list of assistants.
     """
-    api_instance = get_api_instance(ModuleType.inference, async_client=True)
+    api_instance = get_api_instance(ModuleType.INFERENCE, async_client=True)
     # only add non-None parameters
     body = TextEmbeddingRequest(
         model_id=model_id,

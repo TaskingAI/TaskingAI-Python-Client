@@ -58,7 +58,7 @@ def list_assistants(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.assistant)
+    api_instance = get_api_instance(ModuleType.ASSISTANT)
     # only add non-None parameters
     params = {
         "order": order,
@@ -91,7 +91,7 @@ async def a_list_assistants(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.assistant, async_client=True)
+    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
     # only add non-None parameters
     params = {
         "order": order,
@@ -113,7 +113,7 @@ def get_assistant(assistant_id: str) -> Assistant:
     :param assistant_id: The ID of the assistant.
     """
 
-    api_instance = get_api_instance(ModuleType.assistant)
+    api_instance = get_api_instance(ModuleType.ASSISTANT)
     response: AssistantGetResponse = api_instance.get_assistant(assistant_id=assistant_id)
     assistant: Assistant = Assistant(**response.data)
     return assistant
@@ -126,7 +126,7 @@ async def a_get_assistant(assistant_id: str) -> Assistant:
     :param assistant_id: The ID of the assistant.
     """
 
-    api_instance = get_api_instance(ModuleType.assistant, async_client=True)
+    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
     response: AssistantGetResponse = await api_instance.get_assistant(assistant_id=assistant_id)
     assistant: Assistant = Assistant(**response.data)
     return assistant
@@ -156,7 +156,7 @@ def create_assistant(
     :return: The created assistant object.
     """
 
-    api_instance = get_api_instance(ModuleType.assistant)
+    api_instance = get_api_instance(ModuleType.ASSISTANT)
     memory_dict = memory.model_dump()
     body = AssistantCreateRequest(
         model_id=model_id,
@@ -197,7 +197,7 @@ async def a_create_assistant(
     :return: The created assistant object.
     """
 
-    api_instance = get_api_instance(ModuleType.assistant, async_client=True)
+    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
     memory_dict = memory.model_dump()
     body = AssistantCreateRequest(
         model_id=model_id,
@@ -240,7 +240,7 @@ def update_assistant(
     :return: The updated assistant object.
     """
 
-    api_instance = get_api_instance(ModuleType.assistant)
+    api_instance = get_api_instance(ModuleType.ASSISTANT)
     body = AssistantUpdateRequest(
         model_id=model_id,
         name=name,
@@ -282,7 +282,7 @@ async def a_update_assistant(
     :return: The updated assistant object.
     """
 
-    api_instance = get_api_instance(ModuleType.assistant, async_client=True)
+    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
     body = AssistantUpdateRequest(
         model_id=model_id,
         name=name,
@@ -305,7 +305,7 @@ def delete_assistant(assistant_id: str) -> None:
     :param assistant_id: The ID of the assistant.
     """
 
-    api_instance = get_api_instance(ModuleType.assistant)
+    api_instance = get_api_instance(ModuleType.ASSISTANT)
     api_instance.delete_assistant(assistant_id=assistant_id)
 
 
@@ -316,6 +316,6 @@ async def a_delete_assistant(assistant_id: str) -> None:
     :param assistant_id: The ID of the assistant.
     """
 
-    api_instance = get_api_instance(ModuleType.assistant, async_client=True)
+    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
     await api_instance.delete_assistant(assistant_id=assistant_id)
 
