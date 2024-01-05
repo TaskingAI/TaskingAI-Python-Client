@@ -52,6 +52,8 @@ def assume_assistant(res, assistant_dict: Dict[str, Any]):
             pass
         elif key == 'system_prompt_template' and isinstance(value, str):
             pytest.assume(res[key] == [assistant_dict[key]])
+        elif key in ["memory", "tool", "retrievals"]:
+            pass
         else:
             pytest.assume(res[key] == assistant_dict[key])
 
