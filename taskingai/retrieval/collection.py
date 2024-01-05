@@ -41,7 +41,7 @@ def list_collections(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.retrieval)
+    api_instance = get_api_instance(ModuleType.RETRIEVAL)
     # only add non-None parameters
     params = {
         "order": order,
@@ -74,7 +74,7 @@ async def a_list_collections(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.retrieval, async_client=True)
+    api_instance = get_api_instance(ModuleType.RETRIEVAL, async_client=True)
     # only add non-None parameters
     params = {
         "order": order,
@@ -95,7 +95,7 @@ def get_collection(collection_id: str) -> Collection:
     :param collection_id: The ID of the collection.
     """
 
-    api_instance = get_api_instance(ModuleType.retrieval)
+    api_instance = get_api_instance(ModuleType.RETRIEVAL)
     response: CollectionGetResponse = api_instance.get_collection(collection_id=collection_id)
     collection: Collection = Collection(**response.data)
     return collection
@@ -108,7 +108,7 @@ async def a_get_collection(collection_id: str) -> Collection:
     :param collection_id: The ID of the collection.
     """
 
-    api_instance = get_api_instance(ModuleType.retrieval, async_client=True)
+    api_instance = get_api_instance(ModuleType.RETRIEVAL, async_client=True)
     response: CollectionGetResponse = await api_instance.get_collection(collection_id=collection_id)
     collection: Collection = Collection(**response.data)
     return collection
@@ -135,7 +135,7 @@ def create_collection(
     """
 
     # todo verify parameters
-    api_instance = get_api_instance(ModuleType.retrieval)
+    api_instance = get_api_instance(ModuleType.RETRIEVAL)
     body = CollectionCreateRequest(
         embedding_model_id=embedding_model_id,
         capacity=capacity,
@@ -170,7 +170,7 @@ async def a_create_collection(
     """
 
     # todo verify parameters
-    api_instance = get_api_instance(ModuleType.retrieval, async_client=True)
+    api_instance = get_api_instance(ModuleType.RETRIEVAL, async_client=True)
     body = CollectionCreateRequest(
         embedding_model_id=embedding_model_id,
         capacity=capacity,
@@ -199,7 +199,7 @@ def update_collection(
     :return: The updated collection object.
     """
     #todo: verify at least one parameter is not None
-    api_instance = get_api_instance(ModuleType.retrieval)
+    api_instance = get_api_instance(ModuleType.RETRIEVAL)
     body = CollectionUpdateRequest(
         name=name,
         description=description,
@@ -227,7 +227,7 @@ async def a_update_collection(
     :param authentication: The collection API authentication.
     :return: The updated collection object.
     """
-    api_instance = get_api_instance(ModuleType.retrieval, async_client=True)
+    api_instance = get_api_instance(ModuleType.RETRIEVAL, async_client=True)
     body = CollectionUpdateRequest(
         name=name,
         description=description,
@@ -248,7 +248,7 @@ def delete_collection(collection_id: str) -> None:
     :param collection_id: The ID of the collection.
     """
 
-    api_instance = get_api_instance(ModuleType.retrieval)
+    api_instance = get_api_instance(ModuleType.RETRIEVAL)
     api_instance.delete_collection(collection_id=collection_id)
 
 
@@ -259,6 +259,6 @@ async def a_delete_collection(collection_id: str) -> None:
     :param collection_id: The ID of the collection.
     """
 
-    api_instance = get_api_instance(ModuleType.retrieval, async_client=True)
+    api_instance = get_api_instance(ModuleType.RETRIEVAL, async_client=True)
     await api_instance.delete_collection(collection_id=collection_id)
 

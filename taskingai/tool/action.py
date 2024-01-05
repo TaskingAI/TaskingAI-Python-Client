@@ -50,7 +50,7 @@ def list_actions(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.tool)
+    api_instance = get_api_instance(ModuleType.TOOL)
     # only add non-None parameters
     params = {
         "order": order,
@@ -82,7 +82,7 @@ async def a_list_actions(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.tool, async_client=True)
+    api_instance = get_api_instance(ModuleType.TOOL, async_client=True)
     # only add non-None parameters
     params = {
         "order": order,
@@ -104,7 +104,7 @@ def get_action(action_id: str) -> Action:
     :param action_id: The ID of the action.
     """
 
-    api_instance = get_api_instance(ModuleType.tool)
+    api_instance = get_api_instance(ModuleType.TOOL)
     response: ActionGetResponse = api_instance.get_action(action_id=action_id)
     action: Action = Action(**response.data)
     return action
@@ -117,7 +117,7 @@ async def a_get_action(action_id: str) -> Action:
     :param action_id: The ID of the action.
     """
 
-    api_instance = get_api_instance(ModuleType.tool, async_client=True)
+    api_instance = get_api_instance(ModuleType.TOOL, async_client=True)
     response: ActionGetResponse = await api_instance.get_action(action_id=action_id)
     action: Action = Action(**response.data)
     return action
@@ -135,7 +135,7 @@ def bulk_create_actions(
     """
 
     # todo verify schema
-    api_instance = get_api_instance(ModuleType.tool)
+    api_instance = get_api_instance(ModuleType.TOOL)
     if authentication is None:
         authentication = ActionAuthentication(
             type=ActionAuthenticationType.NONE,
@@ -162,7 +162,7 @@ async def a_bulk_create_actions(
     """
 
     # todo verify schema
-    api_instance = get_api_instance(ModuleType.tool, async_client=True)
+    api_instance = get_api_instance(ModuleType.TOOL, async_client=True)
     if authentication is None:
         authentication = ActionAuthentication(
             type=ActionAuthenticationType.NONE,
@@ -190,7 +190,7 @@ def update_action(
     :return: The updated action object.
     """
     #todo: verify schema
-    api_instance = get_api_instance(ModuleType.tool)
+    api_instance = get_api_instance(ModuleType.TOOL)
     body = ActionUpdateRequest(
         schema=schema,
         authentication=authentication,
@@ -216,7 +216,7 @@ async def a_update_action(
     :param authentication: The action API authentication.
     :return: The updated action object.
     """
-    api_instance = get_api_instance(ModuleType.tool, async_client=True)
+    api_instance = get_api_instance(ModuleType.TOOL, async_client=True)
     body = ActionUpdateRequest(
         schema=schema,
         authentication=authentication,
@@ -236,7 +236,7 @@ def delete_action(action_id: str) -> None:
     :param action_id: The ID of the action.
     """
 
-    api_instance = get_api_instance(ModuleType.tool)
+    api_instance = get_api_instance(ModuleType.TOOL)
     api_instance.delete_action(action_id=action_id)
 
 
@@ -247,7 +247,7 @@ async def a_delete_action(action_id: str) -> None:
     :param action_id: The ID of the action.
     """
 
-    api_instance = get_api_instance(ModuleType.tool, async_client=True)
+    api_instance = get_api_instance(ModuleType.TOOL, async_client=True)
     await api_instance.delete_action(action_id=action_id)
 
 
@@ -263,7 +263,7 @@ def run_action(
     :return: The action response.
     """
 
-    api_instance = get_api_instance(ModuleType.tool)
+    api_instance = get_api_instance(ModuleType.TOOL)
     body = ActionRunRequest(
         parameters=parameters,
     )
@@ -287,7 +287,7 @@ async def a_run_action(
     :return: The action response.
     """
 
-    api_instance = get_api_instance(ModuleType.tool, async_client=True)
+    api_instance = get_api_instance(ModuleType.TOOL, async_client=True)
     body = ActionRunRequest(
         parameters=parameters,
     )

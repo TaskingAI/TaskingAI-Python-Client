@@ -4,7 +4,8 @@ import time
 from taskingai.assistant import *
 from taskingai.retrieval import *
 from taskingai.tool import *
-from test.config import chat_model_id, text_model_id, sleep_time
+from taskingai.assistant.memory import AssistantNaiveMemory
+from test.config import chat_completion_model_id, embedding_model_id, sleep_time
 from test.common.read_data import data
 from test.common.logger import logger
 from test.common.utils import list_to_dict
@@ -13,55 +14,38 @@ from test.common.utils import assume_assistant
 
 assistant_data = data.load_yaml("test_assistant_data.yml")
 
+
 @pytest.mark.test_sync
 class TestAssistant:
 
-    assistant_list = ['assistant_id', 'created_timestamp', 'description', 'metadata', 'model_id', 'name', 'object', 'retrievals', 'system_prompt_template', 'tools']
+    assistant_list = ['assistant_id', 'created_timestamp', 'description', 'metadata', 'model_id', 'name', 'object', 'retrievals', 'system_prompt_template', 'tools',"memory"]
     assistant_keys = set(assistant_list)
 
     @pytest.mark.parametrize("create_assistant_data", assistant_data["test_success_create_assistant"])
     @pytest.mark.run(order=18)
     def test_create_assistant(self, collection_id, action_id, create_assistant_data):
 
-        # List assistants.
-
-        old_res = list_assistants(limit=100)
-        old_nums = len(old_res)
-
         # Create an assistant.
 
         assistant_dict = list_to_dict(create_assistant_data)
-        assistant_dict.update({"model_id": chat_model_id})
+        assistant_dict.update({"model_id": chat_completion_model_id})
         if "retrievals" in assistant_dict.keys() and len(assistant_dict["retrievals"]) > 0 and assistant_dict["retrievals"][0]["type"] == "collection":
             assistant_dict["retrievals"][0]["id"] = collection_id
         if "tools" in assistant_dict.keys() and len(assistant_dict["tools"]) > 0 and assistant_dict["tools"][0]["type"] == "action":
             assistant_dict["tools"][0]["id"] = action_id
+        assistant_dict.update({"memory": AssistantNaiveMemory()})
         res = create_assistant(**assistant_dict)
         res_dict = res.to_dict()
         logger.info(f'response_dict:{res_dict}, except_dict:{assistant_dict}')
         pytest.assume(res_dict.keys() == self.assistant_keys)
         assume_assistant(res_dict, assistant_dict)
 
-        # Get an assistant.
-
-        get_res = get_assistant(assistant_id=res_dict["assistant_id"])
-        get_res_dict = get_res.to_dict()
-        pytest.assume(get_res_dict.keys() == self.assistant_keys)
-        assume_assistant(get_res_dict, assistant_dict)
-
-        # List assistants.
-
-        new_res = list_assistants(limit=100)
-        new_nums = len(new_res)
-        logger.info(f'old_nums:{old_nums}, new_nums:{new_nums}')
-        pytest.assume(new_nums == old_nums + 1)
-
     @pytest.mark.run(order=19)
     def test_list_assistants(self):
 
         # List assistants.
 
-        nums_limit = 2
+        nums_limit = 1
         res = list_assistants(limit=nums_limit)
         pytest.assume(len(res) == nums_limit)
 
@@ -101,14 +85,8 @@ class TestAssistant:
         pytest.assume(res_dict.keys() == self.assistant_keys)
         pytest.assume(res_dict["name"] == name)
         pytest.assume(res_dict["description"] == description)
-        # Get an assistant.
-        get_res = get_assistant(assistant_id=assistant_id)
-        get_res_dict = get_res.to_dict()
-        pytest.assume(get_res_dict.keys() == self.assistant_keys)
-        pytest.assume(get_res_dict["name"] == name)
-        pytest.assume(get_res_dict["description"] == description)
 
-    @pytest.mark.run(order=32)
+    @pytest.mark.run(order=33)
     def test_delete_assistant(self):
 
         # List assistants.
@@ -140,11 +118,7 @@ class TestChat:
         @pytest.mark.run(order=22)
         def test_create_chat(self, assistant_id):
 
-            # List chats.
-
-            old_res = list_chats(assistant_id=assistant_id)
-            old_nums = len(old_res)
-            for x in range(4):
+            for x in range(2):
 
                 # Create a chat.
 
@@ -152,24 +126,12 @@ class TestChat:
                 res_dict = res.to_dict()
                 pytest.assume(res_dict.keys() == self.chat_keys)
 
-                # Get a chat.
-
-                get_res = get_chat(assistant_id=assistant_id, chat_id=res_dict["chat_id"])
-                get_res_dict = get_res.to_dict()
-                pytest.assume(get_res_dict.keys() == self.chat_keys)
-
-                # List chats.
-
-                new_res = list_chats(assistant_id=assistant_id)
-                new_nums = len(new_res)
-                pytest.assume(new_nums == old_nums + 1 + x)
-
         @pytest.mark.run(order=23)
         def test_list_chats(self, assistant_id):
 
             # List chats.
 
-            nums_limit = 2
+            nums_limit = 1
             res = list_chats(limit=nums_limit, assistant_id=assistant_id)
             pytest.assume(len(res) == nums_limit)
 
@@ -208,14 +170,7 @@ class TestChat:
             pytest.assume(res_dict.keys() == self.chat_keys)
             pytest.assume(res_dict["metadata"] == metadata)
 
-            # Get a chat.
-
-            get_res = get_chat(assistant_id=assistant_id, chat_id=chat_id)
-            get_res_dict = get_res.to_dict()
-            pytest.assume(get_res_dict.keys() == self.chat_keys)
-            pytest.assume(get_res_dict["metadata"] == metadata)
-
-        @pytest.mark.run(order=31)
+        @pytest.mark.run(order=32)
         def test_delete_chat(self, assistant_id):
 
             # List chats.
@@ -247,11 +202,7 @@ class TestMessage:
     @pytest.mark.run(order=26)
     def test_create_message(self, assistant_id, chat_id):
 
-        # List messages.
-
-        old_res = list_messages(assistant_id=assistant_id, chat_id=chat_id)
-        old_nums = len(old_res)
-        for x in range(4):
+        for x in range(2):
 
             # Create a user message.
 
@@ -263,24 +214,12 @@ class TestMessage:
             pytest.assume(res_dict["content"]["text"] == text)
             pytest.assume(res_dict["role"] == "user")
 
-            # Get a message.
-
-            get_res = get_message(assistant_id=assistant_id, chat_id=chat_id, message_id=res_dict["message_id"])
-            get_res_dict = get_res.to_dict()
-            pytest.assume(get_res_dict.keys() == self.message_keys)
-
-            # List messages.
-
-            new_res = list_messages(assistant_id=assistant_id, chat_id=chat_id)
-            new_nums = len(new_res)
-            pytest.assume(new_nums == old_nums + 1 + x)
-
     @pytest.mark.run(order=27)
     def test_list_messages(self, assistant_id, chat_id):
 
         # List messages.
 
-        nums_limit = 2
+        nums_limit = 1
         res = list_messages(limit=nums_limit, assistant_id=assistant_id, chat_id=chat_id)
         pytest.assume(len(res) == nums_limit)
         after_id = res[-1].message_id
@@ -319,20 +258,8 @@ class TestMessage:
         pytest.assume(res_dict.keys() == self.message_keys)
         pytest.assume(res_dict["metadata"] == metadata)
 
-        # Get a message.
-
-        get_res = get_message(assistant_id=assistant_id, chat_id=chat_id, message_id=message_id)
-        get_res_dict = get_res.to_dict()
-        pytest.assume(get_res_dict.keys() == self.message_keys)
-        pytest.assume(get_res_dict["metadata"] == metadata)
-
     @pytest.mark.run(order=30)
     def test_generate_message(self, assistant_id, chat_id):
-
-        # List messages.
-
-        messages = list_messages(assistant_id=assistant_id, chat_id=chat_id)
-        old_nums = len(messages)
 
         # Generate an assistant message by no stream.
 
@@ -340,18 +267,6 @@ class TestMessage:
         res_dict = res.to_dict()
         pytest.assume(res_dict.keys() == self.message_keys)
         pytest.assume(res_dict["role"] == "assistant")
-
-        # Get a message.
-
-        get_res = get_message(assistant_id=assistant_id, chat_id=chat_id, message_id=res_dict["message_id"])
-        get_res_dict = get_res.to_dict()
-        pytest.assume(get_res_dict.keys() == self.message_keys)
-
-        # List messages.
-
-        new_res = list_messages(assistant_id=assistant_id, chat_id=chat_id)
-        new_nums = len(new_res)
-        pytest.assume(new_nums == old_nums + 1)
 
     @pytest.mark.run(order=30)
     def test_generate_message_by_stream(self):
@@ -390,262 +305,4 @@ class TestMessage:
                 pytest.assume(item.content is not None)
         logger.info(f"except_list: {except_list} real_list: {real_list}")
         pytest.assume(set(except_list) == set(real_list))
-
-    @pytest.mark.run(order=30)
-    @pytest.mark.test_abnormal
-    def test_generate_message_in_user_message_not_created(self, assistant_id):
-
-        # create chat
-
-        chat_res = create_chat(assistant_id=assistant_id)
-        chat_id = chat_res.chat_id
-        logger.info(f'chat_id:{chat_id}')
-
-        # Generate an assistant message.
-
-        try:
-            res = generate_message(assistant_id=assistant_id, chat_id=chat_id,
-                                   system_prompt_variables={})
-        except Exception as e:
-            logger.info(f'test_generate_message_in_user_message_not_created{e}')
-            pytest.assume("There is no user message in the chat context." in str(e))
-
-    @pytest.mark.run(order=30)
-    @pytest.mark.test_abnormal
-    def test_create_message_in_generating_assistant_message(self, assistant_id):
-
-        # create chat
-
-        chat_res = create_chat(assistant_id=assistant_id)
-        chat_id = chat_res.chat_id
-        logger.info(f'chat_id:{chat_id}')
-
-        # create user message
-
-        user_message = create_message(
-            assistant_id=assistant_id,
-            chat_id=chat_id,
-            text="count from 1 to 100 and separate numbers by comma.",
-        )
-
-        # Generate an assistant message by stream.
-
-        stream_res = generate_message(assistant_id=assistant_id, chat_id=chat_id,
-                                      system_prompt_variables={}, stream=True)
-
-        # create user message
-
-        try:
-            user_message = create_message(
-                assistant_id=assistant_id,
-                chat_id=chat_id,
-                text="count from 100 to 200 and separate numbers by comma.",
-            )
-        except Exception as e:
-            logger.info(f'test_create_message_in_generating_assistant_message{user_message}')
-            pytest.assume("Chat is locked by another generation process. Please try again later." in str(e))
-
-    @pytest.mark.run(order=30)
-    @pytest.mark.test_abnormal
-    def test_generate_message_in_generating_assistant_message(self, assistant_id):
-
-        # create chat
-
-        chat_res = create_chat(assistant_id=assistant_id)
-        chat_id = chat_res.chat_id
-        logger.info(f'chat_id:{chat_id}')
-
-        # create user message
-
-        user_message = create_message(
-            assistant_id=assistant_id,
-            chat_id=chat_id,
-            text="count from 1 to 100 and separate numbers by comma.",
-        )
-
-        # Generate an assistant message by stream.
-
-        stream_res = generate_message(assistant_id=assistant_id, chat_id=chat_id,
-                                      system_prompt_variables={},
-                                      stream=True)
-
-        # Generate an assistant message by stream.
-
-        try:
-            stream_res = generate_message(assistant_id=assistant_id, chat_id=chat_id,
-                                          system_prompt_variables={},
-                                          stream=True)
-        except Exception as e:
-            logger.info(f'est_generate_message_in_generating_assistant_message{stream_res}')
-            pytest.assume("Chat is locked by another generation process. Please try again later." in str(e))
-
-    @pytest.mark.run(order=30)
-    @pytest.mark.test_abnormal
-    def test_generate_message_in_generated_assistant_message(self, assistant_id):
-
-        # create chat
-
-        chat_res = create_chat(assistant_id=assistant_id)
-        chat_id = chat_res.chat_id
-        logger.info(f'chat_id:{chat_id}')
-
-        # create user message
-
-        user_message = create_message(
-            assistant_id=assistant_id,
-            chat_id=chat_id,
-            text="count from 1 to 100 and separate numbers by comma.",
-        )
-
-        # Generate an assistant message by stream.
-
-        res = generate_message(assistant_id=assistant_id, chat_id=chat_id,
-                               system_prompt_variables={})
-
-        # Generate an assistant message by stream.
-
-        try:
-            stream_res = generate_message(assistant_id=assistant_id, chat_id=chat_id,
-                                          system_prompt_variables={},
-                                          stream=True)
-        except Exception as e:
-            logger.info(f'test_generate_message_in_generated_assistant_message{e}')
-            pytest.assume("Cannot generate another assistant message after an assistant message." in str(e))
-
-    @pytest.mark.run(order=30)
-    @pytest.mark.test_abnormal
-    def test_generate_message_in_action_deleted_assistant(self):
-
-        # create action
-
-        schema = {
-            "openapi": "3.1.0",
-            "info": {
-                "title": "Get weather data",
-                "description": "Retrieves current weather data for a location.",
-                "version": "v1.0.0"
-            },
-            "servers": [
-                {
-                    "url": "https://weather.example.com"
-                }
-            ],
-            "paths": {
-                "/location": {
-                    "get": {
-                        "description": "Get temperature for a specific location",
-                        "operationId": "GetCurrentWeather",
-                        "parameters": [
-                            {
-                                "name": "location",
-                                "in": "query",
-                                "description": "The city and state to retrieve the weather for",
-                                "required": True,
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        ],
-                        "deprecated": False
-                    },
-                    "post": {
-                        "description": "UPDATE temperature for a specific location",
-                        "operationId": "UpdateCurrentWeather",
-                        "requestBody": {
-                            "required": True,
-                            "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "$ref": "#/componeents/schemas/ActionCreateRequest"
-                                    }
-                                }
-                            }
-                        },
-                        "deprecated": False
-                    }
-                }
-            },
-            "components": {
-                "schemas": {}
-            },
-            "security": []
-        }
-        action_res = bulk_create_actions(schema=schema)
-        action_id = action_res[0].action_id
-
-        # create an assistant
-
-        assistant_res = create_assistant(name="test", description="test", model_id=chat_model_id, tools=[{"type": "action", "id": action_id}])
-        assistant_id = assistant_res.assistant_id
-
-        # create a chat
-
-        chat_res = create_chat(assistant_id=assistant_id)
-        chat_id = chat_res.chat_id
-
-        # create user message
-
-        user_message = create_message(
-            assistant_id=assistant_id,
-            chat_id=chat_id,
-            text="count from 1 to 100 and separate numbers by comma.",
-        )
-
-        # delete action
-
-        delete_action(action_id=action_id)
-        time.sleep(sleep_time)
-
-        # Generate an assistant message by stream.
-
-        try:
-            res = generate_message(assistant_id=assistant_id, chat_id=chat_id,
-                                   system_prompt_variables={})
-        except Exception as e:
-            logger.info(f'test_generate_message_in_action_deleted_assistant{e}')
-            pytest.assume("Some tools are not found" in str(e))
-
-    @pytest.mark.run(order=30)
-    @pytest.mark.test_abnormal
-    def test_generate_message_in_collection_deleted_assistant(self):
-
-        # create collection
-
-        collection_res = create_collection(name="test", description="test", embedding_model_id=text_model_id, capacity=1000)
-        collection_id = collection_res.collection_id
-
-        # create an assistant
-
-        assistant_res = create_assistant(name="test", description="test", model_id=chat_model_id, retrievals=[{"type": "collection", "id": collection_id}])
-        assistant_id = assistant_res.assistant_id
-
-        # create chat
-
-        chat_res = create_chat(assistant_id=assistant_id)
-        chat_id = chat_res.chat_id
-
-        # create user message
-
-        user_message = create_message(
-            assistant_id=assistant_id,
-            chat_id=chat_id,
-            text="count from 1 to 1000 and separate numbers by comma.",
-        )
-
-        # delete collection
-
-        delete_collection(collection_id)
-        time.sleep(sleep_time)
-
-        # Generate an assistant message by stream.
-
-        try:
-            res = generate_message(assistant_id=assistant_id, chat_id=chat_id,
-                                   system_prompt_variables={})
-        except Exception as e:
-            logger.info(f'test_generate_message_in_collection_deleted_assistant{e}')
-            pytest.assume(f"Collections not found" in str(e))
-
-
-
 

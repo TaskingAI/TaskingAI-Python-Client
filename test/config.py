@@ -1,14 +1,13 @@
-# your chat_model_id
+import os
 
-chat_model_id = "KnnBZsjH"
+chat_completion_model_id = os.environ.get("CHAT_COMPLETION_MODEL_ID")
+if not chat_completion_model_id:
+    raise ValueError("chat_completion_model_id is not defined")
 
-# your text_model_id
-
-text_model_id = "fTfk462c"
-
-# need sleep time
+embedding_model_id = os.environ.get("EMBEDDING_MODEL_ID")
+if not chat_completion_model_id:
+    raise ValueError("chat_completion_model_id is not defined")
 
 sleep_time = 1
 
 
-# TASKINGAI_API_KEY = "tag4rNUwc7sYBjTjXtGNe6WbGNhI056C"

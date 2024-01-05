@@ -22,10 +22,10 @@ __all__ = [
 
 
 class ChatCompletionRole(str, Enum):
-    system = "system"
-    assistant = "assistant"
-    user = "user"
-    function = "function"
+    SYSTEM = "system"
+    ASSISTANT = "assistant"
+    USER = "user"
+    FUNCTION = "function"
 
 
 class ChatCompletionFunctionCall(TaskingaiBaseModel):
@@ -45,30 +45,30 @@ class ChatCompletionMessage(TaskingaiBaseModel, metaclass=ABCMeta):
 
 
 class ChatCompletionSystemMessage(ChatCompletionMessage):
-    role: ChatCompletionRole = Field(Literal[ChatCompletionRole.system])
+    role: ChatCompletionRole = Field(Literal[ChatCompletionRole.SYSTEM])
 
 
 class ChatCompletionUserMessage(ChatCompletionMessage):
-    role: ChatCompletionRole = Field(Literal[ChatCompletionRole.user])
+    role: ChatCompletionRole = Field(Literal[ChatCompletionRole.USER])
 
 
 class ChatCompletionAssistantMessage(ChatCompletionMessage):
-    role: ChatCompletionRole = Field(Literal[ChatCompletionRole.assistant])
+    role: ChatCompletionRole = Field(Literal[ChatCompletionRole.ASSISTANT])
     function_calls: Optional[List[ChatCompletionFunctionCall]]
 
 
 class ChatCompletionFunctionMessage(ChatCompletionMessage):
-    role: ChatCompletionRole = Field(Literal[ChatCompletionRole.function])
+    role: ChatCompletionRole = Field(Literal[ChatCompletionRole.FUNCTION])
     id: str
 
 
 class ChatCompletionFinishReason(str, Enum):
-    stop = "stop"
-    length = "length"
-    function_calls = "function_calls"
-    recitation = "recitation"
-    error = "error"
-    unknown = "unknown"
+    STOP = "stop"
+    LENGTH = "length"
+    FUNCTION_CALLS = "function_calls"
+    RECITATION = "recitation"
+    ERROR = "error"
+    UNKNOWN = "unknown"
 
 
 class ChatCompletion(TaskingaiBaseModel):
