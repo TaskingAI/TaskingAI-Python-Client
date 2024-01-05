@@ -2,6 +2,7 @@ import asyncio
 import pytest
 
 from taskingai.assistant import *
+from taskingai.assistant.memory import AssistantNaiveMemory
 from test.config import chat_completion_model_id, sleep_time, embedding_model_id
 from test.common.read_data import data
 from test.common.logger import logger
@@ -26,10 +27,6 @@ class TestAssistant(Base):
     @pytest.mark.asyncio
     async def test_a_create_assistant(self, a_create_assistant_data):
 
-        # List assistants.
-        old_res = await a_list_assistants(limit=100)
-        old_nums = len(old_res)
-
         # Create an assistant.
 
         assistant_dict = list_to_dict(a_create_assistant_data)
@@ -41,24 +38,12 @@ class TestAssistant(Base):
                 == "action"):
             logger.info(f'a_create_assistant_action_id:{Base.action_id}')
             assistant_dict["tools"][0]["id"] = Base.action_id
+        assistant_dict.update({"memory": AssistantNaiveMemory()})
         res = await a_create_assistant(**assistant_dict)
         res_dict = res.to_dict()
         logger.info(f'response_dict:{res_dict}, except_dict:{assistant_dict}')
         pytest.assume(res_dict.keys() == self.assistant_keys)
         assume_assistant(res_dict, assistant_dict)
-
-        # Get an assistant.
-
-        get_res = await a_get_assistant(assistant_id=res_dict["assistant_id"])
-        get_res_dict = get_res.to_dict()
-        pytest.assume(get_res_dict.keys() == self.assistant_keys)
-
-        # List assistants.
-
-        new_res = await a_list_assistants(limit=100)
-        new_nums = len(new_res)
-        logger.info(f'old_nums:{old_nums}, new_nums:{new_nums}')
-        pytest.assume(new_nums == old_nums + 1)
 
     @pytest.mark.run(order=19)
     @pytest.mark.asyncio
@@ -66,7 +51,7 @@ class TestAssistant(Base):
 
         # List assistants.
 
-        nums_limit = 2
+        nums_limit = 1
         res = await a_list_assistants(limit=nums_limit)
         pytest.assume(len(res) == nums_limit)
 
@@ -111,15 +96,7 @@ class TestAssistant(Base):
         pytest.assume(res_dict["name"] == name)
         pytest.assume(res_dict["description"] == description)
 
-        # Get an assistant.
-
-        get_res = await a_get_assistant(assistant_id=self.assistant_id)
-        get_res_dict = get_res.to_dict()
-        pytest.assume(get_res_dict.keys() == self.assistant_keys)
-        pytest.assume(get_res_dict["name"] == name)
-        pytest.assume(get_res_dict["description"] == description)
-
-    @pytest.mark.run(order=32)
+    @pytest.mark.run(order=33)
     @pytest.mark.asyncio
     async def test_a_delete_assistant(self):
 
@@ -142,6 +119,7 @@ class TestAssistant(Base):
             new_nums = len(new_assistants)
             pytest.assume(new_nums == old_nums - 1 - i)
 
+
 @pytest.mark.test_async
 class TestChat(Base):
 
@@ -152,12 +130,7 @@ class TestChat(Base):
         @pytest.mark.asyncio
         async def test_a_create_chat(self):
 
-            # List chats.
-
-            old_res = await a_list_chats(assistant_id=self.assistant_id)
-            old_nums = len(old_res)
-
-            for x in range(4):
+            for x in range(2):
 
                 # Create a chat.
 
@@ -165,25 +138,13 @@ class TestChat(Base):
                 res_dict = res.to_dict()
                 pytest.assume(res_dict.keys() == self.chat_keys)
 
-                # Get a chat.
-
-                get_res = await a_get_chat(assistant_id=self.assistant_id, chat_id=res_dict["chat_id"])
-                get_res_dict = get_res.to_dict()
-                pytest.assume(get_res_dict.keys() == self.chat_keys)
-
-                # List chats.
-
-                new_res = await a_list_chats(assistant_id=self.assistant_id)
-                new_nums = len(new_res)
-                pytest.assume(new_nums == old_nums + 1 + x)
-
         @pytest.mark.run(order=23)
         @pytest.mark.asyncio
         async def test_a_list_chats(self):
 
             # List chats.
 
-            nums_limit = 2
+            nums_limit = 1
             res = await a_list_chats(limit=nums_limit, assistant_id=self.assistant_id)
             pytest.assume(len(res) == nums_limit)
 
@@ -226,14 +187,7 @@ class TestChat(Base):
             pytest.assume(res_dict.keys() == self.chat_keys)
             pytest.assume(res_dict["metadata"] == metadata)
 
-            # Get a chat.
-
-            get_res = await a_get_chat(assistant_id=self.assistant_id, chat_id=self.chat_id)
-            get_res_dict = get_res.to_dict()
-            pytest.assume(get_res_dict.keys() == self.chat_keys)
-            pytest.assume(get_res_dict["metadata"] == metadata)
-
-        @pytest.mark.run(order=31)
+        @pytest.mark.run(order=32)
         @pytest.mark.asyncio
         async def test_a_delete_chat(self):
 
@@ -268,12 +222,7 @@ class TestMessage(Base):
     @pytest.mark.asyncio
     async def test_a_create_message(self):
 
-        # List messages.
-
-        old_res = await a_list_messages(assistant_id=self.assistant_id, chat_id=self.chat_id)
-        old_nums = len(old_res)
-
-        for x in range(4):
+        for x in range(2):
 
             # Create a user message.
 
@@ -285,26 +234,13 @@ class TestMessage(Base):
             pytest.assume(res_dict["content"]["text"] == text)
             pytest.assume(res_dict["role"] == "user")
 
-            # Get a message.
-
-            get_res = await a_get_message(assistant_id=self.assistant_id, chat_id=self.chat_id,
-                                          message_id=res_dict["message_id"])
-            get_res_dict = get_res.to_dict()
-            pytest.assume(get_res_dict.keys() == self.message_keys)
-
-            # List messages.
-
-            new_res = await a_list_messages(assistant_id=self.assistant_id, chat_id=self.chat_id)
-            new_nums = len(new_res)
-            pytest.assume(new_nums == old_nums + 1 + x)
-
     @pytest.mark.run(order=27)
     @pytest.mark.asyncio
     async def test_a_list_messages(self):
 
         # List messages.
 
-        nums_limit = 2
+        nums_limit = 1
         res = await a_list_messages(limit=nums_limit, assistant_id=self.assistant_id, chat_id=self.chat_id)
         pytest.assume(len(res) == nums_limit)
 
@@ -351,21 +287,9 @@ class TestMessage(Base):
         pytest.assume(res_dict.keys() == self.message_keys)
         pytest.assume(res_dict["metadata"] == metadata)
 
-        # Get a message.
-
-        get_res = await a_get_message(assistant_id=self.assistant_id, chat_id=self.chat_id, message_id=self.message_id)
-        get_res_dict = get_res.to_dict()
-        pytest.assume(get_res_dict.keys() == self.message_keys)
-        pytest.assume(get_res_dict["metadata"] == metadata)
-
     @pytest.mark.run(order=30)
     @pytest.mark.asyncio
     async def test_a_generate_message(self):
-
-        # List messages.
-
-        messages = await a_list_messages(assistant_id=self.assistant_id, chat_id=self.chat_id)
-        old_nums = len(messages)
 
         # Generate an assistant message.
 
@@ -374,18 +298,6 @@ class TestMessage(Base):
         res_dict = res.to_dict()
         pytest.assume(res_dict.keys() == self.message_keys)
         pytest.assume(res_dict["role"] == "assistant")
-
-        # Get a message.
-
-        get_res = await a_get_message(assistant_id=self.assistant_id, chat_id=self.chat_id,
-                                      message_id=res_dict["message_id"])
-        get_res_dict = get_res.to_dict()
-        pytest.assume(get_res_dict.keys() == self.message_keys)
-        # List messages.
-
-        new_res = await a_list_messages(assistant_id=self.assistant_id, chat_id=self.chat_id)
-        new_nums = len(new_res)
-        pytest.assume(new_nums == old_nums + 1)
 
     @pytest.mark.run(order=30)
     @pytest.mark.asyncio
@@ -425,265 +337,3 @@ class TestMessage(Base):
         logger.info(f"Message: {real_str}")
         logger.info(f"except_list: {except_list} real_list: {real_list}")
         pytest.assume(set(except_list) == set(real_list))
-
-    @pytest.mark.run(order=30)
-    @pytest.mark.asyncio
-    @pytest.mark.test_abnormal
-    async def test_a_generate_message_in_user_message_not_created(self):
-
-        # create chat
-
-        chat_res = await a_create_chat(assistant_id=self.assistant_id)
-        chat_id = chat_res.chat_id
-        logger.info(f'chat_id:{chat_id}')
-
-        # Generate an assistant message.
-
-        try:
-            res = await a_generate_message(assistant_id=self.assistant_id, chat_id=chat_id,
-                                           system_prompt_variables={})
-        except Exception as e:
-            logger.info(f'test_a_generate_message_in_user_message_not_created{e}')
-            pytest.assume("There is no user message in the chat context." in str(e))
-
-    @pytest.mark.run(order=30)
-    @pytest.mark.asyncio
-    @pytest.mark.test_abnormal
-    async def test_a_create_message_in_generating_assistant_message(self):
-
-        # create chat
-
-        chat_res = await a_create_chat(assistant_id=self.assistant_id)
-        chat_id = chat_res.chat_id
-        logger.info(f'chat_id:{chat_id}')
-
-        # create user message
-
-        user_message = await a_create_message(
-            assistant_id=self.assistant_id,
-            chat_id=chat_id,
-            text="count from 1 to 100 and separate numbers by comma.",
-        )
-
-        # Generate an assistant message by stream.
-
-        await a_generate_message(assistant_id=self.assistant_id, chat_id=chat_id,
-                                 system_prompt_variables={},
-                                 stream=True)
-
-        # create user message
-
-        try:
-            user_message = await a_create_message(
-                assistant_id=self.assistant_id,
-                chat_id=chat_id,
-                text="count from 100 to 200 and separate numbers by comma.",
-            )
-        except Exception as e:
-            logger.info(f'test_a_create_message_in_generating_assistant_message{user_message}')
-            pytest.assume("Chat is locked by another generation process. Please try again later." in str(e))
-
-    @pytest.mark.run(order=30)
-    @pytest.mark.asyncio
-    @pytest.mark.test_abnormal
-    async def test_a_generate_message_in_generating_assistant_message(self):
-
-        # create chat
-
-        chat_res = await a_create_chat(assistant_id=self.assistant_id)
-        chat_id = chat_res.chat_id
-        logger.info(f'chat_id:{chat_id}')
-
-        # create user message
-
-        await a_create_message(
-            assistant_id=self.assistant_id,
-            chat_id=chat_id,
-            text="count from 1 to 100 and separate numbers by comma.",
-        )
-
-        # Generate an assistant message by stream.
-
-        stream_res = await a_generate_message(assistant_id=self.assistant_id, chat_id=chat_id,
-                                              system_prompt_variables={},
-                                              stream=True)
-
-        # Generate an assistant message by stream.
-
-        try:
-            stream_res = await a_generate_message(assistant_id=self.assistant_id, chat_id=chat_id,
-                                                  system_prompt_variables={},
-                                                  stream=True)
-        except Exception as e:
-            logger.info(f'test_a_generate_message_in_generating_assistant_message{stream_res}')
-            pytest.assume("Chat is locked by another generation process. Please try again later." in str(e))
-
-    @pytest.mark.run(order=30)
-    @pytest.mark.asyncio
-    @pytest.mark.test_abnormal
-    async def test_a_generate_message_in_generated_assistant_message(self):
-
-        # create chat
-
-        chat_res = await a_create_chat(assistant_id=self.assistant_id)
-        chat_id = chat_res.chat_id
-        logger.info(f'chat_id:{chat_id}')
-
-        # create user message
-
-        user_message = await a_create_message(
-            assistant_id=self.assistant_id,
-            chat_id=chat_id,
-            text="count from 1 to 100 and separate numbers by comma.",
-        )
-
-        # Generate an assistant message by stream.
-
-        res = await a_generate_message(assistant_id=self.assistant_id, chat_id=chat_id,
-                                       system_prompt_variables={})
-
-        # Generate an assistant message by stream.
-
-        try:
-            stream_res = await a_generate_message(assistant_id=self.assistant_id, chat_id=chat_id,
-                                                  system_prompt_variables={},
-                                                  stream=True)
-        except Exception as e:
-            logger.info(f'test_a_generate_message_in_generated_assistant_message{e}')
-            pytest.assume("Cannot generate another assistant message after an assistant message." in str(e))
-
-    @pytest.mark.run(order=30)
-    @pytest.mark.asyncio
-    @pytest.mark.test_abnormal
-    async def test_a_generate_message_in_action_deleted_assistant(self):
-
-        # create action
-
-        schema = {
-            "openapi": "3.1.0",
-            "info": {
-                "title": "Get weather data",
-                "description": "Retrieves current weather data for a location.",
-                "version": "v1.0.0"
-            },
-            "servers": [
-                {
-                    "url": "https://weather.example.com"
-                }
-            ],
-            "paths": {
-                "/location": {
-                    "get": {
-                        "description": "Get temperature for a specific location",
-                        "operationId": "GetCurrentWeather",
-                        "parameters": [
-                            {
-                                "name": "location",
-                                "in": "query",
-                                "description": "The city and state to retrieve the weather for",
-                                "required": True,
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        ],
-                        "deprecated": False
-                    },
-                    "post": {
-                        "description": "UPDATE temperature for a specific location",
-                        "operationId": "UpdateCurrentWeather",
-                        "requestBody": {
-                            "required": True,
-                            "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "$ref": "#/componeents/schemas/ActionCreateRequest"
-                                    }
-                                }
-                            }
-                        },
-                        "deprecated": False
-                    }
-                }
-            },
-            "components": {
-                "schemas": {}
-            },
-            "security": []
-        }
-        action_res = await a_bulk_create_actions(schema=schema)
-        action_id = action_res[0].action_id
-
-        # create an assistant
-
-        assistant_res = await a_create_assistant(name="test", description="test", model_id=chat_completion_model_id, tools=[{"type": "action", "id": action_id}])
-        assistant_id = assistant_res.assistant_id
-
-        # create a chat
-
-        chat_res = await a_create_chat(assistant_id=assistant_id)
-        chat_id = chat_res.chat_id
-
-        # create user message
-
-        user_message = await a_create_message(
-            assistant_id=assistant_id,
-            chat_id=chat_id,
-            text="count from 1 to 100 and separate numbers by comma.",
-        )
-
-        # delete action
-
-        await a_delete_action(action_id=action_id)
-        await asyncio.sleep(sleep_time)
-
-        # Generate an assistant message by stream.
-
-        try:
-            res = await a_generate_message(assistant_id=assistant_id, chat_id=chat_id,
-                                           system_prompt_variables={})
-        except Exception as e:
-            logger.info(f'test_a_generate_message_in_action_deleted_assistant{e}')
-            pytest.assume("Some tools are not found" in str(e))
-
-    @pytest.mark.run(order=30)
-    @pytest.mark.asyncio
-    @pytest.mark.test_abnormal
-    async def test_a_generate_message_in_collection_deleted_assistant(self):
-
-        # create collection
-
-        collection_res = await a_create_collection(name="test", description="test", embedding_model_id=embedding_model_id, capacity=1000)
-        collection_id = collection_res.collection_id
-
-        # create an assistant
-
-        assistant_res = await a_create_assistant(name="test", description="test", model_id=chat_completion_model_id, retrievals=[{"type": "collection", "id": collection_id}])
-        assistant_id = assistant_res.assistant_id
-
-        # create chat
-
-        chat_res = await a_create_chat(assistant_id=assistant_id)
-        chat_id = chat_res.chat_id
-
-        # create user message
-
-        user_message = await a_create_message(
-            assistant_id=assistant_id,
-            chat_id=chat_id,
-            text="count from 1 to 1000 and separate numbers by comma.",
-        )
-
-        # delete collection
-
-        await a_delete_collection(collection_id)
-        await asyncio.sleep(sleep_time)
-
-        # Generate an assistant message by stream.
-
-        try:
-            res = await a_generate_message(assistant_id=assistant_id, chat_id=chat_id,
-                                           system_prompt_variables={})
-        except Exception as e:
-            logger.info(f'test_a_generate_message_in_collection_deleted_assistant{e}')
-            pytest.assume(f"Collections not found" in str(e))

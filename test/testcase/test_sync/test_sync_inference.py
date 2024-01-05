@@ -23,7 +23,7 @@ class TestChatCompletion:
         pytest.assume(normal_res.finish_reason == "stop")
         pytest.assume(normal_res.message.content)
         pytest.assume(normal_res.message.role == "assistant")
-        pytest.assume(normal_res.message.function_call is None)
+        pytest.assume(normal_res.message.function_calls is None)
 
         # multi round chat completion.
 
@@ -43,7 +43,7 @@ class TestChatCompletion:
         pytest.assume(multi_round_res.finish_reason == "stop")
         pytest.assume(multi_round_res.message.content)
         pytest.assume(multi_round_res.message.role == "assistant")
-        pytest.assume(multi_round_res.message.function_call is None)
+        pytest.assume(multi_round_res.message.function_calls is None)
 
         # config max tokens chat completion.
 
@@ -65,7 +65,7 @@ class TestChatCompletion:
         pytest.assume(max_tokens_res.finish_reason == "length")
         pytest.assume(max_tokens_res.message.content)
         pytest.assume(max_tokens_res.message.role == "assistant")
-        pytest.assume(max_tokens_res.message.function_call is None)
+        pytest.assume(max_tokens_res.message.function_calls is None)
 
         # chat completion with stream.
 
