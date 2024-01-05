@@ -23,7 +23,7 @@ def query_chunks(
     :param top_k: The number of most relevant chunks to return.
     """
 
-    api_instance = get_api_instance(ModuleType.retrieval)
+    api_instance = get_api_instance(ModuleType.RETRIEVAL)
     # only add non-None parameters
     body = ChunkQueryRequest(
         top_k=top_k,
@@ -49,7 +49,7 @@ async def a_query_chunks(
     :param top_k: The number of most relevant chunks to return.
     """
 
-    api_instance = get_api_instance(ModuleType.retrieval, async_client=True)
+    api_instance = get_api_instance(ModuleType.RETRIEVAL, async_client=True)
     # only add non-None parameters
     body = ChunkQueryRequest(
         top_k=top_k,

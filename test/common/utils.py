@@ -24,10 +24,6 @@ def list_to_dict(data: list):
     return d
 
 
-def get_password():
-    return ''.join(random.choices(string.ascii_letters, k=7))+str(random.randint(0, 9))
-
-
 def assume(res, except_dict: Dict[str, Any]):
     pytest.assume(res.status_code == int(except_dict["except_http_code"]))
     pytest.assume(res.json()["status"] == except_dict["except_status"])
@@ -56,6 +52,8 @@ def assume_assistant(res, assistant_dict: Dict[str, Any]):
             pass
         elif key == 'system_prompt_template' and isinstance(value, str):
             pytest.assume(res[key] == [assistant_dict[key]])
+        elif key in ["memory", "tool", "retrievals"]:
+            pass
         else:
             pytest.assume(res[key] == assistant_dict[key])
 

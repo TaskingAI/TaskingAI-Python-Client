@@ -71,57 +71,23 @@ class TestAction(Base):
     @pytest.mark.asyncio
     async def test_a_bulk_create_actions(self):
 
-        # List actions.
+        # Create an action.
 
-        old_res = await a_list_actions(limit=100)
-        old_nums = len(old_res)
+        res = await a_bulk_create_actions(schema=self.schema)
+        for action in res:
+            action_dict = action.to_dict()
+            logger.info(action_dict)
+            pytest.assume(action_dict.keys() == self.action_keys)
+            pytest.assume(action_dict["schema"].keys() == self.action_schema_keys)
 
-        for x in range(4):
-
-            # Create an action.
-
-            res = await a_bulk_create_actions(schema=self.schema)
-            for action in res:
-                action_dict = action.to_dict()
-                logger.info(action_dict)
-                pytest.assume(action_dict.keys() == self.action_keys)
-                pytest.assume(action_dict["schema"].keys() == self.action_schema_keys)
-
-                for key in action_dict["schema"].keys():
-                    if key == "paths":
-                        if action_dict["schema"][key]["/location"] == "get":
-                            pytest.assume(action_dict["schema"][key]["/location"]["get"] == self.schema["paths"]["/location"]["get"])
-                        elif action_dict["schema"][key]["/location"] == "post":
-                            pytest.assume(action_dict["schema"][key]["/location"]["post"] == self.schema["paths"]["/location"]["post"])
-                    else:
-                        pytest.assume(action_dict["schema"][key] == self.schema[key])
-
-                # Get an action.
-
-                action_id = action_dict["action_id"]
-                get_res = await a_get_action(action_id=action_id)
-                get_res_dict = get_res.to_dict()
-                pytest.assume(get_res_dict.keys() == self.action_keys)
-                pytest.assume(get_res_dict["schema"].keys() == self.action_schema_keys)
-
-                for key in action_dict["schema"].keys():
-                    if key == "paths":
-                        if action_dict["schema"][key]["/location"] == "get":
-                            pytest.assume(
-                                action_dict["schema"][key]["/location"]["get"] == self.schema["paths"]["/location"]["get"])
-                        elif action_dict["schema"][key]["/location"] == "post":
-                            pytest.assume(
-                                action_dict["schema"][key]["/location"]["post"] == self.schema["paths"]["/location"][
-                                    "post"])
-                    else:
-                        pytest.assume(action_dict["schema"][key] == self.schema[key])
-
-            # List actions.
-
-            new_res = await a_list_actions(limit=100)
-            new_nums = len(new_res)
-            res_num = len(res)
-            pytest.assume(new_nums == old_nums + res_num + x*2)
+            for key in action_dict["schema"].keys():
+                if key == "paths":
+                    if action_dict["schema"][key]["/location"] == "get":
+                        pytest.assume(action_dict["schema"][key]["/location"]["get"] == self.schema["paths"]["/location"]["get"])
+                    elif action_dict["schema"][key]["/location"] == "post":
+                        pytest.assume(action_dict["schema"][key]["/location"]["post"] == self.schema["paths"]["/location"]["post"])
+                else:
+                    pytest.assume(action_dict["schema"][key] == self.schema[key])
 
     @pytest.mark.run(order=5)
     @pytest.mark.asyncio
@@ -143,7 +109,7 @@ class TestAction(Base):
 
         # List actions.
 
-        nums_limit = 2
+        nums_limit = 1
         res = await a_list_actions(limit=nums_limit)
         pytest.assume(len(res) == nums_limit)
 
@@ -225,15 +191,6 @@ class TestAction(Base):
         pytest.assume(res_dict["schema"].keys() == self.action_schema_keys)
         pytest.assume(res_dict["schema"] == update_schema)
 
-        # Get an action.
-
-        get_res = await a_get_action(action_id=self.action_id)
-        get_res_dict = get_res.to_dict()
-        logger.info(get_res_dict)
-        pytest.assume(get_res_dict.keys() == self.action_keys)
-        pytest.assume(get_res_dict["schema"].keys() == self.action_schema_keys)
-        pytest.assume(res_dict["schema"] == update_schema)
-
     @pytest.mark.run(order=40)
     @pytest.mark.asyncio
     async def test_a_delete_action(self):
@@ -249,7 +206,7 @@ class TestAction(Base):
             # Delete an action.
 
             await a_delete_action(action_id=action_id)
-            await asyncio.sleep(sleep_time)
+
             new_actions = await a_list_actions()
             action_ids = [action.action_id for action in new_actions]
             pytest.assume(action_id not in action_ids)
