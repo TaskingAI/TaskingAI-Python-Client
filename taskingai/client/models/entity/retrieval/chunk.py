@@ -4,10 +4,11 @@ __all__ = [
     "Chunk",
 ]
 
+
 class Chunk(TaskingaiBaseModel):
     object: str
     chunk_id: str
     record_id: str
     collection_id: str
-    text: str
+    content: str
     score: float

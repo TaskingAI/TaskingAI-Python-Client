@@ -22,6 +22,7 @@ from taskingai.client.models.entity.tool.function import *
 from taskingai.client.models.entity.retrieval.collection import *
 from taskingai.client.models.entity.retrieval.record import *
 from taskingai.client.models.entity.retrieval.chunk import *
+from taskingai.client.models.entity.retrieval.text_splitter import *
 from taskingai.client.models.entity.inference.text_embedding import *
 from taskingai.client.models.entity.inference.chat_completion import *
 from taskingai.client.models.rest.action_bulk_create_request import ActionBulkCreateRequest

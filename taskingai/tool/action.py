@@ -10,7 +10,7 @@ from taskingai.client.models import (
     ActionGetResponse,
     ActionListResponse,
     ActionRunRequest,
-    ActionRunResponse
+    ActionRunResponse,
 )
 
 __all__ = [
@@ -33,10 +33,10 @@ __all__ = [
 
 
 def list_actions(
-        order: str = "desc",
-        limit: int = 20,
-        after: Optional[str] = None,
-        before: Optional[str] = None,
+    order: str = "desc",
+    limit: int = 20,
+    after: Optional[str] = None,
+    before: Optional[str] = None,
 ) -> List[Action]:
     """
     List actions.
@@ -65,10 +65,10 @@ def list_actions(
 
 
 async def a_list_actions(
-        order: str = "desc",
-        limit: int = 20,
-        after: Optional[str] = None,
-        before: Optional[str] = None,
+    order: str = "desc",
+    limit: int = 20,
+    after: Optional[str] = None,
+    before: Optional[str] = None,
 ) -> List[Action]:
     """
     List actions in async mode.
@@ -96,7 +96,6 @@ async def a_list_actions(
     return actions
 
 
-
 def get_action(action_id: str) -> Action:
     """
     Get an action.
@@ -122,26 +121,24 @@ async def a_get_action(action_id: str) -> Action:
     action: Action = Action(**response.data)
     return action
 
-def bulk_create_actions(
-    schema: Dict,
-    authentication: Optional[ActionAuthentication] = None
-) -> List[Action]:
+
+def bulk_create_actions(openapi_schema: Dict, authentication: Optional[ActionAuthentication] = None) -> List[Action]:
     """
     Create actions from an OpenAPI schema.
 
-    :param schema: The action schema is compliant with the OpenAPI Specification. If there are multiple paths and methods in the schema, the service will create multiple actions whose schema only has exactly one path and one method
+    :param openapi_schema: The action schema is compliant with the OpenAPI Specification. If there are multiple paths and methods in the openapi_schema, the service will create multiple actions whose openapi_schema only has exactly one path and one method
     :param authentication: The action API authentication.
     :return: The created action object.
     """
 
-    # todo verify schema
+    # todo verify openapi_schema
     api_instance = get_api_instance(ModuleType.TOOL)
     if authentication is None:
         authentication = ActionAuthentication(
             type=ActionAuthenticationType.NONE,
         )
     body = ActionBulkCreateRequest(
-        schema=schema,
+        openapi_schema=openapi_schema,
         authentication=authentication,
     )
     response: ActionBulkCreateResponse = api_instance.bulk_create_action(body=body)
@@ -150,25 +147,24 @@ def bulk_create_actions(
 
 
 async def a_bulk_create_actions(
-    schema: Dict,
-    authentication: Optional[ActionAuthentication] = None
+    openapi_schema: Dict, authentication: Optional[ActionAuthentication] = None
 ) -> List[Action]:
     """
     Create actions from an OpenAPI schema in async mode.
 
-    :param schema: The action schema is compliant with the OpenAPI Specification. If there are multiple paths and methods in the schema, the service will create multiple actions whose schema only has exactly one path and one method
+    :param openapi_schema: The action schema is compliant with the OpenAPI Specification. If there are multiple paths and methods in the openapi_schema, the service will create multiple actions whose openapi_schema only has exactly one path and one method
     :param authentication: The action API authentication.
     :return: The created action object.
     """
 
-    # todo verify schema
+    # todo verify openapi_schema
     api_instance = get_api_instance(ModuleType.TOOL, async_client=True)
     if authentication is None:
         authentication = ActionAuthentication(
             type=ActionAuthenticationType.NONE,
         )
     body = ActionBulkCreateRequest(
-        schema=schema,
+        openapi_schema=openapi_schema,
         authentication=authentication,
     )
     response: ActionBulkCreateResponse = await api_instance.bulk_create_action(body=body)
@@ -178,53 +174,46 @@ async def a_bulk_create_actions(
 
 def update_action(
     action_id: str,
-    schema: Optional[Dict] = None,
+    openapi_schema: Optional[Dict] = None,
     authentication: Optional[ActionAuthentication] = None,
 ) -> Action:
     """
     Update an action.
 
     :param action_id: The ID of the action.
-    :param schema: The action schema, which is compliant with the OpenAPI Specification. It should only have exactly one path and one method.
+    :param openapi_schema: The action schema, which is compliant with the OpenAPI Specification. It should only have exactly one path and one method.
     :param authentication: The action API authentication.
     :return: The updated action object.
     """
-    #todo: verify schema
     api_instance = get_api_instance(ModuleType.TOOL)
     body = ActionUpdateRequest(
-        schema=schema,
+        openapi_schema=openapi_schema,
         authentication=authentication,
     )
-    response: ActionUpdateResponse = api_instance.update_action(
-        action_id=action_id,
-        body=body
-    )
+    response: ActionUpdateResponse = api_instance.update_action(action_id=action_id, body=body)
     action: Action = Action(**response.data)
     return action
 
 
 async def a_update_action(
     action_id: str,
-    schema: Optional[Dict] = None,
+    openapi_schema: Optional[Dict] = None,
     authentication: Optional[ActionAuthentication] = None,
 ) -> Action:
     """
     Update an action in async mode.
 
     :param action_id: The ID of the action.
-    :param schema: The action schema, which is compliant with the OpenAPI Specification. It should only have exactly one path and one method.
+    :param openapi_schema: The action schema, which is compliant with the OpenAPI Specification. It should only have exactly one path and one method.
     :param authentication: The action API authentication.
     :return: The updated action object.
     """
     api_instance = get_api_instance(ModuleType.TOOL, async_client=True)
     body = ActionUpdateRequest(
-        schema=schema,
+        openapi_schema=openapi_schema,
         authentication=authentication,
     )
-    response: ActionUpdateResponse = await api_instance.update_action(
-        action_id=action_id,
-        body=body
-    )
+    response: ActionUpdateResponse = await api_instance.update_action(action_id=action_id, body=body)
     action: Action = Action(**response.data)
     return action
 
@@ -267,10 +256,7 @@ def run_action(
     body = ActionRunRequest(
         parameters=parameters,
     )
-    response: ActionRunResponse = api_instance.run_action(
-        action_id=action_id,
-        body=body
-    )
+    response: ActionRunResponse = api_instance.run_action(action_id=action_id, body=body)
     result = response.data
     return result
 
@@ -291,10 +277,6 @@ async def a_run_action(
     body = ActionRunRequest(
         parameters=parameters,
     )
-    response: ActionRunResponse = await api_instance.run_action(
-        action_id=action_id,
-        body=body
-    )
+    response: ActionRunResponse = await api_instance.run_action(action_id=action_id, body=body)
     result = response.data
     return result
-

@@ -1,14 +1,18 @@
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict
 
 from taskingai.client.utils import get_api_instance, ModuleType
-from taskingai.client.models import Collection, CollectionConfig
-from taskingai.client.models import CollectionCreateRequest, CollectionCreateResponse, \
-    CollectionUpdateRequest, CollectionUpdateResponse, \
-    CollectionGetResponse, CollectionListResponse
+from taskingai.client.models import Collection
+from taskingai.client.models import (
+    CollectionCreateRequest,
+    CollectionCreateResponse,
+    CollectionUpdateRequest,
+    CollectionUpdateResponse,
+    CollectionGetResponse,
+    CollectionListResponse,
+)
 
 __all__ = [
     "Collection",
-    "CollectionConfig",
     "get_collection",
     "list_collections",
     "create_collection",
@@ -23,10 +27,10 @@ __all__ = [
 
 
 def list_collections(
-        order: str = "desc",
-        limit: int = 20,
-        after: Optional[str] = None,
-        before: Optional[str] = None,
+    order: str = "desc",
+    limit: int = 20,
+    after: Optional[str] = None,
+    before: Optional[str] = None,
 ) -> List[Collection]:
     """
     List collections.
@@ -56,10 +60,10 @@ def list_collections(
 
 
 async def a_list_collections(
-        order: str = "desc",
-        limit: int = 20,
-        after: Optional[str] = None,
-        before: Optional[str] = None,
+    order: str = "desc",
+    limit: int = 20,
+    after: Optional[str] = None,
+    before: Optional[str] = None,
 ) -> List[Collection]:
     """
     List collections.
@@ -115,12 +119,11 @@ async def a_get_collection(collection_id: str) -> Collection:
 
 
 def create_collection(
-        embedding_model_id: str,
-        capacity: int = 1000,
-        name: Optional[str] = None,
-        description: Optional[str] = None,
-        configs: Optional[CollectionConfig] = None,
-        metadata: Optional[Dict[str, str]] = None,
+    embedding_model_id: str,
+    capacity: int = 1000,
+    name: Optional[str] = None,
+    description: Optional[str] = None,
+    metadata: Optional[Dict[str, str]] = None,
 ) -> Collection:
     """
     Create a collection.
@@ -129,7 +132,6 @@ def create_collection(
     :param capacity: The maximum number of embeddings that can be stored in the collection.
     :param name: The name of the collection.
     :param description: The description of the collection.
-    :param configs: The collection configurations.
     :param metadata: The collection metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The created collection object.
     """
@@ -141,7 +143,6 @@ def create_collection(
         capacity=capacity,
         name=name,
         description=description,
-        configs=configs,
         metadata=metadata,
     )
     response: CollectionCreateResponse = api_instance.create_collection(body=body)
@@ -150,12 +151,11 @@ def create_collection(
 
 
 async def a_create_collection(
-        embedding_model_id: str,
-        capacity: int = 1000,
-        name: Optional[str] = None,
-        description: Optional[str] = None,
-        configs: Optional[CollectionConfig] = None,
-        metadata: Optional[Dict[str, str]] = None,
+    embedding_model_id: str,
+    capacity: int = 1000,
+    name: Optional[str] = None,
+    description: Optional[str] = None,
+    metadata: Optional[Dict[str, str]] = None,
 ) -> Collection:
     """
     Create a collection in async mode.
@@ -164,7 +164,6 @@ async def a_create_collection(
     :param capacity: The maximum number of embeddings that can be stored in the collection.
     :param name: The name of the collection.
     :param description: The description of the collection.
-    :param configs: The collection configurations.
     :param metadata: The collection metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The created collection object.
     """
@@ -176,7 +175,6 @@ async def a_create_collection(
         capacity=capacity,
         name=name,
         description=description,
-        configs=configs,
         metadata=metadata,
     )
     response: CollectionCreateResponse = await api_instance.create_collection(body=body)
@@ -185,10 +183,10 @@ async def a_create_collection(
 
 
 def update_collection(
-        collection_id: str,
-        name: Optional[str] = None,
-        description: Optional[str] = None,
-        metadata: Optional[Dict[str, str]] = None,
+    collection_id: str,
+    name: Optional[str] = None,
+    description: Optional[str] = None,
+    metadata: Optional[Dict[str, str]] = None,
 ) -> Collection:
     """
     Update a collection.
@@ -198,26 +196,23 @@ def update_collection(
     :param authentication: The collection API authentication.
     :return: The updated collection object.
     """
-    #todo: verify at least one parameter is not None
+    # todo: verify at least one parameter is not None
     api_instance = get_api_instance(ModuleType.RETRIEVAL)
     body = CollectionUpdateRequest(
         name=name,
         description=description,
         metadata=metadata,
     )
-    response: CollectionUpdateResponse = api_instance.update_collection(
-        collection_id=collection_id,
-        body=body
-    )
+    response: CollectionUpdateResponse = api_instance.update_collection(collection_id=collection_id, body=body)
     collection: Collection = Collection(**response.data)
     return collection
 
 
 async def a_update_collection(
-        collection_id: str,
-        name: Optional[str] = None,
-        description: Optional[str] = None,
-        metadata: Optional[Dict[str, str]] = None,
+    collection_id: str,
+    name: Optional[str] = None,
+    description: Optional[str] = None,
+    metadata: Optional[Dict[str, str]] = None,
 ) -> Collection:
     """
     Update a collection in async mode.
@@ -233,10 +228,7 @@ async def a_update_collection(
         description=description,
         metadata=metadata,
     )
-    response: CollectionUpdateResponse = await api_instance.update_collection(
-        collection_id=collection_id,
-        body=body
-    )
+    response: CollectionUpdateResponse = await api_instance.update_collection(collection_id=collection_id, body=body)
     collection: Collection = Collection(**response.data)
     return collection
 
@@ -261,4 +253,3 @@ async def a_delete_collection(collection_id: str) -> None:
 
     api_instance = get_api_instance(ModuleType.RETRIEVAL, async_client=True)
     await api_instance.delete_collection(collection_id=collection_id)
-

@@ -1,4 +1,5 @@
 # TaskingAI-client
+
 The TaskingAI Python client for creating and managing AI-driven applications.
 
 For more information, see the docs at [TaskingAI Documentation](https://docs.tasking.ai/)
@@ -6,6 +7,7 @@ For more information, see the docs at [TaskingAI Documentation](https://docs.tas
 ## Installation
 
 Install the latest released version using pip:
+
 ```shell
 pip3 install taskingai
 ```
@@ -15,10 +17,13 @@ pip3 install taskingai
 Here's how you can quickly start building and managing AI-driven applications using the TaskingAI client.
 
 ### Assistants
+
 Explore the ease of creating and customizing your own AI assistants with TaskingAI to enhance user interactions.
+
 ```python
 import taskingai
 from taskingai.assistant import *
+from taskingai.assistant.memory import AssistantNaiveMemory
 
 # Initialize your API key if you haven't already set it in the environment
 taskingai.init(api_key="YOUR_API_KEY")
@@ -26,8 +31,7 @@ taskingai.init(api_key="YOUR_API_KEY")
 # Create an assistant
 assistant = create_assistant(
     model_id="YOUR_MODEL_ID",
-    name="My Assistant",
-    description="An assistant that understands numbers.",
+    memory=AssistantNaiveMemory(),
     system_prompt_template=["You are a professional assistant."],
 )
 print(f"Assistant created: {assistant.id}")
@@ -49,7 +53,9 @@ print("Assistant deleted successfully.")
 ```
 
 ### Retrieval
+
 Leverage TaskingAI's retrieval capabilities to store, manage, and extract information, making your applications smarter and more responsive.
+
 ```python
 import taskingai
 from taskingai.retrieval import *
@@ -62,9 +68,10 @@ collection = create_collection(
 print(f"Collection created: {collection.id}")
 
 # Add a record to the collection
-record = create_text_record(
+record = create_record(
     collection_id=collection.id,
-    text="Example text for machine learning."
+    content="Example text for machine learning.",
+    text_splitter=TokenTextSplitter(chunk_size=200, chunk_overlap=20),
 )
 print(f"Record added to collection: {record.id}")
 
@@ -88,7 +95,9 @@ print("Collection deleted.")
 ```
 
 ### Tools
+
 Utilize TaskingAI's tools to create actions that enable your assistant to interact with external APIs and services, enriching the user experience.
+
 ```python
 import taskingai
 from taskingai.tool import *
@@ -121,8 +130,3 @@ print("Action deleted.")
 ## Contributing
 
 We welcome contributions of all kinds. Please read our [Contributing Guidelines](./CONTRIBUTING.md) for more information on how to get started.
-
-## Security
-
-For any security concerns or issues, please reach out to us directly at support@tasking.ai.
-

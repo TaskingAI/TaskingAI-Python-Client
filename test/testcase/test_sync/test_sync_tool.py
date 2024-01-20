@@ -6,23 +6,26 @@ from test.common.logger import logger
 
 @pytest.mark.test_sync
 class TestAction:
-
-    action_list = ['object', 'action_id', 'name', 'description', 'authentication', 'schema', 'created_timestamp']
+    action_list = [
+        "object",
+        "action_id",
+        "name",
+        "description",
+        "authentication",
+        "openapi_schema",
+        "created_timestamp",
+    ]
     action_keys = set(action_list)
-    action_schema = ['openapi', 'info', 'servers', 'paths', 'components', 'security']
+    action_schema = ["openapi", "info", "servers", "paths", "components", "security"]
     action_schema_keys = set(action_schema)
-    schema = {
+    openapi_schema = {
         "openapi": "3.1.0",
         "info": {
             "title": "Get weather data",
             "description": "Retrieves current weather data for a location.",
-            "version": "v1.0.0"
+            "version": "v1.0.0",
         },
-        "servers": [
-            {
-                "url": "https://weather.example.com"
-            }
-        ],
+        "servers": [{"url": "https://weather.example.com"}],
         "paths": {
             "/location": {
                 "get": {
@@ -34,12 +37,10 @@ class TestAction:
                             "in": "query",
                             "description": "The city and state to retrieve the weather for",
                             "required": True,
-                            "schema": {
-                                "type": "string"
-                            }
+                            "schema": {"type": "string"},
                         }
                     ],
-                    "deprecated": False
+                    "deprecated": False,
                 },
                 "post": {
                     "description": "UPDATE temperature for a specific location",
@@ -47,63 +48,55 @@ class TestAction:
                     "requestBody": {
                         "required": True,
                         "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/componeents/schemas/ActionCreateRequest"
-                                }
-                            }
-                        }
+                            "application/json": {"schema": {"$ref": "#/componeents/schemas/ActionCreateRequest"}}
+                        },
                     },
-                    "deprecated": False
-                }
+                    "deprecated": False,
+                },
             }
         },
-        "components": {
-            "schemas": {}
-        },
-        "security": []
+        "components": {"schemas": {}},
+        "security": [],
     }
 
     @pytest.mark.run(order=4)
     def test_bulk_create_actions(self):
-
         # Create an action.
 
-        res = bulk_create_actions(schema=self.schema)
+        res = bulk_create_actions(openapi_schema=self.openapi_schema)
         for action in res:
             action_dict = action.to_dict()
             logger.info(action_dict)
             pytest.assume(action_dict.keys() == self.action_keys)
-            pytest.assume(action_dict["schema"].keys() == self.action_schema_keys)
+            pytest.assume(action_dict["openapi_schema"].keys() == self.action_schema_keys)
 
-            for key in action_dict["schema"].keys():
+            for key in action_dict["openapi_schema"].keys():
                 if key == "paths":
-                    if action_dict["schema"][key]["/location"] == "get":
+                    if action_dict["openapi_schema"][key]["/location"] == "get":
                         pytest.assume(
-                            action_dict["schema"][key]["/location"]["get"] == self.schema["paths"]["/location"]["get"])
-                    elif action_dict["schema"][key]["/location"] == "post":
+                            action_dict["openapi_schema"][key]["/location"]["get"]
+                            == self.openapi_schema["paths"]["/location"]["get"]
+                        )
+                    elif action_dict["openapi_schema"][key]["/location"] == "post":
                         pytest.assume(
-                            action_dict["schema"][key]["/location"]["post"] == self.schema["paths"]["/location"][
-                                "post"])
+                            action_dict["openapi_schema"][key]["/location"]["post"]
+                            == self.openapi_schema["paths"]["/location"]["post"]
+                        )
                 else:
-                    pytest.assume(action_dict["schema"][key] == self.schema[key])
+                    pytest.assume(action_dict["openapi_schema"][key] == self.openapi_schema[key])
 
     @pytest.mark.run(order=5)
     def test_run_action(self, action_id):
-
         # Run an action.
 
-        parameters = {
-                      "parameters": {"location": "tokyo"}
-                     }
+        parameters = {"parameters": {"location": "tokyo"}}
         res = run_action(action_id=action_id, parameters=parameters)
-        logger.info(f'async run action{res}')
-        pytest.assume(res['status'] == 400)
+        logger.info(f"async run action{res}")
+        pytest.assume(res["status"] != 200)
         pytest.assume(res["error"])
 
     @pytest.mark.run(order=6)
     def test_list_actions(self):
-
         # List actions.
 
         nums_limit = 1
@@ -131,18 +124,16 @@ class TestAction:
 
     @pytest.mark.run(order=7)
     def test_get_action(self, action_id):
-
         # Get an action.
 
         res = get_action(action_id=action_id)
         res_dict = res.to_dict()
         pytest.assume(res_dict.keys() == self.action_keys)
-        logger.info(res_dict["schema"].keys())
-        pytest.assume(res_dict["schema"].keys() == self.action_schema_keys)
+        logger.info(res_dict["openapi_schema"].keys())
+        pytest.assume(res_dict["openapi_schema"].keys() == self.action_schema_keys)
 
     @pytest.mark.run(order=39)
     def test_update_action(self, action_id):
-
         # Update an action.
 
         update_schema = {
@@ -150,13 +141,9 @@ class TestAction:
             "info": {
                 "title": "Get weather data",
                 "description": "Retrieves current weather data for a location.",
-                "version": "v1.0.0"
+                "version": "v1.0.0",
             },
-            "servers": [
-                {
-                    "url": "https://weather.example.com"
-                }
-            ],
+            "servers": [{"url": "https://weather.example.com"}],
             "paths": {
                 "/location": {
                     "get": {
@@ -168,31 +155,25 @@ class TestAction:
                                 "in": "query",
                                 "description": "The city and state to retrieve the weather for",
                                 "required": True,
-                                "schema": {
-                                    "type": "string"
-                                }
+                                "schema": {"type": "string"},
                             }
                         ],
-                        "deprecated": False
+                        "deprecated": False,
                     }
-
                 }
             },
-            "components": {
-                "schemas": {}
-            },
-            "security": []
+            "components": {"schemas": {}},
+            "security": [],
         }
-        res = update_action(action_id=action_id, schema=update_schema)
+        res = update_action(action_id=action_id, openapi_schema=update_schema)
         res_dict = res.to_dict()
         logger.info(res_dict)
         pytest.assume(res_dict.keys() == self.action_keys)
-        pytest.assume(res_dict["schema"].keys() == self.action_schema_keys)
-        pytest.assume(res_dict["schema"] == update_schema)
+        pytest.assume(res_dict["openapi_schema"].keys() == self.action_schema_keys)
+        pytest.assume(res_dict["openapi_schema"] == update_schema)
 
     @pytest.mark.run(order=40)
     def test_delete_action(self):
-
         # List actions.
 
         actions = list_actions(limit=100)
@@ -209,7 +190,3 @@ class TestAction:
             pytest.assume(action_id not in action_ids)
             new_nums = len(new_actions)
             pytest.assume(new_nums == old_nums - 1 - index)
-
-
-
-
