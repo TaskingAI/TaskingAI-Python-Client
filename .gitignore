@@ -67,3 +67,9 @@ target/
 
 .DS_Store
 .venv
+
+# test
+test/.pytest_cache/
+test/log/
+
+**/allure-report

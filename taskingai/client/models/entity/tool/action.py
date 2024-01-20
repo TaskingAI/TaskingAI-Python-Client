@@ -1,7 +1,6 @@
 from typing import Dict, Any, Optional
 from enum import Enum
 from .._base import TaskingaiBaseModel
-from pydantic import Field
 
 
 __all__ = [
@@ -29,10 +28,9 @@ class Action(TaskingaiBaseModel):
     action_id: str
     name: str
     description: str
-    schema: Dict[str, Any] = Field(..., alias='schema')
+    openapi_schema: Dict[str, Any]
     authentication: ActionAuthentication
     created_timestamp: int
 
     class Config:
         allow_population_by_field_name = True
-

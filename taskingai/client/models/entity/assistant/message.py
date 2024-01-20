@@ -1,14 +1,8 @@
 from typing import Optional, Dict
-from pydantic import Field, validator
 from .._base import TaskingaiBaseModel
 from enum import Enum
 
-__all__ = [
-    "Message",
-    "MessageContent",
-    "MessageRole",
-    "MessageChunk"
-]
+__all__ = ["Message", "MessageContent", "MessageRole", "MessageChunk"]
 
 
 class MessageRole(str, Enum):
@@ -17,7 +11,7 @@ class MessageRole(str, Enum):
 
 
 class MessageContent(TaskingaiBaseModel):
-    text: Optional[str]
+    text: str
 
 
 class Message(TaskingaiBaseModel):

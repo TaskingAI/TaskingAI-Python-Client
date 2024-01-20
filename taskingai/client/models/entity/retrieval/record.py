@@ -1,10 +1,10 @@
-from typing import Dict, Any
+from typing import Dict
 from .._base import TaskingaiBaseModel
-from pydantic import Field
 
 __all__ = [
     "Record",
 ]
+
 
 class Record(TaskingaiBaseModel):
     object: str
@@ -12,7 +12,7 @@ class Record(TaskingaiBaseModel):
     collection_id: str
     type: str
     num_chunks: int
-    content: Dict[str, Any]
+    content: str
     metadata: Dict[str, str]
     created_timestamp: int
     status: str

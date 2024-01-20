@@ -17,7 +17,6 @@ from taskingai.client.api_client import AsyncApiClient
 
 
 class AsyncRetrievalApi(object):
-
     def __init__(self, api_client=None):
         if api_client is None:
             api_client = AsyncApiClient()
@@ -38,8 +37,8 @@ class AsyncRetrievalApi(object):
                  If the method is called asynchronously,
                  returns the request thread.
         """
-        kwargs['_return_http_data_only'] = True
-        if kwargs.get('async_req'):
+        kwargs["_return_http_data_only"] = True
+        if kwargs.get("async_req"):
             return await self.create_collection_with_http_info(body, **kwargs)  # noqa: E501
         else:
             (data) = await self.create_collection_with_http_info(body, **kwargs)  # noqa: E501
@@ -61,24 +60,20 @@ class AsyncRetrievalApi(object):
                  returns the request thread.
         """
 
-        all_params = ['body']  # noqa: E501
-        all_params.append('async_req')
-        all_params.append('_return_http_data_only')
-        all_params.append('_preload_content')
-        all_params.append('_request_timeout')
+        all_params = ["body"]  # noqa: E501
+        all_params.append("async_req")
+        all_params.append("_return_http_data_only")
+        all_params.append("_preload_content")
+        all_params.append("_request_timeout")
 
         params = locals()
-        for key, val in six.iteritems(params['kwargs']):
+        for key, val in six.iteritems(params["kwargs"]):
             if key not in all_params:
-                raise TypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method create_collection" % key
-                )
+                raise TypeError("Got an unexpected keyword argument '%s'" " to method create_collection" % key)
             params[key] = val
-        del params['kwargs']
+        del params["kwargs"]
         # verify the required parameter 'body' is set
-        if ('body' not in params or
-                params['body'] is None):
+        if "body" not in params or params["body"] is None:
             raise ValueError("Missing the required parameter `body` when calling `create_collection`")  # noqa: E501
 
         collection_formats = {}
@@ -93,33 +88,35 @@ class AsyncRetrievalApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'body' in params:
-            body_params = params['body']
+        if "body" in params:
+            body_params = params["body"]
         # HTTP header `Accept`
-        header_params['Accept'] = self.api_client.select_header_accept(
-            ['application/json'])  # noqa: E501
+        header_params["Accept"] = self.api_client.select_header_accept(["application/json"])  # noqa: E501
 
         # HTTP header `Content-Type`
-        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
-            ['application/json'])  # noqa: E501
+        header_params["Content-Type"] = self.api_client.select_header_content_type(  # noqa: E501
+            ["application/json"]
+        )  # noqa: E501
 
         # Authentication setting
         auth_settings = []  # noqa: E501
 
         return await self.api_client.call_api(
-            '/v1/collections', 'POST',
+            "/v1/collections",
+            "POST",
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='CollectionCreateResponse',  # noqa: E501
+            response_type="CollectionCreateResponse",  # noqa: E501
             auth_settings=auth_settings,
-            _return_http_data_only=params.get('_return_http_data_only'),
-            _preload_content=params.get('_preload_content', True),
-            _request_timeout=params.get('_request_timeout'),
-            collection_formats=collection_formats)
+            _return_http_data_only=params.get("_return_http_data_only"),
+            _preload_content=params.get("_preload_content", True),
+            _request_timeout=params.get("_request_timeout"),
+            collection_formats=collection_formats,
+        )
 
     async def create_record(self, body, collection_id, **kwargs):  # noqa: E501
         """Create record  # noqa: E501
@@ -127,7 +124,7 @@ class AsyncRetrievalApi(object):
         Create a new record in a collection.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.create_text_record(body, collection_id, async_req=True)
+        >>> thread = api.create_record(body, collection_id, async_req=True)
         >>> result = thread.get()
 
         :param async_req bool
@@ -137,8 +134,8 @@ class AsyncRetrievalApi(object):
                  If the method is called asynchronously,
                  returns the request thread.
         """
-        kwargs['_return_http_data_only'] = True
-        if kwargs.get('async_req'):
+        kwargs["_return_http_data_only"] = True
+        if kwargs.get("async_req"):
             return await self.create_record_with_http_info(body, collection_id, **kwargs)  # noqa: E501
         else:
             (data) = await self.create_record_with_http_info(body, collection_id, **kwargs)  # noqa: E501
@@ -161,35 +158,32 @@ class AsyncRetrievalApi(object):
                  returns the request thread.
         """
 
-        all_params = ['body', 'collection_id']  # noqa: E501
-        all_params.append('async_req')
-        all_params.append('_return_http_data_only')
-        all_params.append('_preload_content')
-        all_params.append('_request_timeout')
+        all_params = ["body", "collection_id"]  # noqa: E501
+        all_params.append("async_req")
+        all_params.append("_return_http_data_only")
+        all_params.append("_preload_content")
+        all_params.append("_request_timeout")
 
         params = locals()
-        for key, val in six.iteritems(params['kwargs']):
+        for key, val in six.iteritems(params["kwargs"]):
             if key not in all_params:
-                raise TypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method create_record" % key
-                )
+                raise TypeError("Got an unexpected keyword argument '%s'" " to method create_record" % key)
             params[key] = val
-        del params['kwargs']
+        del params["kwargs"]
         # verify the required parameter 'body' is set
-        if ('body' not in params or
-                params['body'] is None):
+        if "body" not in params or params["body"] is None:
             raise ValueError("Missing the required parameter `body` when calling `create_record`")  # noqa: E501
         # verify the required parameter 'collection_id' is set
-        if ('collection_id' not in params or
-                params['collection_id'] is None):
-            raise ValueError("Missing the required parameter `collection_id` when calling `create_record`")  # noqa: E501
+        if "collection_id" not in params or params["collection_id"] is None:
+            raise ValueError(
+                "Missing the required parameter `collection_id` when calling `create_record`"
+            )  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
-        if 'collection_id' in params:
-            path_params['collection_id'] = params['collection_id']  # noqa: E501
+        if "collection_id" in params:
+            path_params["collection_id"] = params["collection_id"]  # noqa: E501
 
         query_params = []
 
@@ -199,33 +193,35 @@ class AsyncRetrievalApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'body' in params:
-            body_params = params['body']
+        if "body" in params:
+            body_params = params["body"]
         # HTTP header `Accept`
-        header_params['Accept'] = self.api_client.select_header_accept(
-            ['application/json'])  # noqa: E501
+        header_params["Accept"] = self.api_client.select_header_accept(["application/json"])  # noqa: E501
 
         # HTTP header `Content-Type`
-        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
-            ['application/json'])  # noqa: E501
+        header_params["Content-Type"] = self.api_client.select_header_content_type(  # noqa: E501
+            ["application/json"]
+        )  # noqa: E501
 
         # Authentication setting
         auth_settings = []  # noqa: E501
 
         return await self.api_client.call_api(
-            '/v1/collections/{collection_id}/records', 'POST',
+            "/v1/collections/{collection_id}/records",
+            "POST",
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='RecordCreateResponse',  # noqa: E501
+            response_type="RecordCreateResponse",  # noqa: E501
             auth_settings=auth_settings,
-            _return_http_data_only=params.get('_return_http_data_only'),
-            _preload_content=params.get('_preload_content', True),
-            _request_timeout=params.get('_request_timeout'),
-            collection_formats=collection_formats)
+            _return_http_data_only=params.get("_return_http_data_only"),
+            _preload_content=params.get("_preload_content", True),
+            _request_timeout=params.get("_request_timeout"),
+            collection_formats=collection_formats,
+        )
 
     async def delete_collection(self, collection_id, **kwargs):  # noqa: E501
         """Delete collection  # noqa: E501
@@ -242,8 +238,8 @@ class AsyncRetrievalApi(object):
                  If the method is called asynchronously,
                  returns the request thread.
         """
-        kwargs['_return_http_data_only'] = True
-        if kwargs.get('async_req'):
+        kwargs["_return_http_data_only"] = True
+        if kwargs.get("async_req"):
             return await self.delete_collection_with_http_info(collection_id, **kwargs)  # noqa: E501
         else:
             (data) = await self.delete_collection_with_http_info(collection_id, **kwargs)  # noqa: E501
@@ -265,31 +261,29 @@ class AsyncRetrievalApi(object):
                  returns the request thread.
         """
 
-        all_params = ['collection_id']  # noqa: E501
-        all_params.append('async_req')
-        all_params.append('_return_http_data_only')
-        all_params.append('_preload_content')
-        all_params.append('_request_timeout')
+        all_params = ["collection_id"]  # noqa: E501
+        all_params.append("async_req")
+        all_params.append("_return_http_data_only")
+        all_params.append("_preload_content")
+        all_params.append("_request_timeout")
 
         params = locals()
-        for key, val in six.iteritems(params['kwargs']):
+        for key, val in six.iteritems(params["kwargs"]):
             if key not in all_params:
-                raise TypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method delete_collection" % key
-                )
+                raise TypeError("Got an unexpected keyword argument '%s'" " to method delete_collection" % key)
             params[key] = val
-        del params['kwargs']
+        del params["kwargs"]
         # verify the required parameter 'collection_id' is set
-        if ('collection_id' not in params or
-                params['collection_id'] is None):
-            raise ValueError("Missing the required parameter `collection_id` when calling `delete_collection`")  # noqa: E501
+        if "collection_id" not in params or params["collection_id"] is None:
+            raise ValueError(
+                "Missing the required parameter `collection_id` when calling `delete_collection`"
+            )  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
-        if 'collection_id' in params:
-            path_params['collection_id'] = params['collection_id']  # noqa: E501
+        if "collection_id" in params:
+            path_params["collection_id"] = params["collection_id"]  # noqa: E501
 
         query_params = []
 
@@ -300,26 +294,27 @@ class AsyncRetrievalApi(object):
 
         body_params = None
         # HTTP header `Accept`
-        header_params['Accept'] = self.api_client.select_header_accept(
-            ['application/json'])  # noqa: E501
+        header_params["Accept"] = self.api_client.select_header_accept(["application/json"])  # noqa: E501
 
         # Authentication setting
         auth_settings = []  # noqa: E501
 
         return await self.api_client.call_api(
-            '/v1/collections/{collection_id}', 'DELETE',
+            "/v1/collections/{collection_id}",
+            "DELETE",
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='DeleteCollectionResponse',  # noqa: E501
+            response_type="DeleteCollectionResponse",  # noqa: E501
             auth_settings=auth_settings,
-            _return_http_data_only=params.get('_return_http_data_only'),
-            _preload_content=params.get('_preload_content', True),
-            _request_timeout=params.get('_request_timeout'),
-            collection_formats=collection_formats)
+            _return_http_data_only=params.get("_return_http_data_only"),
+            _preload_content=params.get("_preload_content", True),
+            _request_timeout=params.get("_request_timeout"),
+            collection_formats=collection_formats,
+        )
 
     async def delete_record(self, collection_id, record_id, **kwargs):  # noqa: E501
         """Delete record  # noqa: E501
@@ -337,8 +332,8 @@ class AsyncRetrievalApi(object):
                  If the method is called asynchronously,
                  returns the request thread.
         """
-        kwargs['_return_http_data_only'] = True
-        if kwargs.get('async_req'):
+        kwargs["_return_http_data_only"] = True
+        if kwargs.get("async_req"):
             return await self.delete_record_with_http_info(collection_id, record_id, **kwargs)  # noqa: E501
         else:
             (data) = await self.delete_record_with_http_info(collection_id, record_id, **kwargs)  # noqa: E501
@@ -361,37 +356,34 @@ class AsyncRetrievalApi(object):
                  returns the request thread.
         """
 
-        all_params = ['collection_id', 'record_id']  # noqa: E501
-        all_params.append('async_req')
-        all_params.append('_return_http_data_only')
-        all_params.append('_preload_content')
-        all_params.append('_request_timeout')
+        all_params = ["collection_id", "record_id"]  # noqa: E501
+        all_params.append("async_req")
+        all_params.append("_return_http_data_only")
+        all_params.append("_preload_content")
+        all_params.append("_request_timeout")
 
         params = locals()
-        for key, val in six.iteritems(params['kwargs']):
+        for key, val in six.iteritems(params["kwargs"]):
             if key not in all_params:
-                raise TypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method delete_record" % key
-                )
+                raise TypeError("Got an unexpected keyword argument '%s'" " to method delete_record" % key)
             params[key] = val
-        del params['kwargs']
+        del params["kwargs"]
         # verify the required parameter 'collection_id' is set
-        if ('collection_id' not in params or
-                params['collection_id'] is None):
-            raise ValueError("Missing the required parameter `collection_id` when calling `delete_record`")  # noqa: E501
+        if "collection_id" not in params or params["collection_id"] is None:
+            raise ValueError(
+                "Missing the required parameter `collection_id` when calling `delete_record`"
+            )  # noqa: E501
         # verify the required parameter 'record_id' is set
-        if ('record_id' not in params or
-                params['record_id'] is None):
+        if "record_id" not in params or params["record_id"] is None:
             raise ValueError("Missing the required parameter `record_id` when calling `delete_record`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
-        if 'collection_id' in params:
-            path_params['collection_id'] = params['collection_id']  # noqa: E501
-        if 'record_id' in params:
-            path_params['record_id'] = params['record_id']  # noqa: E501
+        if "collection_id" in params:
+            path_params["collection_id"] = params["collection_id"]  # noqa: E501
+        if "record_id" in params:
+            path_params["record_id"] = params["record_id"]  # noqa: E501
 
         query_params = []
 
@@ -402,26 +394,27 @@ class AsyncRetrievalApi(object):
 
         body_params = None
         # HTTP header `Accept`
-        header_params['Accept'] = self.api_client.select_header_accept(
-            ['application/json'])  # noqa: E501
+        header_params["Accept"] = self.api_client.select_header_accept(["application/json"])  # noqa: E501
 
         # Authentication setting
         auth_settings = []  # noqa: E501
 
         return await self.api_client.call_api(
-            '/v1/collections/{collection_id}/records/{record_id}', 'DELETE',
+            "/v1/collections/{collection_id}/records/{record_id}",
+            "DELETE",
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='RecordDeleteResponse',  # noqa: E501
+            response_type="RecordDeleteResponse",  # noqa: E501
             auth_settings=auth_settings,
-            _return_http_data_only=params.get('_return_http_data_only'),
-            _preload_content=params.get('_preload_content', True),
-            _request_timeout=params.get('_request_timeout'),
-            collection_formats=collection_formats)
+            _return_http_data_only=params.get("_return_http_data_only"),
+            _preload_content=params.get("_preload_content", True),
+            _request_timeout=params.get("_request_timeout"),
+            collection_formats=collection_formats,
+        )
 
     async def get_collection(self, collection_id, **kwargs):  # noqa: E501
         """Get collection  # noqa: E501
@@ -438,8 +431,8 @@ class AsyncRetrievalApi(object):
                  If the method is called asynchronously,
                  returns the request thread.
         """
-        kwargs['_return_http_data_only'] = True
-        if kwargs.get('async_req'):
+        kwargs["_return_http_data_only"] = True
+        if kwargs.get("async_req"):
             return await self.get_collection_with_http_info(collection_id, **kwargs)  # noqa: E501
         else:
             (data) = await self.get_collection_with_http_info(collection_id, **kwargs)  # noqa: E501
@@ -461,31 +454,29 @@ class AsyncRetrievalApi(object):
                  returns the request thread.
         """
 
-        all_params = ['collection_id']  # noqa: E501
-        all_params.append('async_req')
-        all_params.append('_return_http_data_only')
-        all_params.append('_preload_content')
-        all_params.append('_request_timeout')
+        all_params = ["collection_id"]  # noqa: E501
+        all_params.append("async_req")
+        all_params.append("_return_http_data_only")
+        all_params.append("_preload_content")
+        all_params.append("_request_timeout")
 
         params = locals()
-        for key, val in six.iteritems(params['kwargs']):
+        for key, val in six.iteritems(params["kwargs"]):
             if key not in all_params:
-                raise TypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_collection" % key
-                )
+                raise TypeError("Got an unexpected keyword argument '%s'" " to method get_collection" % key)
             params[key] = val
-        del params['kwargs']
+        del params["kwargs"]
         # verify the required parameter 'collection_id' is set
-        if ('collection_id' not in params or
-                params['collection_id'] is None):
-            raise ValueError("Missing the required parameter `collection_id` when calling `get_collection`")  # noqa: E501
+        if "collection_id" not in params or params["collection_id"] is None:
+            raise ValueError(
+                "Missing the required parameter `collection_id` when calling `get_collection`"
+            )  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
-        if 'collection_id' in params:
-            path_params['collection_id'] = params['collection_id']  # noqa: E501
+        if "collection_id" in params:
+            path_params["collection_id"] = params["collection_id"]  # noqa: E501
 
         query_params = []
 
@@ -496,26 +487,27 @@ class AsyncRetrievalApi(object):
 
         body_params = None
         # HTTP header `Accept`
-        header_params['Accept'] = self.api_client.select_header_accept(
-            ['application/json'])  # noqa: E501
+        header_params["Accept"] = self.api_client.select_header_accept(["application/json"])  # noqa: E501
 
         # Authentication setting
         auth_settings = []  # noqa: E501
 
         return await self.api_client.call_api(
-            '/v1/collections/{collection_id}', 'GET',
+            "/v1/collections/{collection_id}",
+            "GET",
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='CollectionGetResponse',  # noqa: E501
+            response_type="CollectionGetResponse",  # noqa: E501
             auth_settings=auth_settings,
-            _return_http_data_only=params.get('_return_http_data_only'),
-            _preload_content=params.get('_preload_content', True),
-            _request_timeout=params.get('_request_timeout'),
-            collection_formats=collection_formats)
+            _return_http_data_only=params.get("_return_http_data_only"),
+            _preload_content=params.get("_preload_content", True),
+            _request_timeout=params.get("_request_timeout"),
+            collection_formats=collection_formats,
+        )
 
     async def get_record(self, collection_id, record_id, **kwargs):  # noqa: E501
         """Get record  # noqa: E501
@@ -533,8 +525,8 @@ class AsyncRetrievalApi(object):
                  If the method is called asynchronously,
                  returns the request thread.
         """
-        kwargs['_return_http_data_only'] = True
-        if kwargs.get('async_req'):
+        kwargs["_return_http_data_only"] = True
+        if kwargs.get("async_req"):
             return await self.get_record_with_http_info(collection_id, record_id, **kwargs)  # noqa: E501
         else:
             (data) = await self.get_record_with_http_info(collection_id, record_id, **kwargs)  # noqa: E501
@@ -557,37 +549,32 @@ class AsyncRetrievalApi(object):
                  returns the request thread.
         """
 
-        all_params = ['collection_id', 'record_id']  # noqa: E501
-        all_params.append('async_req')
-        all_params.append('_return_http_data_only')
-        all_params.append('_preload_content')
-        all_params.append('_request_timeout')
+        all_params = ["collection_id", "record_id"]  # noqa: E501
+        all_params.append("async_req")
+        all_params.append("_return_http_data_only")
+        all_params.append("_preload_content")
+        all_params.append("_request_timeout")
 
         params = locals()
-        for key, val in six.iteritems(params['kwargs']):
+        for key, val in six.iteritems(params["kwargs"]):
             if key not in all_params:
-                raise TypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_record" % key
-                )
+                raise TypeError("Got an unexpected keyword argument '%s'" " to method get_record" % key)
             params[key] = val
-        del params['kwargs']
+        del params["kwargs"]
         # verify the required parameter 'collection_id' is set
-        if ('collection_id' not in params or
-                params['collection_id'] is None):
+        if "collection_id" not in params or params["collection_id"] is None:
             raise ValueError("Missing the required parameter `collection_id` when calling `get_record`")  # noqa: E501
         # verify the required parameter 'record_id' is set
-        if ('record_id' not in params or
-                params['record_id'] is None):
+        if "record_id" not in params or params["record_id"] is None:
             raise ValueError("Missing the required parameter `record_id` when calling `get_record`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
-        if 'collection_id' in params:
-            path_params['collection_id'] = params['collection_id']  # noqa: E501
-        if 'record_id' in params:
-            path_params['record_id'] = params['record_id']  # noqa: E501
+        if "collection_id" in params:
+            path_params["collection_id"] = params["collection_id"]  # noqa: E501
+        if "record_id" in params:
+            path_params["record_id"] = params["record_id"]  # noqa: E501
 
         query_params = []
 
@@ -598,26 +585,27 @@ class AsyncRetrievalApi(object):
 
         body_params = None
         # HTTP header `Accept`
-        header_params['Accept'] = self.api_client.select_header_accept(
-            ['application/json'])  # noqa: E501
+        header_params["Accept"] = self.api_client.select_header_accept(["application/json"])  # noqa: E501
 
         # Authentication setting
         auth_settings = []  # noqa: E501
 
         return await self.api_client.call_api(
-            '/v1/collections/{collection_id}/records/{record_id}', 'GET',
+            "/v1/collections/{collection_id}/records/{record_id}",
+            "GET",
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='RecordGetResponse',  # noqa: E501
+            response_type="RecordGetResponse",  # noqa: E501
             auth_settings=auth_settings,
-            _return_http_data_only=params.get('_return_http_data_only'),
-            _preload_content=params.get('_preload_content', True),
-            _request_timeout=params.get('_request_timeout'),
-            collection_formats=collection_formats)
+            _return_http_data_only=params.get("_return_http_data_only"),
+            _preload_content=params.get("_preload_content", True),
+            _request_timeout=params.get("_request_timeout"),
+            collection_formats=collection_formats,
+        )
 
     async def list_collections(self, **kwargs):  # noqa: E501
         """List collections  # noqa: E501
@@ -637,8 +625,8 @@ class AsyncRetrievalApi(object):
                  If the method is called asynchronously,
                  returns the request thread.
         """
-        kwargs['_return_http_data_only'] = True
-        if kwargs.get('async_req'):
+        kwargs["_return_http_data_only"] = True
+        if kwargs.get("async_req"):
             return await self.list_collections_with_http_info(**kwargs)  # noqa: E501
         else:
             (data) = await self.list_collections_with_http_info(**kwargs)  # noqa: E501
@@ -663,35 +651,32 @@ class AsyncRetrievalApi(object):
                  returns the request thread.
         """
 
-        all_params = ['limit', 'order', 'after', 'before']  # noqa: E501
-        all_params.append('async_req')
-        all_params.append('_return_http_data_only')
-        all_params.append('_preload_content')
-        all_params.append('_request_timeout')
+        all_params = ["limit", "order", "after", "before"]  # noqa: E501
+        all_params.append("async_req")
+        all_params.append("_return_http_data_only")
+        all_params.append("_preload_content")
+        all_params.append("_request_timeout")
 
         params = locals()
-        for key, val in six.iteritems(params['kwargs']):
+        for key, val in six.iteritems(params["kwargs"]):
             if key not in all_params:
-                raise TypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method list_collections" % key
-                )
+                raise TypeError("Got an unexpected keyword argument '%s'" " to method list_collections" % key)
             params[key] = val
-        del params['kwargs']
+        del params["kwargs"]
 
         collection_formats = {}
 
         path_params = {}
 
         query_params = []
-        if 'limit' in params:
-            query_params.append(('limit', params['limit']))  # noqa: E501
-        if 'order' in params:
-            query_params.append(('order', params['order']))  # noqa: E501
-        if 'after' in params:
-            query_params.append(('after', params['after']))  # noqa: E501
-        if 'before' in params:
-            query_params.append(('before', params['before']))  # noqa: E501
+        if "limit" in params:
+            query_params.append(("limit", params["limit"]))  # noqa: E501
+        if "order" in params:
+            query_params.append(("order", params["order"]))  # noqa: E501
+        if "after" in params:
+            query_params.append(("after", params["after"]))  # noqa: E501
+        if "before" in params:
+            query_params.append(("before", params["before"]))  # noqa: E501
 
         header_params = {}
 
@@ -700,26 +685,27 @@ class AsyncRetrievalApi(object):
 
         body_params = None
         # HTTP header `Accept`
-        header_params['Accept'] = self.api_client.select_header_accept(
-            ['application/json'])  # noqa: E501
+        header_params["Accept"] = self.api_client.select_header_accept(["application/json"])  # noqa: E501
 
         # Authentication setting
         auth_settings = []  # noqa: E501
 
         return await self.api_client.call_api(
-            '/v1/collections', 'GET',
+            "/v1/collections",
+            "GET",
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='CollectionListResponse',  # noqa: E501
+            response_type="CollectionListResponse",  # noqa: E501
             auth_settings=auth_settings,
-            _return_http_data_only=params.get('_return_http_data_only'),
-            _preload_content=params.get('_preload_content', True),
-            _request_timeout=params.get('_request_timeout'),
-            collection_formats=collection_formats)
+            _return_http_data_only=params.get("_return_http_data_only"),
+            _preload_content=params.get("_preload_content", True),
+            _request_timeout=params.get("_request_timeout"),
+            collection_formats=collection_formats,
+        )
 
     async def list_records(self, collection_id, **kwargs):  # noqa: E501
         """List records  # noqa: E501
@@ -740,8 +726,8 @@ class AsyncRetrievalApi(object):
                  If the method is called asynchronously,
                  returns the request thread.
         """
-        kwargs['_return_http_data_only'] = True
-        if kwargs.get('async_req'):
+        kwargs["_return_http_data_only"] = True
+        if kwargs.get("async_req"):
             return await self.list_records_with_http_info(collection_id, **kwargs)  # noqa: E501
         else:
             (data) = await self.list_records_with_http_info(collection_id, **kwargs)  # noqa: E501
@@ -767,41 +753,37 @@ class AsyncRetrievalApi(object):
                  returns the request thread.
         """
 
-        all_params = ['collection_id', 'limit', 'order', 'after', 'before']  # noqa: E501
-        all_params.append('async_req')
-        all_params.append('_return_http_data_only')
-        all_params.append('_preload_content')
-        all_params.append('_request_timeout')
+        all_params = ["collection_id", "limit", "order", "after", "before"]  # noqa: E501
+        all_params.append("async_req")
+        all_params.append("_return_http_data_only")
+        all_params.append("_preload_content")
+        all_params.append("_request_timeout")
 
         params = locals()
-        for key, val in six.iteritems(params['kwargs']):
+        for key, val in six.iteritems(params["kwargs"]):
             if key not in all_params:
-                raise TypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method list_records" % key
-                )
+                raise TypeError("Got an unexpected keyword argument '%s'" " to method list_records" % key)
             params[key] = val
-        del params['kwargs']
+        del params["kwargs"]
         # verify the required parameter 'collection_id' is set
-        if ('collection_id' not in params or
-                params['collection_id'] is None):
+        if "collection_id" not in params or params["collection_id"] is None:
             raise ValueError("Missing the required parameter `collection_id` when calling `list_records`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
-        if 'collection_id' in params:
-            path_params['collection_id'] = params['collection_id']  # noqa: E501
+        if "collection_id" in params:
+            path_params["collection_id"] = params["collection_id"]  # noqa: E501
 
         query_params = []
-        if 'limit' in params:
-            query_params.append(('limit', params['limit']))  # noqa: E501
-        if 'order' in params:
-            query_params.append(('order', params['order']))  # noqa: E501
-        if 'after' in params:
-            query_params.append(('after', params['after']))  # noqa: E501
-        if 'before' in params:
-            query_params.append(('before', params['before']))  # noqa: E501
+        if "limit" in params:
+            query_params.append(("limit", params["limit"]))  # noqa: E501
+        if "order" in params:
+            query_params.append(("order", params["order"]))  # noqa: E501
+        if "after" in params:
+            query_params.append(("after", params["after"]))  # noqa: E501
+        if "before" in params:
+            query_params.append(("before", params["before"]))  # noqa: E501
 
         header_params = {}
 
@@ -810,26 +792,27 @@ class AsyncRetrievalApi(object):
 
         body_params = None
         # HTTP header `Accept`
-        header_params['Accept'] = self.api_client.select_header_accept(
-            ['application/json'])  # noqa: E501
+        header_params["Accept"] = self.api_client.select_header_accept(["application/json"])  # noqa: E501
 
         # Authentication setting
         auth_settings = []  # noqa: E501
 
         return await self.api_client.call_api(
-            '/v1/collections/{collection_id}/records', 'GET',
+            "/v1/collections/{collection_id}/records",
+            "GET",
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='RecordListResponse',  # noqa: E501
+            response_type="RecordListResponse",  # noqa: E501
             auth_settings=auth_settings,
-            _return_http_data_only=params.get('_return_http_data_only'),
-            _preload_content=params.get('_preload_content', True),
-            _request_timeout=params.get('_request_timeout'),
-            collection_formats=collection_formats)
+            _return_http_data_only=params.get("_return_http_data_only"),
+            _preload_content=params.get("_preload_content", True),
+            _request_timeout=params.get("_request_timeout"),
+            collection_formats=collection_formats,
+        )
 
     async def query_chunks(self, body, collection_id, **kwargs):  # noqa: E501
         """Query chunks  # noqa: E501
@@ -847,8 +830,8 @@ class AsyncRetrievalApi(object):
                  If the method is called asynchronously,
                  returns the request thread.
         """
-        kwargs['_return_http_data_only'] = True
-        if kwargs.get('async_req'):
+        kwargs["_return_http_data_only"] = True
+        if kwargs.get("async_req"):
             return await self.query_chunks_with_http_info(body, collection_id, **kwargs)  # noqa: E501
         else:
             (data) = await self.query_chunks_with_http_info(body, collection_id, **kwargs)  # noqa: E501
@@ -871,35 +854,30 @@ class AsyncRetrievalApi(object):
                  returns the request thread.
         """
 
-        all_params = ['body', 'collection_id']  # noqa: E501
-        all_params.append('async_req')
-        all_params.append('_return_http_data_only')
-        all_params.append('_preload_content')
-        all_params.append('_request_timeout')
+        all_params = ["body", "collection_id"]  # noqa: E501
+        all_params.append("async_req")
+        all_params.append("_return_http_data_only")
+        all_params.append("_preload_content")
+        all_params.append("_request_timeout")
 
         params = locals()
-        for key, val in six.iteritems(params['kwargs']):
+        for key, val in six.iteritems(params["kwargs"]):
             if key not in all_params:
-                raise TypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method query_chunks" % key
-                )
+                raise TypeError("Got an unexpected keyword argument '%s'" " to method query_chunks" % key)
             params[key] = val
-        del params['kwargs']
+        del params["kwargs"]
         # verify the required parameter 'body' is set
-        if ('body' not in params or
-                params['body'] is None):
+        if "body" not in params or params["body"] is None:
             raise ValueError("Missing the required parameter `body` when calling `query_chunks`")  # noqa: E501
         # verify the required parameter 'collection_id' is set
-        if ('collection_id' not in params or
-                params['collection_id'] is None):
+        if "collection_id" not in params or params["collection_id"] is None:
             raise ValueError("Missing the required parameter `collection_id` when calling `query_chunks`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
-        if 'collection_id' in params:
-            path_params['collection_id'] = params['collection_id']  # noqa: E501
+        if "collection_id" in params:
+            path_params["collection_id"] = params["collection_id"]  # noqa: E501
 
         query_params = []
 
@@ -909,33 +887,35 @@ class AsyncRetrievalApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'body' in params:
-            body_params = params['body']
+        if "body" in params:
+            body_params = params["body"]
         # HTTP header `Accept`
-        header_params['Accept'] = self.api_client.select_header_accept(
-            ['application/json'])  # noqa: E501
+        header_params["Accept"] = self.api_client.select_header_accept(["application/json"])  # noqa: E501
 
         # HTTP header `Content-Type`
-        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
-            ['application/json'])  # noqa: E501
+        header_params["Content-Type"] = self.api_client.select_header_content_type(  # noqa: E501
+            ["application/json"]
+        )  # noqa: E501
 
         # Authentication setting
         auth_settings = []  # noqa: E501
 
         return await self.api_client.call_api(
-            '/v1/collections/{collection_id}/chunks/query', 'POST',
+            "/v1/collections/{collection_id}/chunks/query",
+            "POST",
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='ChunkQueryResponse',  # noqa: E501
+            response_type="ChunkQueryResponse",  # noqa: E501
             auth_settings=auth_settings,
-            _return_http_data_only=params.get('_return_http_data_only'),
-            _preload_content=params.get('_preload_content', True),
-            _request_timeout=params.get('_request_timeout'),
-            collection_formats=collection_formats)
+            _return_http_data_only=params.get("_return_http_data_only"),
+            _preload_content=params.get("_preload_content", True),
+            _request_timeout=params.get("_request_timeout"),
+            collection_formats=collection_formats,
+        )
 
     async def update_collection(self, body, collection_id, **kwargs):  # noqa: E501
         """Update collection  # noqa: E501
@@ -953,8 +933,8 @@ class AsyncRetrievalApi(object):
                  If the method is called asynchronously,
                  returns the request thread.
         """
-        kwargs['_return_http_data_only'] = True
-        if kwargs.get('async_req'):
+        kwargs["_return_http_data_only"] = True
+        if kwargs.get("async_req"):
             return await self.update_collection_with_http_info(body, collection_id, **kwargs)  # noqa: E501
         else:
             (data) = await self.update_collection_with_http_info(body, collection_id, **kwargs)  # noqa: E501
@@ -977,35 +957,32 @@ class AsyncRetrievalApi(object):
                  returns the request thread.
         """
 
-        all_params = ['body', 'collection_id']  # noqa: E501
-        all_params.append('async_req')
-        all_params.append('_return_http_data_only')
-        all_params.append('_preload_content')
-        all_params.append('_request_timeout')
+        all_params = ["body", "collection_id"]  # noqa: E501
+        all_params.append("async_req")
+        all_params.append("_return_http_data_only")
+        all_params.append("_preload_content")
+        all_params.append("_request_timeout")
 
         params = locals()
-        for key, val in six.iteritems(params['kwargs']):
+        for key, val in six.iteritems(params["kwargs"]):
             if key not in all_params:
-                raise TypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method update_collection" % key
-                )
+                raise TypeError("Got an unexpected keyword argument '%s'" " to method update_collection" % key)
             params[key] = val
-        del params['kwargs']
+        del params["kwargs"]
         # verify the required parameter 'body' is set
-        if ('body' not in params or
-                params['body'] is None):
+        if "body" not in params or params["body"] is None:
             raise ValueError("Missing the required parameter `body` when calling `update_collection`")  # noqa: E501
         # verify the required parameter 'collection_id' is set
-        if ('collection_id' not in params or
-                params['collection_id'] is None):
-            raise ValueError("Missing the required parameter `collection_id` when calling `update_collection`")  # noqa: E501
+        if "collection_id" not in params or params["collection_id"] is None:
+            raise ValueError(
+                "Missing the required parameter `collection_id` when calling `update_collection`"
+            )  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
-        if 'collection_id' in params:
-            path_params['collection_id'] = params['collection_id']  # noqa: E501
+        if "collection_id" in params:
+            path_params["collection_id"] = params["collection_id"]  # noqa: E501
 
         query_params = []
 
@@ -1015,33 +992,35 @@ class AsyncRetrievalApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'body' in params:
-            body_params = params['body']
+        if "body" in params:
+            body_params = params["body"]
         # HTTP header `Accept`
-        header_params['Accept'] = self.api_client.select_header_accept(
-            ['application/json'])  # noqa: E501
+        header_params["Accept"] = self.api_client.select_header_accept(["application/json"])  # noqa: E501
 
         # HTTP header `Content-Type`
-        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
-            ['application/json'])  # noqa: E501
+        header_params["Content-Type"] = self.api_client.select_header_content_type(  # noqa: E501
+            ["application/json"]
+        )  # noqa: E501
 
         # Authentication setting
         auth_settings = []  # noqa: E501
 
         return await self.api_client.call_api(
-            '/v1/collections/{collection_id}', 'POST',
+            "/v1/collections/{collection_id}",
+            "POST",
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='CollectionUpdateResponse',  # noqa: E501
+            response_type="CollectionUpdateResponse",  # noqa: E501
             auth_settings=auth_settings,
-            _return_http_data_only=params.get('_return_http_data_only'),
-            _preload_content=params.get('_preload_content', True),
-            _request_timeout=params.get('_request_timeout'),
-            collection_formats=collection_formats)
+            _return_http_data_only=params.get("_return_http_data_only"),
+            _preload_content=params.get("_preload_content", True),
+            _request_timeout=params.get("_request_timeout"),
+            collection_formats=collection_formats,
+        )
 
     async def update_record(self, body, collection_id, record_id, **kwargs):  # noqa: E501
         """Update record  # noqa: E501
@@ -1060,8 +1039,8 @@ class AsyncRetrievalApi(object):
                  If the method is called asynchronously,
                  returns the request thread.
         """
-        kwargs['_return_http_data_only'] = True
-        if kwargs.get('async_req'):
+        kwargs["_return_http_data_only"] = True
+        if kwargs.get("async_req"):
             return await self.update_record_with_http_info(body, collection_id, record_id, **kwargs)  # noqa: E501
         else:
             (data) = await self.update_record_with_http_info(body, collection_id, record_id, **kwargs)  # noqa: E501
@@ -1085,41 +1064,37 @@ class AsyncRetrievalApi(object):
                  returns the request thread.
         """
 
-        all_params = ['body', 'collection_id', 'record_id']  # noqa: E501
-        all_params.append('async_req')
-        all_params.append('_return_http_data_only')
-        all_params.append('_preload_content')
-        all_params.append('_request_timeout')
+        all_params = ["body", "collection_id", "record_id"]  # noqa: E501
+        all_params.append("async_req")
+        all_params.append("_return_http_data_only")
+        all_params.append("_preload_content")
+        all_params.append("_request_timeout")
 
         params = locals()
-        for key, val in six.iteritems(params['kwargs']):
+        for key, val in six.iteritems(params["kwargs"]):
             if key not in all_params:
-                raise TypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method update_record" % key
-                )
+                raise TypeError("Got an unexpected keyword argument '%s'" " to method update_record" % key)
             params[key] = val
-        del params['kwargs']
+        del params["kwargs"]
         # verify the required parameter 'body' is set
-        if ('body' not in params or
-                params['body'] is None):
+        if "body" not in params or params["body"] is None:
             raise ValueError("Missing the required parameter `body` when calling `update_record`")  # noqa: E501
         # verify the required parameter 'collection_id' is set
-        if ('collection_id' not in params or
-                params['collection_id'] is None):
-            raise ValueError("Missing the required parameter `collection_id` when calling `update_record`")  # noqa: E501
+        if "collection_id" not in params or params["collection_id"] is None:
+            raise ValueError(
+                "Missing the required parameter `collection_id` when calling `update_record`"
+            )  # noqa: E501
         # verify the required parameter 'record_id' is set
-        if ('record_id' not in params or
-                params['record_id'] is None):
+        if "record_id" not in params or params["record_id"] is None:
             raise ValueError("Missing the required parameter `record_id` when calling `update_record`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
-        if 'collection_id' in params:
-            path_params['collection_id'] = params['collection_id']  # noqa: E501
-        if 'record_id' in params:
-            path_params['record_id'] = params['record_id']  # noqa: E501
+        if "collection_id" in params:
+            path_params["collection_id"] = params["collection_id"]  # noqa: E501
+        if "record_id" in params:
+            path_params["record_id"] = params["record_id"]  # noqa: E501
 
         query_params = []
 
@@ -1129,30 +1104,32 @@ class AsyncRetrievalApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'body' in params:
-            body_params = params['body']
+        if "body" in params:
+            body_params = params["body"]
         # HTTP header `Accept`
-        header_params['Accept'] = self.api_client.select_header_accept(
-            ['application/json'])  # noqa: E501
+        header_params["Accept"] = self.api_client.select_header_accept(["application/json"])  # noqa: E501
 
         # HTTP header `Content-Type`
-        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
-            ['application/json'])  # noqa: E501
+        header_params["Content-Type"] = self.api_client.select_header_content_type(  # noqa: E501
+            ["application/json"]
+        )  # noqa: E501
 
         # Authentication setting
         auth_settings = []  # noqa: E501
 
         return await self.api_client.call_api(
-            '/v1/collections/{collection_id}/records/{record_id}', 'POST',
+            "/v1/collections/{collection_id}/records/{record_id}",
+            "POST",
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='RecordUpdateResponse',  # noqa: E501
+            response_type="RecordUpdateResponse",  # noqa: E501
             auth_settings=auth_settings,
-            _return_http_data_only=params.get('_return_http_data_only'),
-            _preload_content=params.get('_preload_content', True),
-            _request_timeout=params.get('_request_timeout'),
-            collection_formats=collection_formats)
+            _return_http_data_only=params.get("_return_http_data_only"),
+            _preload_content=params.get("_preload_content", True),
+            _request_timeout=params.get("_request_timeout"),
+            collection_formats=collection_formats,
+        )
