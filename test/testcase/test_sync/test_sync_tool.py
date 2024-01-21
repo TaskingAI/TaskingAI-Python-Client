@@ -89,7 +89,7 @@ class TestAction:
     def test_run_action(self, action_id):
         # Run an action.
 
-        parameters = {"parameters": {"location": "tokyo"}}
+        parameters = {"location": "tokyo"}
         res = run_action(action_id=action_id, parameters=parameters)
         logger.info(f"async run action{res}")
         pytest.assume(res["status"] != 200)
@@ -129,7 +129,6 @@ class TestAction:
         res = get_action(action_id=action_id)
         res_dict = res.to_dict()
         pytest.assume(res_dict.keys() == self.action_keys)
-        logger.info(res_dict["openapi_schema"].keys())
         pytest.assume(res_dict["openapi_schema"].keys() == self.action_schema_keys)
 
     @pytest.mark.run(order=39)

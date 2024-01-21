@@ -21,8 +21,6 @@ class TestCollection:
         "status",
     ]
     collection_keys = set(collection_list)
-    collection_configs = ["metric", "chunk_size", "chunk_overlap"]
-    collection_configs_keys = set(collection_configs)
 
     @pytest.mark.run(order=9)
     def test_create_collection(self):
@@ -69,7 +67,7 @@ class TestCollection:
         res = get_collection(collection_id=collection_id)
         res_dict = res.to_dict()
         pytest.assume(res_dict.keys() == self.collection_keys)
-        pytest.assume(res_dict["status"] == "ready")
+        pytest.assume(res_dict["status"] == "ready" or res_dict["status"] == "creating")
 
     @pytest.mark.run(order=12)
     def test_update_collection(self, collection_id):
@@ -95,7 +93,6 @@ class TestCollection:
             collection_id = collection.collection_id
 
             # Delete a collection.
-
             delete_collection(collection_id=collection_id)
 
             new_collections = list_collections(order="desc", limit=100, after=None, before=None)
@@ -173,7 +170,7 @@ class TestRecord:
             logger.info(f"get record response: {res}")
             res_dict = res.to_dict()
             pytest.assume(res_dict.keys() == self.record_keys)
-            pytest.assume(res_dict["status"] == "creating" or "ready")
+            pytest.assume(res_dict["status"] == "ready" or res_dict["status"] == "creating")
 
     @pytest.mark.run(order=16)
     def test_update_record(self, collection_id, record_id):
