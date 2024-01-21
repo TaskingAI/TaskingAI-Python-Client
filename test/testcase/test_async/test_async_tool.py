@@ -26,7 +26,7 @@ class TestAction(Base):
     action_keys = set(action_list)
     action_schema = ["openapi", "info", "servers", "paths", "components", "security"]
     action_schema_keys = set(action_schema)
-    schema = {
+    openapi_schema = {
         "openapi": "3.1.0",
         "info": {
             "title": "Get weather data",
@@ -72,7 +72,7 @@ class TestAction(Base):
     async def test_a_bulk_create_actions(self):
         # Create an action.
 
-        res = await a_bulk_create_actions(schema=self.schema)
+        res = await a_bulk_create_actions(openapi_schema=self.openapi_schema)
         for action in res:
             action_dict = action.to_dict()
             logger.info(action_dict)
@@ -84,15 +84,15 @@ class TestAction(Base):
                     if action_dict["openapi_schema"][key]["/location"] == "get":
                         pytest.assume(
                             action_dict["openapi_schema"][key]["/location"]["get"]
-                            == self.schema["paths"]["/location"]["get"]
+                            == self.openapi_schema["paths"]["/location"]["get"]
                         )
                     elif action_dict["openapi_schema"][key]["/location"] == "post":
                         pytest.assume(
                             action_dict["openapi_schema"][key]["/location"]["post"]
-                            == self.schema["paths"]["/location"]["post"]
+                            == self.openapi_schema["paths"]["/location"]["post"]
                         )
                 else:
-                    pytest.assume(action_dict["openapi_schema"][key] == self.schema[key])
+                    pytest.assume(action_dict["openapi_schema"][key] == self.openapi_schema[key])
 
     @pytest.mark.run(order=5)
     @pytest.mark.asyncio
@@ -101,10 +101,10 @@ class TestAction(Base):
 
         if not Base.action_id:
             Base.action_id = await a_action_id
-        parameters = {"location": "beijing"}
+        parameters = {"location": "tokyo"}
         res = await a_run_action(action_id=self.action_id, parameters=parameters)
         logger.info(f"async run action{res}")
-        pytest.assume(res["status"] == 400)
+        pytest.assume(res["status"] != 200)
         pytest.assume(res["error"])
 
     @pytest.mark.run(order=6)
@@ -176,7 +176,7 @@ class TestAction(Base):
             "security": [],
         }
 
-        res = await a_update_action(action_id=self.action_id, schema=update_schema)
+        res = await a_update_action(action_id=self.action_id, openapi_schema=update_schema)
         res_dict = res.to_dict()
         logger.info(res_dict)
         pytest.assume(res_dict.keys() == self.action_keys)

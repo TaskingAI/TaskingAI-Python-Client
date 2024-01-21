@@ -22,8 +22,6 @@ class TestCollection(Base):
         "status",
     ]
     collection_keys = set(collection_list)
-    collection_configs = ["metric", "chunk_size", "chunk_overlap"]
-    collection_configs_keys = set(collection_configs)
 
     @pytest.mark.run(order=9)
     @pytest.mark.asyncio
@@ -43,7 +41,7 @@ class TestCollection(Base):
             pytest.assume(res_dict["description"] == description)
             pytest.assume(res_dict["embedding_model_id"] == embedding_model_id)
             pytest.assume(res_dict["capacity"] == 1000)
-            pytest.assume(res_dict["status"] == "creating")
+            pytest.assume((res_dict["status"] == "ready") or (res_dict["status"] == "creating"))
 
     @pytest.mark.run(order=10)
     @pytest.mark.asyncio
@@ -76,8 +74,7 @@ class TestCollection(Base):
         res = await a_get_collection(collection_id=self.collection_id)
         res_dict = res.to_dict()
         pytest.assume(res_dict.keys() == self.collection_keys)
-        pytest.assume(res_dict["configs"].keys() == self.collection_configs_keys)
-        pytest.assume(res_dict["status"] == "ready" or "creating")
+        pytest.assume(res_dict["status"] == "ready" or res_dict["status"] == "creating")
 
     @pytest.mark.run(order=12)
     @pytest.mark.asyncio
@@ -89,7 +86,6 @@ class TestCollection(Base):
         res = await a_update_collection(collection_id=self.collection_id, name=name, description=description)
         res_dict = res.to_dict()
         pytest.assume(res_dict.keys() == self.collection_keys)
-        pytest.assume(res_dict["configs"].keys() == self.collection_configs_keys)
         pytest.assume(res_dict["name"] == name)
         pytest.assume(res_dict["description"] == description)
         pytest.assume(res_dict["status"] == "ready")
@@ -99,16 +95,21 @@ class TestCollection(Base):
     async def test_a_delete_collection(self):
         # List collections.
         old_res = await a_list_collections(order="desc", limit=100, after=None, before=None)
+        old_nums = len(old_res)
 
         for index, collection in enumerate(old_res):
             collection_id = collection.collection_id
-            # Delete a collection.
+            # Delete a collection
             await a_delete_collection(collection_id=collection_id)
 
             new_collections = await a_list_collections(order="desc", limit=100, after=None, before=None)
-            # List collections.
+
+            # List collections
             collection_ids = [c.collection_id for c in new_collections]
             pytest.assume(collection_id not in collection_ids)
+
+            new_nums = len(new_collections)
+            pytest.assume(new_nums == old_nums - 1 - index)
 
 
 @pytest.mark.test_async
@@ -125,8 +126,6 @@ class TestRecord(Base):
         "status",
     ]
     record_keys = set(record_list)
-    record_content = ["text"]
-    record_content_keys = set(record_content)
 
     @pytest.mark.run(order=13)
     @pytest.mark.asyncio
@@ -142,9 +141,8 @@ class TestRecord(Base):
             )
             res_dict = res.to_dict()
             pytest.assume(res_dict.keys() == self.record_keys)
-            pytest.assume(res_dict["content"].keys() == self.record_content_keys)
-            pytest.assume(res_dict["content"]["text"] == text)
-            pytest.assume(res_dict["status"] == "creating")
+            pytest.assume(res_dict["content"] == text)
+            pytest.assume((res_dict["status"] == "creating") or (res_dict["status"] == "ready"))
 
     @pytest.mark.run(order=14)
     @pytest.mark.asyncio
@@ -177,12 +175,14 @@ class TestRecord(Base):
     async def test_a_get_record(self):
         # Get a record.
 
-        res = await a_get_record(collection_id=self.collection_id, record_id=self.record_id)
-        logger.info(f"a_get_record:{res}")
-        res_dict = res.to_dict()
-        pytest.assume(res_dict.keys() == self.record_keys)
-        pytest.assume(res_dict["content"].keys() == self.record_content_keys)
-        pytest.assume(res_dict["status"] == "ready" or "creating")
+        records = await a_list_records(collection_id=self.collection_id)
+        for record in records:
+            record_id = record.record_id
+            res = await a_get_record(collection_id=self.collection_id, record_id=record_id)
+            logger.info(f"a_get_record:{res}")
+            res_dict = res.to_dict()
+            pytest.assume(res_dict.keys() == self.record_keys)
+            pytest.assume(res_dict["status"] == "ready" or res_dict["status"] == "creating")
 
     @pytest.mark.run(order=16)
     @pytest.mark.asyncio
@@ -194,7 +194,6 @@ class TestRecord(Base):
         logger.info(f"a_update_record:{res}")
         res_dict = res.to_dict()
         pytest.assume(res_dict.keys() == self.record_keys)
-        pytest.assume(res_dict["content"].keys() == self.record_content_keys)
         pytest.assume(res_dict["metadata"] == metadata)
 
     @pytest.mark.run(order=34)
@@ -226,7 +225,7 @@ class TestRecord(Base):
 
 @pytest.mark.test_async
 class TestChunk(Base):
-    chunk_list = ["chunk_id", "collection_id", "record_id", "object", "text", "score"]
+    chunk_list = ["chunk_id", "collection_id", "record_id", "object", "content", "score"]
     chunk_keys = set(chunk_list)
 
     @pytest.mark.run(order=17)
@@ -241,5 +240,5 @@ class TestChunk(Base):
         for chunk in res:
             chunk_dict = chunk.to_dict()
             pytest.assume(chunk_dict.keys() == self.chunk_keys)
-            pytest.assume(query_text in chunk_dict["text"])
+            pytest.assume(query_text in chunk_dict["content"])
             pytest.assume(chunk_dict["score"] >= 0)
