@@ -109,7 +109,7 @@ NUMBERS_API_SCHEMA = {
 
 # Create a tool action based on the defined schema
 actions = bulk_create_actions(
-    schema=NUMBERS_API_SCHEMA,
+    openapi_schema=NUMBERS_API_SCHEMA,
     authentication=ActionAuthentication(type=ActionAuthenticationType.NONE)
 )
 action = actions[0]
