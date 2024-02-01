@@ -1,0 +1,72 @@
+name: Publish Package
+
+on:
+  push:
+    tags: ["v*.*.*"]
+    paths-ignore:
+      - '**.md'
+
+env:
+  ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+  # EKS_NAMESPACE: ${{ vars.EKS_NAMESPACE_TEST }}
+  # AWS_DEFAULT_REGION: ${{ vars.AWS_REGION_TEST }}
+  # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: test
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Set short SHA
+      run: echo "IMAGE_TAG=$(echo ${{ github.sha }} | cut -c 1-7)" >> $GITHUB_ENV
+
+    - name: Check for git tag version
+      id: get_tag
+      run: |
+        TAG=$(git describe --tags --exact-match 2> /dev/null || echo "")
+        if [[ -n "$TAG" ]]; then
+          echo "IMAGE_TAG=${TAG}" >> $GITHUB_ENV
+        fi
+    
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: Run Version Verification
+      run: |
+        python -c "from config import CONFIG; import os; current_tag = os.getenv('IMAGE_TAG'); assert CONFIG.VERSION == current_tag, 'Version mismatch: Expected {} but got {}'.format(CONFIG.VERSION, current_tag); print('Version matched!')"
+
+
+    - name: Install Twine
+      run: |
+        python -m pip install --upgrade pip
+        pip install twine
+
+    - name: Build Package
+      run: python setup.py sdist bdist_wheel
+
+    - name: Publish Package
+      run: twine upload dist/*
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ env.IMAGE_TAG }}
+        release_name: Release ${{ env.IMAGE_TAG }}
+        body: |
+          This is the release for version ${{ env.IMAGE_TAG }}.
+        draft: false
+        prerelease: false
