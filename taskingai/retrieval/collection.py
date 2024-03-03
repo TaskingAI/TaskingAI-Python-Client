@@ -1,15 +1,7 @@
 from typing import Optional, List, Dict
 
-from taskingai.client.utils import get_api_instance, ModuleType
-from taskingai.client.models import Collection
-from taskingai.client.models import (
-    CollectionCreateRequest,
-    CollectionCreateResponse,
-    CollectionUpdateRequest,
-    CollectionUpdateResponse,
-    CollectionGetResponse,
-    CollectionListResponse,
-)
+from taskingai.client.models import *
+from taskingai.client.apis import *
 
 __all__ = [
     "Collection",
@@ -45,18 +37,15 @@ def list_collections(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.RETRIEVAL)
     # only add non-None parameters
-    params = {
-        "order": order,
-        "limit": limit,
-        "after": after,
-        "before": before,
-    }
-    params = {k: v for k, v in params.items() if v is not None}
-    response: CollectionListResponse = api_instance.list_collections(**params)
-    collections: List[Collection] = [Collection(**item) for item in response.data]
-    return collections
+    payload = CollectionListRequest(
+        order=order,
+        limit=limit,
+        after=after,
+        before=before,
+    )
+    response: CollectionListResponse = api_list_collections(payload=payload)
+    return response.data
 
 
 async def a_list_collections(
@@ -78,18 +67,15 @@ async def a_list_collections(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.RETRIEVAL, async_client=True)
     # only add non-None parameters
-    params = {
-        "order": order,
-        "limit": limit,
-        "after": after,
-        "before": before,
-    }
-    params = {k: v for k, v in params.items() if v is not None}
-    response: CollectionListResponse = await api_instance.list_collections(**params)
-    collections: List[Collection] = [Collection(**item) for item in response.data]
-    return collections
+    payload = CollectionListRequest(
+        order=order,
+        limit=limit,
+        after=after,
+        before=before,
+    )
+    response: CollectionListResponse = await async_api_list_collections(payload=payload)
+    return response.data
 
 
 def get_collection(collection_id: str) -> Collection:
@@ -99,10 +85,8 @@ def get_collection(collection_id: str) -> Collection:
     :param collection_id: The ID of the collection.
     """
 
-    api_instance = get_api_instance(ModuleType.RETRIEVAL)
-    response: CollectionGetResponse = api_instance.get_collection(collection_id=collection_id)
-    collection: Collection = Collection(**response.data)
-    return collection
+    response: CollectionGetResponse = api_get_collection(collection_id=collection_id)
+    return response.data
 
 
 async def a_get_collection(collection_id: str) -> Collection:
@@ -112,10 +96,8 @@ async def a_get_collection(collection_id: str) -> Collection:
     :param collection_id: The ID of the collection.
     """
 
-    api_instance = get_api_instance(ModuleType.RETRIEVAL, async_client=True)
-    response: CollectionGetResponse = await api_instance.get_collection(collection_id=collection_id)
-    collection: Collection = Collection(**response.data)
-    return collection
+    response: CollectionGetResponse = await async_api_get_collection(collection_id=collection_id)
+    return response.data
 
 
 def create_collection(
@@ -136,18 +118,15 @@ def create_collection(
     :return: The created collection object.
     """
 
-    # todo verify parameters
-    api_instance = get_api_instance(ModuleType.RETRIEVAL)
     body = CollectionCreateRequest(
         embedding_model_id=embedding_model_id,
         capacity=capacity,
-        name=name,
-        description=description,
-        metadata=metadata,
+        name=name or "",
+        description=description or "",
+        metadata=metadata or {},
     )
-    response: CollectionCreateResponse = api_instance.create_collection(body=body)
-    collection: Collection = Collection(**response.data)
-    return collection
+    response: CollectionCreateResponse = api_create_collection(payload=body)
+    return response.data
 
 
 async def a_create_collection(
@@ -169,17 +148,15 @@ async def a_create_collection(
     """
 
     # todo verify parameters
-    api_instance = get_api_instance(ModuleType.RETRIEVAL, async_client=True)
     body = CollectionCreateRequest(
         embedding_model_id=embedding_model_id,
         capacity=capacity,
-        name=name,
-        description=description,
-        metadata=metadata,
+        name=name or "",
+        description=description or "",
+        metadata=metadata or {},
     )
-    response: CollectionCreateResponse = await api_instance.create_collection(body=body)
-    collection: Collection = Collection(**response.data)
-    return collection
+    response: CollectionCreateResponse = await async_api_create_collection(payload=body)
+    return response.data
 
 
 def update_collection(
@@ -197,15 +174,13 @@ def update_collection(
     :return: The updated collection object.
     """
     # todo: verify at least one parameter is not None
-    api_instance = get_api_instance(ModuleType.RETRIEVAL)
     body = CollectionUpdateRequest(
         name=name,
         description=description,
         metadata=metadata,
     )
-    response: CollectionUpdateResponse = api_instance.update_collection(collection_id=collection_id, body=body)
-    collection: Collection = Collection(**response.data)
-    return collection
+    response: CollectionUpdateResponse = api_update_collection(collection_id=collection_id, payload=body)
+    return response.data
 
 
 async def a_update_collection(
@@ -222,15 +197,13 @@ async def a_update_collection(
     :param authentication: The collection API authentication.
     :return: The updated collection object.
     """
-    api_instance = get_api_instance(ModuleType.RETRIEVAL, async_client=True)
     body = CollectionUpdateRequest(
         name=name,
         description=description,
         metadata=metadata,
     )
-    response: CollectionUpdateResponse = await api_instance.update_collection(collection_id=collection_id, body=body)
-    collection: Collection = Collection(**response.data)
-    return collection
+    response: CollectionUpdateResponse = await async_api_update_collection(collection_id=collection_id, payload=body)
+    return response.data
 
 
 def delete_collection(collection_id: str) -> None:
@@ -240,8 +213,7 @@ def delete_collection(collection_id: str) -> None:
     :param collection_id: The ID of the collection.
     """
 
-    api_instance = get_api_instance(ModuleType.RETRIEVAL)
-    api_instance.delete_collection(collection_id=collection_id)
+    api_delete_collection(collection_id=collection_id)
 
 
 async def a_delete_collection(collection_id: str) -> None:
@@ -251,5 +223,4 @@ async def a_delete_collection(collection_id: str) -> None:
     :param collection_id: The ID of the collection.
     """
 
-    api_instance = get_api_instance(ModuleType.RETRIEVAL, async_client=True)
-    await api_instance.delete_collection(collection_id=collection_id)
+    await async_api_delete_collection(collection_id=collection_id)

@@ -1,17 +1,8 @@
 from typing import Optional, List, Dict
 
-from taskingai.client.utils import get_api_instance, ModuleType
-from taskingai.client.models import Action, ActionAuthentication, ActionAuthenticationType
-from taskingai.client.models import (
-    ActionBulkCreateRequest,
-    ActionBulkCreateResponse,
-    ActionUpdateRequest,
-    ActionUpdateResponse,
-    ActionGetResponse,
-    ActionListResponse,
-    ActionRunRequest,
-    ActionRunResponse,
-)
+from taskingai.client.models import *
+from taskingai.client.apis import *
+
 
 __all__ = [
     "Action",
@@ -50,18 +41,15 @@ def list_actions(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.TOOL)
     # only add non-None parameters
-    params = {
-        "order": order,
-        "limit": limit,
-        "after": after,
-        "before": before,
-    }
-    params = {k: v for k, v in params.items() if v is not None}
-    response: ActionListResponse = api_instance.list_actions(**params)
-    actions: List[Action] = [Action(**item) for item in response.data]
-    return actions
+    payload = ActionListRequest(
+        order=order,
+        limit=limit,
+        after=after,
+        before=before,
+    )
+    response: ActionListResponse = api_list_actions(payload=payload)
+    return response.data
 
 
 async def a_list_actions(
@@ -82,18 +70,15 @@ async def a_list_actions(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.TOOL, async_client=True)
     # only add non-None parameters
-    params = {
-        "order": order,
-        "limit": limit,
-        "after": after,
-        "before": before,
-    }
-    params = {k: v for k, v in params.items() if v is not None}
-    response: ActionListResponse = await api_instance.list_actions(**params)
-    actions: List[Action] = [Action(**item) for item in response.data]
-    return actions
+    payload = ActionListRequest(
+        order=order,
+        limit=limit,
+        after=after,
+        before=before,
+    )
+    response: ActionListResponse = await async_api_list_actions(payload)
+    return response.data
 
 
 def get_action(action_id: str) -> Action:
@@ -103,10 +88,8 @@ def get_action(action_id: str) -> Action:
     :param action_id: The ID of the action.
     """
 
-    api_instance = get_api_instance(ModuleType.TOOL)
-    response: ActionGetResponse = api_instance.get_action(action_id=action_id)
-    action: Action = Action(**response.data)
-    return action
+    response: ActionGetResponse = api_get_action(action_id=action_id)
+    return response.data
 
 
 async def a_get_action(action_id: str) -> Action:
@@ -116,13 +99,14 @@ async def a_get_action(action_id: str) -> Action:
     :param action_id: The ID of the action.
     """
 
-    api_instance = get_api_instance(ModuleType.TOOL, async_client=True)
-    response: ActionGetResponse = await api_instance.get_action(action_id=action_id)
-    action: Action = Action(**response.data)
-    return action
+    response: ActionGetResponse = await async_api_get_action(action_id=action_id)
+    return response.data
 
 
-def bulk_create_actions(openapi_schema: Dict, authentication: Optional[ActionAuthentication] = None) -> List[Action]:
+def bulk_create_actions(
+    openapi_schema: Dict,
+    authentication: Optional[ActionAuthentication] = None,
+) -> List[Action]:
     """
     Create actions from an OpenAPI schema.
 
@@ -131,8 +115,6 @@ def bulk_create_actions(openapi_schema: Dict, authentication: Optional[ActionAut
     :return: The created action object.
     """
 
-    # todo verify openapi_schema
-    api_instance = get_api_instance(ModuleType.TOOL)
     if authentication is None:
         authentication = ActionAuthentication(
             type=ActionAuthenticationType.NONE,
@@ -141,13 +123,13 @@ def bulk_create_actions(openapi_schema: Dict, authentication: Optional[ActionAut
         openapi_schema=openapi_schema,
         authentication=authentication,
     )
-    response: ActionBulkCreateResponse = api_instance.bulk_create_action(body=body)
-    actions: List[Action] = [Action(**data) for data in response.data]
-    return actions
+    response: ActionBulkCreateResponse = api_bulk_create_actions(payload=body)
+    return response.data
 
 
 async def a_bulk_create_actions(
-    openapi_schema: Dict, authentication: Optional[ActionAuthentication] = None
+    openapi_schema: Dict,
+    authentication: Optional[ActionAuthentication] = None,
 ) -> List[Action]:
     """
     Create actions from an OpenAPI schema in async mode.
@@ -157,8 +139,6 @@ async def a_bulk_create_actions(
     :return: The created action object.
     """
 
-    # todo verify openapi_schema
-    api_instance = get_api_instance(ModuleType.TOOL, async_client=True)
     if authentication is None:
         authentication = ActionAuthentication(
             type=ActionAuthenticationType.NONE,
@@ -167,9 +147,8 @@ async def a_bulk_create_actions(
         openapi_schema=openapi_schema,
         authentication=authentication,
     )
-    response: ActionBulkCreateResponse = await api_instance.bulk_create_action(body=body)
-    actions: List[Action] = [Action(**data) for data in response.data]
-    return actions
+    response: ActionBulkCreateResponse = await async_api_bulk_create_actions(payload=body)
+    return response.data
 
 
 def update_action(
@@ -185,14 +164,12 @@ def update_action(
     :param authentication: The action API authentication.
     :return: The updated action object.
     """
-    api_instance = get_api_instance(ModuleType.TOOL)
     body = ActionUpdateRequest(
         openapi_schema=openapi_schema,
         authentication=authentication,
     )
-    response: ActionUpdateResponse = api_instance.update_action(action_id=action_id, body=body)
-    action: Action = Action(**response.data)
-    return action
+    response: ActionUpdateResponse = api_update_action(action_id=action_id, payload=body)
+    return response.data
 
 
 async def a_update_action(
@@ -208,14 +185,12 @@ async def a_update_action(
     :param authentication: The action API authentication.
     :return: The updated action object.
     """
-    api_instance = get_api_instance(ModuleType.TOOL, async_client=True)
     body = ActionUpdateRequest(
         openapi_schema=openapi_schema,
         authentication=authentication,
     )
-    response: ActionUpdateResponse = await api_instance.update_action(action_id=action_id, body=body)
-    action: Action = Action(**response.data)
-    return action
+    response: ActionUpdateResponse = await async_api_update_action(action_id=action_id, payload=body)
+    return response.data
 
 
 def delete_action(action_id: str) -> None:
@@ -225,8 +200,7 @@ def delete_action(action_id: str) -> None:
     :param action_id: The ID of the action.
     """
 
-    api_instance = get_api_instance(ModuleType.TOOL)
-    api_instance.delete_action(action_id=action_id)
+    api_delete_action(action_id=action_id)
 
 
 async def a_delete_action(action_id: str) -> None:
@@ -236,8 +210,7 @@ async def a_delete_action(action_id: str) -> None:
     :param action_id: The ID of the action.
     """
 
-    api_instance = get_api_instance(ModuleType.TOOL, async_client=True)
-    await api_instance.delete_action(action_id=action_id)
+    await async_api_delete_action(action_id=action_id)
 
 
 def run_action(
@@ -252,11 +225,10 @@ def run_action(
     :return: The action response.
     """
 
-    api_instance = get_api_instance(ModuleType.TOOL)
     body = ActionRunRequest(
         parameters=parameters,
     )
-    response: ActionRunResponse = api_instance.run_action(action_id=action_id, body=body)
+    response: ActionRunResponse = api_run_action(action_id=action_id, payload=body)
     result = response.data
     return result
 
@@ -273,10 +245,9 @@ async def a_run_action(
     :return: The action response.
     """
 
-    api_instance = get_api_instance(ModuleType.TOOL, async_client=True)
     body = ActionRunRequest(
         parameters=parameters,
     )
-    response: ActionRunResponse = await api_instance.run_action(action_id=action_id, body=body)
+    response: ActionRunResponse = await async_api_run_action(action_id=action_id, payload=body)
     result = response.data
     return result

@@ -1,11 +1,7 @@
-from typing import Optional, List, Dict, Union
+from typing import List, Union
 
-from taskingai.client.utils import get_api_instance, ModuleType
-from taskingai.client.models import (
-    TextEmbeddingOutput,
-    TextEmbeddingRequest,
-    TextEmbeddingResponse
-)
+from taskingai.client.models import *
+from taskingai.client.apis import *
 
 __all__ = [
     "TextEmbeddingOutput",
@@ -15,9 +11,9 @@ __all__ = [
 
 
 def text_embedding(
-        model_id: str,
-        input: Union[str, List[str]],
-) -> Union[List[float] ,List[List[float]]]:
+    model_id: str,
+    input: Union[str, List[str]],
+) -> Union[List[float], List[List[float]]]:
     """
     Chat completion model inference.
 
@@ -25,17 +21,11 @@ def text_embedding(
     :param input: The input text or list of input texts.
     :return: The list of assistants.
     """
-    api_instance = get_api_instance(ModuleType.INFERENCE)
+
     # only add non-None parameters
-    body = TextEmbeddingRequest(
-        model_id=model_id,
-        input=input
-    )
-    response: TextEmbeddingResponse = api_instance.text_embedding(body=body)
-    results = []
-    for data in response.data:
-        text_embedding_result: TextEmbeddingOutput = TextEmbeddingOutput(**data)
-        results.append(text_embedding_result.embedding)
+    body = TextEmbeddingRequest(model_id=model_id, input=input)
+    response: TextEmbeddingResponse = api_text_embedding(payload=body)
+    results = [data.embedding for data in response.data]
 
     if isinstance(input, str):
         return results[0]
@@ -44,9 +34,9 @@ def text_embedding(
 
 
 async def a_text_embedding(
-        model_id: str,
-        input: Union[str, List[str]],
-) -> Union[List[float] ,List[List[float]]]:
+    model_id: str,
+    input: Union[str, List[str]],
+) -> Union[List[float], List[List[float]]]:
     """
     Chat completion model inference in async mode.
 
@@ -54,17 +44,11 @@ async def a_text_embedding(
     :param input: The input text or list of input texts.
     :return: The list of assistants.
     """
-    api_instance = get_api_instance(ModuleType.INFERENCE, async_client=True)
+
     # only add non-None parameters
-    body = TextEmbeddingRequest(
-        model_id=model_id,
-        input=input
-    )
-    response: TextEmbeddingResponse = await api_instance.text_embedding(body=body)
-    results = []
-    for data in response.data:
-        text_embedding_result: TextEmbeddingOutput = TextEmbeddingOutput(**data)
-        results.append(text_embedding_result.embedding)
+    body = TextEmbeddingRequest(model_id=model_id, input=input)
+    response: TextEmbeddingResponse = await async_api_text_embedding(payload=body)
+    results = [data.embedding for data in response.data]
 
     if isinstance(input, str):
         return results[0]

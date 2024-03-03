@@ -1,21 +1,8 @@
 from typing import Optional, List, Dict, Union
 
-from taskingai.client.utils import get_api_instance, ModuleType
-from taskingai.client.models import (
-    Message,
-    MessageRole,
-    MessageContent,
-    MessageChunk,
-)
-from taskingai.client.models import (
-    MessageCreateRequest,
-    MessageCreateResponse,
-    MessageUpdateRequest,
-    MessageUpdateResponse,
-    MessageGetResponse,
-    MessageListResponse,
-    MessageGenerateRequest
-)
+from taskingai.client.models import *
+from taskingai.client.apis import *
+from taskingai.client.stream_apis import *
 from taskingai.client.stream import Stream, AsyncStream
 
 __all__ = [
@@ -56,22 +43,19 @@ def list_messages(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT)
     # only add non-None parameters
-    params = {
-        "order": order,
-        "limit": limit,
-        "after": after,
-        "before": before,
-    }
-    params = {k: v for k, v in params.items() if v is not None}
-    response: MessageListResponse = api_instance.list_messages(
+    payload = MessageListRequest(
+        order=order,
+        limit=limit,
+        after=after,
+        before=before,
+    )
+    response: MessageListResponse = api_list_messages(
         assistant_id=assistant_id,
         chat_id=chat_id,
-        **params
+        payload=payload,
     )
-    messages: List[Message] = [Message(**item) for item in response.data]
-    return messages
+    return response.data
 
 
 async def a_list_messages(
@@ -96,29 +80,22 @@ async def a_list_messages(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
     # only add non-None parameters
-    params = {
-        "order": order,
-        "limit": limit,
-        "after": after,
-        "before": before,
-    }
-    params = {k: v for k, v in params.items() if v is not None}
-    response: MessageListResponse = await api_instance.list_messages(
+    payload = MessageListRequest(
+        order=order,
+        limit=limit,
+        after=after,
+        before=before,
+    )
+    response: MessageListResponse = await async_api_list_messages(
         assistant_id=assistant_id,
         chat_id=chat_id,
-        **params
+        payload=payload,
     )
-    messages: List[Message] = [Message(**item) for item in response.data]
-    return messages
+    return response.data
 
 
-def get_message(
-    assistant_id: str,
-    chat_id: str,
-    message_id: str
-) -> Message:
+def get_message(assistant_id: str, chat_id: str, message_id: str) -> Message:
     """
     Get a message.
 
@@ -127,21 +104,15 @@ def get_message(
     :param message_id: The ID of the message.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT)
-    response: MessageGetResponse = api_instance.get_message(
+    response: MessageGetResponse = api_get_message(
         assistant_id=assistant_id,
         chat_id=chat_id,
         message_id=message_id,
     )
-    message: Message = Message(**response.data)
-    return message
+    return response.data
 
 
-async def a_get_message(
-    assistant_id: str,
-    chat_id: str,
-    message_id: str
-) -> Message:
+async def a_get_message(assistant_id: str, chat_id: str, message_id: str) -> Message:
     """
     Get a message in async mode.
 
@@ -150,15 +121,12 @@ async def a_get_message(
     :param message_id: The ID of the message.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
-    response: MessageGetResponse = await api_instance.get_message(
+    response: MessageGetResponse = await async_api_get_message(
         assistant_id=assistant_id,
         chat_id=chat_id,
         message_id=message_id,
     )
-    message: Message = Message(**response.data)
-    return message
-
+    return response.data
 
 
 def create_message(
@@ -177,19 +145,13 @@ def create_message(
     :return: The created message object.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT)
     body = MessageCreateRequest(
         role=MessageRole.USER,
         content=MessageContent(text=text),
-        metadata=metadata,
+        metadata=metadata or {},
     )
-    response: MessageCreateResponse = api_instance.create_message(
-        assistant_id=assistant_id,
-        chat_id=chat_id,
-        body=body
-    )
-    message: Message = Message(**response.data)
-    return message
+    response: MessageCreateResponse = api_create_message(assistant_id=assistant_id, chat_id=chat_id, payload=body)
+    return response.data
 
 
 async def a_create_message(
@@ -208,19 +170,15 @@ async def a_create_message(
     :return: The created message object.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
     body = MessageCreateRequest(
         role=MessageRole.USER,
         content=MessageContent(text=text),
-        metadata=metadata,
+        metadata=metadata or {},
     )
-    response: MessageCreateResponse = await api_instance.create_message(
-        assistant_id=assistant_id,
-        chat_id=chat_id,
-        body=body
+    response: MessageCreateResponse = await async_api_create_message(
+        assistant_id=assistant_id, chat_id=chat_id, payload=body
     )
-    message: Message = Message(**response.data)
-    return message
+    return response.data
 
 
 def update_message(
@@ -238,18 +196,13 @@ def update_message(
     :return: The updated message object.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT)
     body = MessageUpdateRequest(
-        metadata=metadata,
+        metadata=metadata or {},
     )
-    response: MessageUpdateResponse = api_instance.update_message(
-        assistant_id=assistant_id,
-        chat_id=chat_id,
-        message_id=message_id,
-        body=body
+    response: MessageUpdateResponse = api_update_message(
+        assistant_id=assistant_id, chat_id=chat_id, message_id=message_id, payload=body
     )
-    message: Message = Message(**response.data)
-    return message
+    return response.data
 
 
 async def a_update_message(
@@ -267,19 +220,13 @@ async def a_update_message(
     :return: The updated message object.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
     body = MessageUpdateRequest(
-        metadata=metadata,
+        metadata=metadata or {},
     )
-    response: MessageUpdateResponse = await api_instance.update_message(
-        assistant_id=assistant_id,
-        chat_id=chat_id,
-        message_id=message_id,
-        body=body
+    response: MessageUpdateResponse = await async_api_update_message(
+        assistant_id=assistant_id, chat_id=chat_id, message_id=message_id, payload=body
     )
-    message: Message = Message(**response.data)
-    return message
-
+    return response.data
 
 
 def generate_message(
@@ -293,35 +240,29 @@ def generate_message(
 
     :param assistant_id: The ID of the assistant.
     :param chat_id: The ID of the chat.
-    :param text: The text content of the message.
-    :param metadata: The message metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
+    :param system_prompt_variables: The system prompt variables.
+    :param stream: Whether to return a stream.
     :return: The generated message object.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT)
     body = MessageGenerateRequest(
         system_prompt_variables=system_prompt_variables,
         stream=stream,
     )
 
     if not stream:
-        response = api_instance.generate_message(
+        response: MessageGenerateResponse = api_generate_message(
             assistant_id=assistant_id,
             chat_id=chat_id,
-            body=body,
-            stream=False,
+            payload=body,
         )
-        message: Message = Message(**response["data"])
-        return message
+        return response.data
     else:
-        response: Stream = api_instance.generate_message(
-            assistant_id=assistant_id,
-            chat_id=chat_id,
-            body=body,
-            stream=True,
-            _preload_content=False
+        response: Stream = stream_api_generate_message(
+            assistant_id=assistant_id, chat_id=chat_id, payload=body, _preload_content=False
         )
         return response
+
 
 async def a_generate_message(
     assistant_id: str,
@@ -334,34 +275,25 @@ async def a_generate_message(
 
     :param assistant_id: The ID of the assistant.
     :param chat_id: The ID of the chat.
-    :param text: The text content of the message.
-    :param metadata: The message metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
+    :param system_prompt_variables: The system prompt variables.
+    :param stream: Whether to return a stream.
     :return: The generated message object.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
     body = MessageGenerateRequest(
         system_prompt_variables=system_prompt_variables,
         stream=stream,
     )
 
     if not stream:
-        response = await api_instance.generate_message(
+        response: MessageGenerateResponse = await async_api_generate_message(
             assistant_id=assistant_id,
             chat_id=chat_id,
-            body=body,
-            stream=False,
+            payload=body,
         )
-        message: Message = Message(**response["data"])
-        return message
+        return response.data
     else:
-        response: AsyncStream = await api_instance.generate_message(
-            assistant_id=assistant_id,
-            chat_id=chat_id,
-            body=body,
-            stream=True,
-            _preload_content=False
+        response: AsyncStream = await async_stream_api_generate_message(
+            assistant_id=assistant_id, chat_id=chat_id, payload=body, stream=True, _preload_content=False
         )
         return response
-
-

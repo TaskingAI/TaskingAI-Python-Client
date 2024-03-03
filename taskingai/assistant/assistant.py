@@ -1,23 +1,6 @@
 from typing import Optional, List, Dict
-
-from taskingai.client.utils import get_api_instance, ModuleType
-from taskingai.client.models import (
-    Assistant,
-    AssistantMemory,
-    AssistantRetrieval,
-    AssistantTool,
-    AssistantToolType,
-    AssistantRetrievalType
-)
-
-from taskingai.client.models import (
-    AssistantCreateRequest,
-    AssistantCreateResponse,
-    AssistantUpdateRequest,
-    AssistantUpdateResponse,
-    AssistantGetResponse,
-    AssistantListResponse,
-)
+from taskingai.client.models import *
+from taskingai.client.apis import *
 
 __all__ = [
     "Assistant",
@@ -37,6 +20,12 @@ __all__ = [
     "a_delete_assistant",
 ]
 
+AssistantTool = ToolRef
+AssistantRetrieval = RetrievalRef
+AssistantToolType = ToolType
+AssistantRetrievalType = RetrievalType
+DEFAULT_RETRIEVAL_CONFIG = RetrievalConfig(top_k=3, method=RetrievalMethod.USER_MESSAGE)
+
 
 def list_assistants(
     order: str = "desc",
@@ -44,7 +33,6 @@ def list_assistants(
     after: Optional[str] = None,
     before: Optional[str] = None,
 ) -> List[Assistant]:
-
     """
     List assistants.
 
@@ -58,25 +46,23 @@ def list_assistants(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT)
     # only add non-None parameters
-    params = {
-        "order": order,
-        "limit": limit,
-        "after": after,
-        "before": before,
-    }
-    params = {k: v for k, v in params.items() if v is not None}
-    response: AssistantListResponse = api_instance.list_assistants(**params)
-    assistants: List[Assistant] = [Assistant(**item) for item in response.data]
+    payload = AssistantListRequest(
+        order=order,
+        limit=limit,
+        after=after,
+        before=before,
+    )
+    response: AssistantListResponse = api_list_assistants(payload)
+    assistants: List[Assistant] = response.data
     return assistants
 
 
 async def a_list_assistants(
-        order: str = "desc",
-        limit: int = 20,
-        after: Optional[str] = None,
-        before: Optional[str] = None,
+    order: str = "desc",
+    limit: int = 20,
+    after: Optional[str] = None,
+    before: Optional[str] = None,
 ) -> List[Assistant]:
     """
     List assistants.
@@ -91,19 +77,15 @@ async def a_list_assistants(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
     # only add non-None parameters
-    params = {
-        "order": order,
-        "limit": limit,
-        "after": after,
-        "before": before,
-    }
-    params = {k: v for k, v in params.items() if v is not None}
-    response: AssistantListResponse = await api_instance.list_assistants(**params)
-    assistants: List[Assistant] = [Assistant(**item) for item in response.data]
-    return assistants
-
+    payload = AssistantListRequest(
+        order=order,
+        limit=limit,
+        after=after,
+        before=before,
+    )
+    response: AssistantListResponse = await async_api_list_assistants(payload)
+    return response.data
 
 
 def get_assistant(assistant_id: str) -> Assistant:
@@ -113,10 +95,8 @@ def get_assistant(assistant_id: str) -> Assistant:
     :param assistant_id: The ID of the assistant.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT)
-    response: AssistantGetResponse = api_instance.get_assistant(assistant_id=assistant_id)
-    assistant: Assistant = Assistant(**response.data)
-    return assistant
+    response: AssistantGetResponse = api_get_assistant(assistant_id=assistant_id)
+    return response.data
 
 
 async def a_get_assistant(assistant_id: str) -> Assistant:
@@ -126,10 +106,8 @@ async def a_get_assistant(assistant_id: str) -> Assistant:
     :param assistant_id: The ID of the assistant.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
-    response: AssistantGetResponse = await api_instance.get_assistant(assistant_id=assistant_id)
-    assistant: Assistant = Assistant(**response.data)
-    return assistant
+    response: AssistantGetResponse = await async_api_get_assistant(assistant_id=assistant_id)
+    return response.data
 
 
 def create_assistant(
@@ -140,6 +118,7 @@ def create_assistant(
     system_prompt_template: Optional[List[str]] = None,
     tools: Optional[List[AssistantTool]] = None,
     retrievals: Optional[List[AssistantRetrieval]] = None,
+    retrieval_configs: Optional[RetrievalConfig] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Assistant:
     """
@@ -156,21 +135,19 @@ def create_assistant(
     :return: The created assistant object.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT)
-    memory_dict = memory.model_dump()
     body = AssistantCreateRequest(
         model_id=model_id,
-        name=name,
-        description=description,
-        memory=memory_dict,
-        system_prompt_template=system_prompt_template,
-        tools=tools,
-        retrievals=retrievals,
-        metadata=metadata,
+        name=name or "",
+        description=description or "",
+        memory=memory,
+        system_prompt_template=system_prompt_template or [],
+        tools=tools or [],
+        retrievals=retrievals or [],
+        retrieval_configs=retrieval_configs or RetrievalConfig(top_k=3, method=RetrievalMethod.USER_MESSAGE),
+        metadata=metadata or {},
     )
-    response: AssistantCreateResponse = api_instance.create_assistant(body=body)
-    assistant: Assistant = Assistant(**response.data)
-    return assistant
+    response: AssistantCreateResponse = api_create_assistant(payload=body)
+    return response.data
 
 
 async def a_create_assistant(
@@ -181,6 +158,7 @@ async def a_create_assistant(
     system_prompt_template: Optional[List[str]] = None,
     tools: Optional[List[AssistantTool]] = None,
     retrievals: Optional[List[AssistantRetrieval]] = None,
+    retrieval_configs: Optional[RetrievalConfig] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Assistant:
     """
@@ -197,21 +175,19 @@ async def a_create_assistant(
     :return: The created assistant object.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
-    memory_dict = memory.model_dump()
     body = AssistantCreateRequest(
         model_id=model_id,
-        name=name,
-        description=description,
-        memory=memory_dict,
-        system_prompt_template=system_prompt_template,
-        tools=tools,
-        retrievals=retrievals,
-        metadata=metadata,
+        name=name or "",
+        description=description or "",
+        memory=memory,
+        system_prompt_template=system_prompt_template or [],
+        tools=tools or [],
+        retrievals=retrievals or [],
+        retrieval_configs=retrieval_configs or DEFAULT_RETRIEVAL_CONFIG,
+        metadata=metadata or {},
     )
-    response: AssistantCreateResponse = await api_instance.create_assistant(body=body)
-    assistant: Assistant = Assistant(**response.data)
-    return assistant
+    response: AssistantCreateResponse = await async_api_create_assistant(payload=body)
+    return response.data
 
 
 def update_assistant(
@@ -223,6 +199,7 @@ def update_assistant(
     memory: Optional[AssistantMemory] = None,
     tools: Optional[List[AssistantTool]] = None,
     retrievals: Optional[List[AssistantRetrieval]] = None,
+    retrieval_configs: Optional[RetrievalConfig] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Assistant:
     """
@@ -240,20 +217,19 @@ def update_assistant(
     :return: The updated assistant object.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT)
     body = AssistantUpdateRequest(
         model_id=model_id,
         name=name,
         description=description,
-        system_prompt_template=system_prompt_template,
         memory=memory,
+        system_prompt_template=system_prompt_template,
         tools=tools,
         retrievals=retrievals,
+        retrieval_configs=retrieval_configs,
         metadata=metadata,
     )
-    response: AssistantUpdateResponse = api_instance.update_assistant(assistant_id=assistant_id, body=body)
-    assistant: Assistant = Assistant(**response.data)
-    return assistant
+    response: AssistantUpdateResponse = api_update_assistant(assistant_id=assistant_id, payload=body)
+    return response.data
 
 
 async def a_update_assistant(
@@ -265,6 +241,7 @@ async def a_update_assistant(
     memory: Optional[AssistantMemory] = None,
     tools: Optional[List[AssistantTool]] = None,
     retrievals: Optional[List[AssistantRetrieval]] = None,
+    retrieval_configs: Optional[RetrievalConfig] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Assistant:
     """
@@ -282,20 +259,19 @@ async def a_update_assistant(
     :return: The updated assistant object.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
     body = AssistantUpdateRequest(
         model_id=model_id,
         name=name,
         description=description,
-        system_prompt_template=system_prompt_template,
         memory=memory,
+        system_prompt_template=system_prompt_template,
         tools=tools,
         retrievals=retrievals,
+        retrieval_configs=retrieval_configs,
         metadata=metadata,
     )
-    response: AssistantUpdateResponse = await api_instance.update_assistant(assistant_id=assistant_id, body=body)
-    assistant: Assistant = Assistant(**response.data)
-    return assistant
+    response: AssistantUpdateResponse = await async_api_update_assistant(assistant_id=assistant_id, payload=body)
+    return response.data
 
 
 def delete_assistant(assistant_id: str) -> None:
@@ -305,8 +281,7 @@ def delete_assistant(assistant_id: str) -> None:
     :param assistant_id: The ID of the assistant.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT)
-    api_instance.delete_assistant(assistant_id=assistant_id)
+    api_delete_assistant(assistant_id=assistant_id)
 
 
 async def a_delete_assistant(assistant_id: str) -> None:
@@ -316,6 +291,4 @@ async def a_delete_assistant(assistant_id: str) -> None:
     :param assistant_id: The ID of the assistant.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
-    await api_instance.delete_assistant(assistant_id=assistant_id)
-
+    await async_api_delete_assistant(assistant_id=assistant_id)

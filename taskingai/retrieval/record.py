@@ -1,15 +1,7 @@
 from typing import Optional, List, Dict
 
-from taskingai.client.utils import get_api_instance, ModuleType
-from taskingai.client.models import Record, TextSplitter
-from taskingai.client.models import (
-    RecordCreateRequest,
-    RecordCreateResponse,
-    RecordUpdateRequest,
-    RecordUpdateResponse,
-    RecordGetResponse,
-    RecordListResponse,
-)
+from taskingai.client.models import *
+from taskingai.client.apis import *
 
 __all__ = [
     "Record",
@@ -46,18 +38,15 @@ def list_records(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.RETRIEVAL)
     # only add non-None parameters
-    params = {
-        "order": order,
-        "limit": limit,
-        "after": after,
-        "before": before,
-    }
-    params = {k: v for k, v in params.items() if v is not None}
-    response: RecordListResponse = api_instance.list_records(collection_id=collection_id, **params)
-    records: List[Record] = [Record(**item) for item in response.data]
-    return records
+    payload = RecordListRequest(
+        order=order,
+        limit=limit,
+        after=after,
+        before=before,
+    )
+    response: RecordListResponse = api_list_records(collection_id=collection_id, payload=payload)
+    return response.data
 
 
 async def a_list_records(
@@ -80,18 +69,15 @@ async def a_list_records(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.RETRIEVAL, async_client=True)
     # only add non-None parameters
-    params = {
-        "order": order,
-        "limit": limit,
-        "after": after,
-        "before": before,
-    }
-    params = {k: v for k, v in params.items() if v is not None}
-    response: RecordListResponse = await api_instance.list_records(collection_id=collection_id, **params)
-    records: List[Record] = [Record(**item) for item in response.data]
-    return records
+    payload = RecordListRequest(
+        order=order,
+        limit=limit,
+        after=after,
+        before=before,
+    )
+    response: RecordListResponse = await async_api_list_records(collection_id=collection_id, payload=payload)
+    return response.data
 
 
 def get_record(collection_id: str, record_id: str) -> Record:
@@ -102,13 +88,11 @@ def get_record(collection_id: str, record_id: str) -> Record:
     :param record_id: The ID of the record.
     """
 
-    api_instance = get_api_instance(ModuleType.RETRIEVAL)
-    response: RecordGetResponse = api_instance.get_record(
+    response: RecordGetResponse = api_get_record(
         collection_id=collection_id,
         record_id=record_id,
     )
-    record: Record = Record(**response.data)
-    return record
+    return response.data
 
 
 async def a_get_record(collection_id: str, record_id: str) -> Record:
@@ -119,13 +103,11 @@ async def a_get_record(collection_id: str, record_id: str) -> Record:
     :param record_id: The ID of the record.
     """
 
-    api_instance = get_api_instance(ModuleType.RETRIEVAL, async_client=True)
-    response: RecordGetResponse = await api_instance.get_record(
+    response: RecordGetResponse = await async_api_get_record(
         collection_id=collection_id,
         record_id=record_id,
     )
-    record: Record = Record(**response.data)
-    return record
+    return response.data
 
 
 def create_record(
@@ -144,16 +126,14 @@ def create_record(
     :return: The created record object.
     """
 
-    api_instance = get_api_instance(ModuleType.RETRIEVAL)
     body = RecordCreateRequest(
         type="text",
         content=content,
         text_splitter=text_splitter,
-        metadata=metadata,
+        metadata=metadata or {},
     )
-    response: RecordCreateResponse = api_instance.create_record(collection_id=collection_id, body=body)
-    record: Record = Record(**response.data)
-    return record
+    response: RecordCreateResponse = api_create_record(collection_id=collection_id, payload=body)
+    return response.data
 
 
 async def a_create_record(
@@ -172,16 +152,14 @@ async def a_create_record(
     :return: The created record object.
     """
 
-    api_instance = get_api_instance(ModuleType.RETRIEVAL, async_client=True)
     body = RecordCreateRequest(
         type="text",
         content=content,
         text_splitter=text_splitter,
-        metadata=metadata,
+        metadata=metadata or {},
     )
-    response: RecordCreateResponse = await api_instance.create_record(collection_id=collection_id, body=body)
-    record: Record = Record(**response.data)
-    return record
+    response: RecordCreateResponse = await async_api_create_record(collection_id=collection_id, payload=body)
+    return response.data
 
 
 def update_record(
@@ -203,7 +181,6 @@ def update_record(
     :return: The collection object.
     """
 
-    api_instance = get_api_instance(ModuleType.RETRIEVAL)
     type = None
     if content and text_splitter:
         type = "text"
@@ -213,11 +190,8 @@ def update_record(
         text_splitter=text_splitter,
         metadata=metadata,
     )
-    response: RecordUpdateResponse = api_instance.update_record(
-        collection_id=collection_id, record_id=record_id, body=body
-    )
-    record: Record = Record(**response.data)
-    return record
+    response: RecordUpdateResponse = api_update_record(collection_id=collection_id, record_id=record_id, payload=body)
+    return response.data
 
 
 async def a_update_record(
@@ -239,7 +213,6 @@ async def a_update_record(
     :return: The collection object.
     """
 
-    api_instance = get_api_instance(ModuleType.RETRIEVAL, async_client=True)
     type = None
     if content and text_splitter:
         type = "text"
@@ -249,11 +222,10 @@ async def a_update_record(
         text_splitter=text_splitter,
         metadata=metadata,
     )
-    response: RecordUpdateResponse = await api_instance.update_record(
-        collection_id=collection_id, record_id=record_id, body=body
+    response: RecordUpdateResponse = await async_api_update_record(
+        collection_id=collection_id, record_id=record_id, payload=body
     )
-    record: Record = Record(**response.data)
-    return record
+    return response.data
 
 
 def delete_record(
@@ -267,8 +239,7 @@ def delete_record(
     :param record_id: The ID of the record.
     """
 
-    api_instance = get_api_instance(ModuleType.RETRIEVAL)
-    api_instance.delete_record(collection_id=collection_id, record_id=record_id)
+    api_delete_record(collection_id=collection_id, record_id=record_id)
 
 
 async def a_delete_record(
@@ -282,5 +253,4 @@ async def a_delete_record(
     :param record_id: The ID of the record.
     """
 
-    api_instance = get_api_instance(ModuleType.RETRIEVAL, async_client=True)
-    await api_instance.delete_record(collection_id=collection_id, record_id=record_id)
+    await async_api_delete_record(collection_id=collection_id, record_id=record_id)
