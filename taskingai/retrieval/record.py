@@ -28,6 +28,7 @@ def list_records(
     """
     List records.
 
+    :param collection_id: The ID of the collection.
     :param order: The order of the records. It can be "asc" or "desc".
     :param limit: The maximum number of assistants to return.
     :param after: The cursor to get the next page of records.
