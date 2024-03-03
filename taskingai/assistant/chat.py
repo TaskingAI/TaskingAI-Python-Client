@@ -1,10 +1,7 @@
 from typing import Optional, List, Dict
 
-from taskingai.client.utils import get_api_instance, ModuleType
-from taskingai.client.models import Chat
-from taskingai.client.models import ChatCreateRequest, ChatCreateResponse, \
-    ChatUpdateRequest, ChatUpdateResponse, \
-    ChatGetResponse, ChatListResponse
+from taskingai.client.models import *
+from taskingai.client.apis import *
 
 __all__ = [
     "Chat",
@@ -40,21 +37,18 @@ def list_chats(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT)
     # only add non-None parameters
-    params = {
-        "order": order,
-        "limit": limit,
-        "after": after,
-        "before": before,
-    }
-    params = {k: v for k, v in params.items() if v is not None}
-    response: ChatListResponse = api_instance.list_chats(
-        assistant_id=assistant_id,
-        **params
+    payload = ChatListRequest(
+        order=order,
+        limit=limit,
+        after=after,
+        before=before,
     )
-    chats: List[Chat] = [Chat(**item) for item in response.data]
-    return chats
+    response: ChatListResponse = api_list_chats(
+        assistant_id=assistant_id,
+        payload=payload,
+    )
+    return response.data
 
 
 async def a_list_chats(
@@ -76,21 +70,18 @@ async def a_list_chats(
     if after and before:
         raise ValueError("Only one of after and before can be specified.")
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
     # only add non-None parameters
-    params = {
-        "order": order,
-        "limit": limit,
-        "after": after,
-        "before": before,
-    }
-    params = {k: v for k, v in params.items() if v is not None}
-    response: ChatListResponse = await api_instance.list_chats(
-        assistant_id=assistant_id,
-        **params
+    payload = ChatListRequest(
+        order=order,
+        limit=limit,
+        after=after,
+        before=before,
     )
-    chats: List[Chat] = [Chat(**item) for item in response.data]
-    return chats
+    response: ChatListResponse = await async_api_list_chats(
+        assistant_id=assistant_id,
+        payload=payload,
+    )
+    return response.data
 
 
 def get_chat(assistant_id: str, chat_id: str) -> Chat:
@@ -101,13 +92,11 @@ def get_chat(assistant_id: str, chat_id: str) -> Chat:
     :param chat_id: The ID of the chat.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT)
-    response: ChatGetResponse = api_instance.get_chat(
+    response: ChatGetResponse = api_get_chat(
         assistant_id=assistant_id,
         chat_id=chat_id,
     )
-    chat: Chat = Chat(**response.data)
-    return chat
+    return response.data
 
 
 async def a_get_chat(assistant_id: str, chat_id: str) -> Chat:
@@ -118,13 +107,11 @@ async def a_get_chat(assistant_id: str, chat_id: str) -> Chat:
     :param chat_id: The ID of the chat.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
-    response: ChatGetResponse = await api_instance.get_chat(
+    response: ChatGetResponse = await async_api_get_chat(
         assistant_id=assistant_id,
         chat_id=chat_id,
     )
-    chat: Chat = Chat(**response.data)
-    return chat
+    return response.data
 
 
 def create_chat(
@@ -139,16 +126,11 @@ def create_chat(
     :return: The created chat object.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT)
     body = ChatCreateRequest(
-        metadata=metadata,
+        metadata=metadata or {},
     )
-    response: ChatCreateResponse = api_instance.create_chat(
-        assistant_id=assistant_id,
-        body=body
-    )
-    chat: Chat = Chat(**response.data)
-    return chat
+    response: ChatCreateResponse = api_create_chat(assistant_id=assistant_id, payload=body)
+    return response.data
 
 
 async def a_create_chat(
@@ -163,16 +145,11 @@ async def a_create_chat(
     :return: The created chat object.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
     body = ChatCreateRequest(
-        metadata=metadata,
+        metadata=metadata or {},
     )
-    response: ChatCreateResponse = await api_instance.create_chat(
-        assistant_id=assistant_id,
-        body=body
-    )
-    chat: Chat = Chat(**response.data)
-    return chat
+    response: ChatCreateResponse = await async_api_create_chat(assistant_id=assistant_id, payload=body)
+    return response.data
 
 
 def update_chat(
@@ -189,17 +166,11 @@ def update_chat(
     :return: The updated chat object.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT)
     body = ChatUpdateRequest(
         metadata=metadata,
     )
-    response: ChatUpdateResponse = api_instance.update_chat(
-        assistant_id=assistant_id,
-        chat_id=chat_id,
-        body=body
-    )
-    chat: Chat = Chat(**response.data)
-    return chat
+    response: ChatUpdateResponse = api_update_chat(assistant_id=assistant_id, chat_id=chat_id, payload=body)
+    return response.data
 
 
 async def a_update_chat(
@@ -216,17 +187,11 @@ async def a_update_chat(
     :return: The updated chat object.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
     body = ChatUpdateRequest(
         metadata=metadata,
     )
-    response: ChatUpdateResponse = await api_instance.update_chat(
-        assistant_id=assistant_id,
-        chat_id=chat_id,
-        body=body
-    )
-    chat: Chat = Chat(**response.data)
-    return chat
+    response: ChatUpdateResponse = await async_api_update_chat(assistant_id=assistant_id, chat_id=chat_id, payload=body)
+    return response.data
 
 
 def delete_chat(
@@ -240,8 +205,7 @@ def delete_chat(
     :param chat_id: The ID of the chat.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT)
-    api_instance.delete_chat(assistant_id=assistant_id, chat_id=chat_id)
+    api_delete_chat(assistant_id=assistant_id, chat_id=chat_id)
 
 
 async def a_delete_chat(
@@ -255,8 +219,4 @@ async def a_delete_chat(
     :param chat_id: The ID of the chat.
     """
 
-    api_instance = get_api_instance(ModuleType.ASSISTANT, async_client=True)
-    await api_instance.delete_chat(assistant_id=assistant_id, chat_id=chat_id)
-
-
-
+    await async_api_delete_chat(assistant_id=assistant_id, chat_id=chat_id)

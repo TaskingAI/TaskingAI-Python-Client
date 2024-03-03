@@ -1,26 +1,17 @@
-from typing import Optional, List, Dict, Union, Any
+from typing import Optional, List, Dict, Union
 from ..client.stream import Stream, AsyncStream
 
-from taskingai.client.utils import get_api_instance, ModuleType
-from taskingai.client.models import (
-    ChatCompletionRequest,
-    ChatCompletionResponse,
-    ChatCompletion,
-    ChatCompletionChunk,
-    ChatCompletionFunctionMessage,
-    ChatCompletionAssistantMessage,
-    ChatCompletionUserMessage,
-    ChatCompletionSystemMessage,
-    ChatCompletionFunctionCall as FunctionCall,
-    ChatCompletionFunction as Function,
-    ChatCompletionRole,
-)
+from taskingai.client.models import *
+from taskingai.client.apis import *
+from taskingai.client.stream_apis import *
 
 __all__ = [
     "ChatCompletion",
     "ChatCompletionChunk",
-    "FunctionCall",
+    "ChatCompletionFunctionCall",
+    "ChatCompletionFunction",
     "Function",
+    "FunctionCall",
     "FunctionMessage",
     "AssistantMessage",
     "UserMessage",
@@ -29,53 +20,37 @@ __all__ = [
     "a_chat_completion",
 ]
 
+Function = ChatCompletionFunction
+FunctionCall = ChatCompletionFunctionCall
+
 
 class SystemMessage(ChatCompletionSystemMessage):
     def __init__(self, content: str):
-        super().__init__(
-            role=ChatCompletionRole.SYSTEM,
-            content=content
-        )
+        super().__init__(role=ChatCompletionRole.SYSTEM, content=content)
 
 
 class UserMessage(ChatCompletionUserMessage):
     def __init__(self, content: str):
-        super().__init__(
-            role=ChatCompletionRole.USER,
-            content=content
-        )
+        super().__init__(role=ChatCompletionRole.USER, content=content)
 
 
 class AssistantMessage(ChatCompletionAssistantMessage):
     def __init__(self, content: str = None, function_calls: Optional[List[FunctionCall]] = None):
-        super().__init__(
-            role=ChatCompletionRole.ASSISTANT,
-            content=content,
-            function_calls=function_calls
-        )
+        super().__init__(role=ChatCompletionRole.ASSISTANT, content=content, function_calls=function_calls)
 
 
 class FunctionMessage(ChatCompletionFunctionMessage):
     def __init__(self, id: str, content: str):
-        super().__init__(
-            role=ChatCompletionRole.FUNCTION,
-            id=id,
-            content=content
-        )
+        super().__init__(role=ChatCompletionRole.FUNCTION, id=id, content=content)
 
 
 def chat_completion(
-        model_id: str,
-        messages: List[Union[
-            SystemMessage,
-            UserMessage,
-            AssistantMessage,
-            FunctionMessage
-        ]],
-        configs: Optional[Dict] = None,
-        function_call: Optional[str] = None,
-        functions: Optional[List[Function]] = None,
-        stream: bool = False
+    model_id: str,
+    messages: List[Union[SystemMessage, UserMessage, AssistantMessage, FunctionMessage]],
+    configs: Optional[Dict] = None,
+    function_call: Optional[str] = None,
+    functions: Optional[List[Function]] = None,
+    stream: bool = False,
 ) -> Union[ChatCompletion, Stream]:
     """
     Chat completion model inference.
@@ -85,9 +60,9 @@ def chat_completion(
     :param configs: The configurations.
     :param function_call: The function call.
     :param functions: The list of functions.
+    :param stream: Whether to request in stream mode.
     :return: The list of assistants.
     """
-    api_instance = get_api_instance(ModuleType.INFERENCE)
     # only add non-None parameters
     body = ChatCompletionRequest(
         model_id=model_id,
@@ -95,29 +70,23 @@ def chat_completion(
         configs=configs,
         function_call=function_call,
         functions=functions,
-        stream=stream
+        stream=stream,
     )
     if not stream:
-        response: ChatCompletionResponse = api_instance.chat_completion(body=body)
-        chat_completion_result: ChatCompletion = ChatCompletion(**response["data"])
-        return chat_completion_result
+        response: ChatCompletionResponse = api_chat_completion(payload=body)
+        return response.data
     else:
-        response: Stream = api_instance.chat_completion(body=body, stream=True)
+        response: Stream = stream_api_chat_completion(payload=body, stream=True)
         return response
 
 
 async def a_chat_completion(
-        model_id: str,
-        messages: List[Union[
-            SystemMessage,
-            UserMessage,
-            AssistantMessage,
-            FunctionMessage
-        ]],
-        configs: Optional[Dict] = None,
-        function_call: Optional[str] = None,
-        functions: Optional[List[Function]] = None,
-        stream: bool = False
+    model_id: str,
+    messages: List[Union[SystemMessage, UserMessage, AssistantMessage, FunctionMessage]],
+    configs: Optional[Dict] = None,
+    function_call: Optional[str] = None,
+    functions: Optional[List[Function]] = None,
+    stream: bool = False,
 ) -> Union[ChatCompletion, AsyncStream]:
     """
     Chat completion model inference in async mode.
@@ -127,9 +96,9 @@ async def a_chat_completion(
     :param configs: The configurations.
     :param function_call: The function call.
     :param functions: The list of functions.
+    :param stream: Whether to request in stream mode.
     :return: The list of assistants.
     """
-    api_instance = get_api_instance(ModuleType.INFERENCE, async_client=True)
     # only add non-None parameters
     body = ChatCompletionRequest(
         model_id=model_id,
@@ -137,17 +106,11 @@ async def a_chat_completion(
         configs=configs,
         function_call=function_call,
         functions=functions,
-        stream=stream
+        stream=stream,
     )
     if not stream:
-        response: ChatCompletionResponse = await api_instance.chat_completion(body=body)
-        chat_completion_result: ChatCompletion = ChatCompletion(**response["data"])
-        return chat_completion_result
+        response: ChatCompletionResponse = await async_api_chat_completion(payload=body)
+        return response.data
     else:
-        response: AsyncStream = await api_instance.chat_completion(body=body, stream=True)
+        response: AsyncStream = await async_stream_api_chat_completion(payload=body, stream=True)
         return response
-
-
-
-
-# todo: chat_completion_stream

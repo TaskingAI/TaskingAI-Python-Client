@@ -3,14 +3,7 @@ from __future__ import annotations
 
 import json
 from typing import Any, Dict, Iterator, AsyncIterator, Optional
-from .models import (
-    MessageChunk,
-    Message,
-    ChatCompletion,
-    ChatCompletionChunk
-)
-
-from .models.entity._base import TaskingaiBaseModel
+from .models import MessageChunk, Message, ChatCompletion, ChatCompletionChunk
 
 from .exceptions import ApiException
 
@@ -27,6 +20,7 @@ def _cast(item: Dict):
     else:
         # cannot cast, keep the original dict
         return item
+
 
 class Stream(object):
     """Provides the core interface to iterate over a synchronous stream response."""
@@ -67,6 +61,7 @@ class Stream(object):
         for sse in iterator:
             ...
 
+
 class AsyncStream(object):
     """Provides the core interface to iterate over an asynchronous stream response."""
 
@@ -104,6 +99,7 @@ class AsyncStream(object):
         # Ensure the entire stream is consumed
         async for sse in self._iter_events():
             ...
+
 
 class ServerSentEvent:
     def __init__(
@@ -143,6 +139,7 @@ class ServerSentEvent:
 
     def __repr__(self) -> str:
         return f"ServerSentEvent(event={self.event}, data={self.data}, id={self.id}, retry={self.retry})"
+
 
 class SSEDecoder:
     _data: list[str]

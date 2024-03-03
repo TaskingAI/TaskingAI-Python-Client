@@ -1,84 +1,66 @@
 import inspect
 import logging
-from pathlib import Path
 import httpx
-from taskingai.client.api import *
 from taskingai.client.api_client import SyncApiClient, AsyncApiClient
-from .constants import ModuleType
+from enum import Enum
+
 
 def check_kwargs(caller, given):
     argspec = inspect.getfullargspec(caller)
     diff = set(given).difference(argspec.args)
     if diff:
-        logging.exception(caller.__name__ + ' had unexpected keyword argument(s): ' + ', '.join(diff), exc_info=False)
+        logging.exception(caller.__name__ + " had unexpected keyword argument(s): " + ", ".join(diff), exc_info=False)
 
 
 def get_version():
     from taskingai import __version__
+
     return __version__
 
 
 def get_user_agent():
-    client_id = f'python-client-{get_version()}'
-    user_agent_details = {'httpx': httpx.__version__}
-    user_agent = '{} ({})'.format(client_id, ', '.join([f'{k}:{v}' for k, v in user_agent_details.items()]))
+    client_id = f"python-client-{get_version()}"
+    user_agent_details = {"httpx": httpx.__version__}
+    user_agent = "{} ({})".format(client_id, ", ".join([f"{k}:{v}" for k, v in user_agent_details.items()]))
     return user_agent
 
-sync_api_instance_dict = {
-    ModuleType.ASSISTANT: None,
-    ModuleType.TOOL: None,
-    ModuleType.RETRIEVAL: None,
-    ModuleType.INFERENCE: None
-}
 
-async_api_instance_dict = {
-    ModuleType.ASSISTANT: None,
-    ModuleType.TOOL: None,
-    ModuleType.RETRIEVAL: None,
-    ModuleType.INFERENCE: None
-}
+def convert_query_params_dict(query_params_dict):
+    """
+    This helper function will convert the query_params_dict to a format where enum values are converted to their
+    corresponding string values.
+    """
+    converted_dict = {}
+    for key, value in query_params_dict.items():
+        if isinstance(value, Enum):
+            converted_dict[key] = value.value
+        elif isinstance(value, bool):
+            converted_dict[key] = str(value).lower()
+        elif value is not None:
+            converted_dict[key] = value
+    return converted_dict
 
-def get_api_instance(module: ModuleType, async_client=False):
+
+__sync_api_client = None
+__async_api_client = None
+
+
+def get_api_client(async_client: bool):
+    global __sync_api_client, __async_api_client
+
     from taskingai.config import Config
+
     client_config = Config.OPENAPI_CONFIG
     client_config.api_key = client_config.api_key or {}
 
-    api_instance = None
-
     if async_client:
-        api_client = AsyncApiClient(configuration=client_config)
-        api_client.user_agent = get_user_agent()
-
-        if async_api_instance_dict.get(module) is None:
-            if module == ModuleType.ASSISTANT:
-                async_api_instance_dict[module] = AsyncAssistantApi(api_client)
-            elif module == ModuleType.TOOL:
-                async_api_instance_dict[module] = AsyncToolApi(api_client)
-            elif module == ModuleType.RETRIEVAL:
-                async_api_instance_dict[module] = AsyncRetrievalApi(api_client)
-            elif module == ModuleType.INFERENCE:
-                async_api_instance_dict[module] = AsyncInferenceApi(api_client)
-
-        api_instance = async_api_instance_dict[module]
+        if not __async_api_client:
+            __async_api_client = AsyncApiClient(configuration=client_config)
+            __async_api_client.user_agent = get_user_agent()
+        return __async_api_client
 
     else:
-        api_client = SyncApiClient(configuration=client_config)
-        api_client.user_agent = get_user_agent()
-
-        if sync_api_instance_dict.get(module) is None:
-
-            if module == ModuleType.ASSISTANT:
-                sync_api_instance_dict[module] = AssistantApi(api_client)
-            elif module == ModuleType.TOOL:
-                sync_api_instance_dict[module] = ToolApi(api_client)
-            elif module == ModuleType.RETRIEVAL:
-                sync_api_instance_dict[module] = RetrievalApi(api_client)
-            elif module == ModuleType.INFERENCE:
-                sync_api_instance_dict[module] = InferenceApi(api_client)
-
-        api_instance = sync_api_instance_dict[module]
-
-    if api_instance is None:
-        raise NotImplementedError(f"Cannot find api instance for module {module} with async={async_client}")
-
-    return api_instance
+        if not __sync_api_client:
+            __sync_api_client = SyncApiClient(configuration=client_config)
+            __sync_api_client.user_agent = get_user_agent()
+        return __sync_api_client
