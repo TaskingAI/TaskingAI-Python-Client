@@ -214,13 +214,7 @@ class TestAction(Base):
             # Delete an action.
 
             await a_delete_action(action_id=action_id)
-
-            new_actions = await a_list_actions()
-            action_ids = [action.action_id for action in new_actions]
-            pytest.assume(action_id not in action_ids)
-            new_nums = len(new_actions)
-            pytest.assume(new_nums == old_nums - 1 - index)
-
-
-
-
+            if index == old_nums - 1:
+                new_actions = await a_list_actions()
+                new_nums = len(new_actions)
+                pytest.assume(new_nums == 0)

@@ -4,7 +4,9 @@ export PYTHONPATH="${PYTHONPATH}:${parent_dir}"
 
 echo "Starting tests..."
 
-pytest  -q  --tb=no
+pytest  ./test/testcase/test_sync
+sleep 5
+pytest  ./test/testcase/test_async
 
 echo "Tests completed."
 

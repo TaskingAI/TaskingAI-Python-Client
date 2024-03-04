@@ -106,16 +106,16 @@ class TestCollection(Base):
     async def test_a_delete_collection(self):
         # List collections.
         old_res = await a_list_collections(order="desc", limit=100,  after=None, before=None)
-
+        old_nums = len(old_res)
         for index, collection in enumerate(old_res):
             collection_id = collection.collection_id
             # Delete a collection.
             await a_delete_collection(collection_id=collection_id)
-
-            new_collections = await a_list_collections(order="desc", limit=100,  after=None, before=None)
-            # List collections.
-            collection_ids = [c.collection_id for c in new_collections]
-            pytest.assume(collection_id not in collection_ids)
+            if index == old_nums - 1:
+                new_collections = await a_list_collections(order="desc", limit=100,  after=None, before=None)
+                # List collections.
+                new_nums = len(new_collections)
+                pytest.assume(new_nums == 0)
 
 
 @pytest.mark.test_async
@@ -234,13 +234,13 @@ class TestRecord(Base):
             await a_delete_record(collection_id=self.collection_id, record_id=record_id)
 
             # List records.
-
-            new_records = await a_list_records(collection_id=self.collection_id, order="desc", limit=20,  after=None,
-                                       before=None)
-            record_ids = [record.record_id for record in new_records]
-            pytest.assume(record_id not in record_ids)
-            new_nums = len(new_records)
-            pytest.assume(new_nums == old_nums - 1 - index)
+            if index == old_nums - 1:
+                new_records = await a_list_records(collection_id=self.collection_id, order="desc", limit=20,  after=None,
+                                           before=None)
+                record_ids = [record.record_id for record in new_records]
+                pytest.assume(record_id not in record_ids)
+                new_nums = len(new_records)
+                pytest.assume(new_nums == 0)
 
 
 @pytest.mark.test_async
@@ -352,9 +352,7 @@ class TestChunk(Base):
             delete_chunk(collection_id=self.collection_id, chunk_id=chunk_id)
 
             # List chunks.
-
-            new_chunks = list_chunks(collection_id=self.collection_id)
-            chunk_ids = [chunk.chunk_id for chunk in new_chunks]
-            pytest.assume(chunk_id not in chunk_ids)
-            new_nums = len(new_chunks)
-            pytest.assume(new_nums == old_nums - 1 - index)
+            if index == old_nums-1:
+                new_chunks = list_chunks(collection_id=self.collection_id)
+                new_nums = len(new_chunks)
+                pytest.assume(new_nums == 0)

@@ -1,0 +1,49 @@
+name: Run test
+
+on:
+  pull_request:
+    branches: [ "master" ]
+    paths-ignore:
+      - '**.md'
+      - '**.svg'
+      - '**.jpg'
+      - '**.png'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: test
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Set short SHA
+      run: echo "IMAGE_TAG=$(echo ${{ github.sha }} | cut -c 1-7)" >> $GITHUB_ENV
+
+    - name: Check for git tag version
+      id: get_tag
+      run: |
+        TAG=$(git describe --tags --exact-match 2> /dev/null || echo "")
+        if [[ -n "$TAG" ]]; then
+          echo "IMAGE_TAG=${TAG}" >> $GITHUB_ENV
+        fi
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: Install Dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install -r test_requirements.txt
+
+    - name: Run Tests
+      env:
+        CLIENT_TEST_ENV: ${{ secrets.CLIENT_TEST_ENV }}
+      run: |
+        echo "$CLIENT_TEST_ENV" > .env
+        bash ./test/run_test.sh

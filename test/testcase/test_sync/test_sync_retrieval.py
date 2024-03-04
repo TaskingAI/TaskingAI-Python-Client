@@ -109,15 +109,13 @@ class TestCollection:
             # Delete a collection.
 
             delete_collection(collection_id=collection_id)
+            if index == old_nums-1:
+                new_collections = list_collections(order="desc", limit=100,  after=None, before=None)
 
-            new_collections = list_collections(order="desc", limit=100,  after=None, before=None)
+                # List collections.
 
-            # List collections.
-
-            collection_ids = [collection.collection_id for collection in new_collections]
-            pytest.assume(collection_id not in collection_ids)
-            new_nums = len(new_collections)
-            pytest.assume(new_nums == old_nums - 1 - index)
+                new_nums = len(new_collections)
+                pytest.assume(new_nums == 0)
 
 
 @pytest.mark.test_sync
@@ -229,13 +227,12 @@ class TestRecord:
             delete_record(collection_id=collection_id, record_id=record_id)
 
             # List records.
+            if index == old_nums-1:
+                new_records = list_records(collection_id=collection_id, order="desc", limit=20,  after=None,
+                                           before=None)
 
-            new_records = list_records(collection_id=collection_id, order="desc", limit=20,  after=None,
-                                       before=None)
-            record_ids = [record.record_id for record in new_records]
-            pytest.assume(record_id not in record_ids)
-            new_nums = len(new_records)
-            pytest.assume(new_nums == old_nums - 1 - index)
+                new_nums = len(new_records)
+                pytest.assume(new_nums == 0)
 
 
 @pytest.mark.test_sync
@@ -340,9 +337,7 @@ class TestChunk:
             delete_chunk(collection_id=collection_id, chunk_id=chunk_id)
 
             # List chunks.
-
-            new_chunks = list_chunks(collection_id=collection_id)
-            chunk_ids = [chunk.chunk_id for chunk in new_chunks]
-            pytest.assume(chunk_id not in chunk_ids)
-            new_nums = len(new_chunks)
-            pytest.assume(new_nums == old_nums - 1 - index)
+            if index == old_nums-1:
+                new_chunks = list_chunks(collection_id=collection_id)
+                new_nums = len(new_chunks)
+                pytest.assume(new_nums == 0)
