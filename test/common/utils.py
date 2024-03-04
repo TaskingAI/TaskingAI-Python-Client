@@ -93,3 +93,53 @@ def get_random():
 
 def get_project_id(i: int):
     return (get_random() for j in range(i))
+
+
+def assume_text_embedding_result(result: list):
+    pytest.assume(len(result) > 0)
+    pytest.assume(all(isinstance(value, float) for value in result))
+
+
+def assume_collection_result(create_dict: dict, res_dict: dict):
+    for key in create_dict:
+        pytest.assume(res_dict[key] == create_dict[key])
+    pytest.assume(res_dict["status"] == "ready")
+
+
+def assume_record_result(create_record_data: dict, res_dict: dict):
+    for key in create_record_data:
+        if key == "text_splitter":
+            continue
+        pytest.assume(res_dict[key] == create_record_data[key])
+    pytest.assume(res_dict["status"] == "ready")
+
+
+def assume_chunk_result(chunk_dict: dict, res: dict):
+    for key, value in chunk_dict.items():
+        pytest.assume(res[key] == chunk_dict[key])
+
+
+def assume_query_chunk_result(query_text, chunk_dict: dict):
+    pytest.assume(query_text in chunk_dict["content"])
+    pytest.assume(isinstance(chunk_dict["score"], float))
+
+
+def assume_assistant_result(assistant_dict: dict, res: dict):
+    for key, value in assistant_dict.items():
+        if key == 'system_prompt_template' and isinstance(value, str):
+            pytest.assume(res[key] == [assistant_dict[key]])
+        elif key in ["memory", "tool", "retrievals"]:
+            continue
+        else:
+            pytest.assume(res[key] == assistant_dict[key])
+
+
+def assume_chat_result(chat_dict: dict, res: dict):
+    for key, value in chat_dict.items():
+        pytest.assume(res[key] == chat_dict[key])
+
+
+def assume_message_result(message_dict: dict, res: dict):
+    for key, value in message_dict.items():
+        pytest.assume(res[key] == message_dict[key])
+
