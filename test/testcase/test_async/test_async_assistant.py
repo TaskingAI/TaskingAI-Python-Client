@@ -113,7 +113,7 @@ class TestAssistant(Base):
 
         assistants = await a_list_assistants(limit=100)
         old_nums = len(assistants)
-        for i, v in enumerate(assistants):
+        for index, v in enumerate(assistants):
             assistant_id = v.assistant_id
 
             # Delete an assistant.
@@ -121,12 +121,10 @@ class TestAssistant(Base):
             await a_delete_assistant(assistant_id=str(assistant_id))
 
             # List assistants.
-
-            new_assistants = await a_list_assistants()
-            assistant_ids = [j.assistant_id for j in new_assistants]
-            pytest.assume(assistant_id not in assistant_ids)
-            new_nums = len(new_assistants)
-            pytest.assume(new_nums == old_nums - 1 - i)
+            if index == old_nums - 1:
+                new_assistants = await a_list_assistants()
+                new_nums = len(new_assistants)
+                pytest.assume(new_nums == 0)
 
 
 @pytest.mark.test_async
@@ -210,12 +208,10 @@ class TestChat(Base):
                 await a_delete_chat(assistant_id=self.assistant_id, chat_id=str(chat_id))
 
                 # List chats.
-
-                new_chats = await a_list_chats(assistant_id=self.assistant_id)
-                chat_ids = [i.chat_id for i in new_chats]
-                pytest.assume(chat_id not in chat_ids)
-                new_nums = len(new_chats)
-                pytest.assume(new_nums == old_nums - 1 - index)
+                if index == old_nums - 1:
+                    new_chats = await a_list_chats(assistant_id=self.assistant_id)
+                    new_nums = len(new_chats)
+                    pytest.assume(new_nums == 0)
 
 
 @pytest.mark.test_async

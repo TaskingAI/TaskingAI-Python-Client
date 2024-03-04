@@ -24,7 +24,7 @@ setup(
     url="https://www.tasking.ai",
     keywords=["TaskingAI", "LLM", "AI"],
     install_requires=REQUIRES,
-    packages=find_packages(exclude=["test", "test.*"]),
+    packages=find_packages(exclude=["test", "test.*", "examples", "examples.*"]),
     include_package_data=True,
     long_description=long_description,
     long_description_content_type="text/markdown",

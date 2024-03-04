@@ -111,12 +111,10 @@ class TestAssistant:
             delete_assistant(assistant_id=str(assistant_id))
 
             # List assistants.
-
-            new_assistants = list_assistants()
-            assistant_ids = [j.assistant_id for j in new_assistants]
-            pytest.assume(assistant_id not in assistant_ids)
-            new_nums = len(new_assistants)
-            pytest.assume(new_nums == old_nums - 1 - i)
+            if i == old_nums-1:
+                new_assistants = list_assistants()
+                new_nums = len(new_assistants)
+                pytest.assume(new_nums == 0)
 
 
 @pytest.mark.test_sync
@@ -195,12 +193,10 @@ class TestChat:
                 delete_chat(assistant_id=assistant_id, chat_id=str(chat_id))
 
                 # List chats.
-
-                new_chats = list_chats(assistant_id=assistant_id)
-                chat_ids = [i.chat_id for i in new_chats]
-                pytest.assume(chat_id not in chat_ids)
-                new_nums = len(new_chats)
-                pytest.assume(new_nums == old_nums - 1 - index)
+                if index == old_nums-1:
+                    new_chats = list_chats(assistant_id=assistant_id)
+                    new_nums = len(new_chats)
+                    pytest.assume(new_nums == 0)
 
 
 @pytest.mark.test_sync

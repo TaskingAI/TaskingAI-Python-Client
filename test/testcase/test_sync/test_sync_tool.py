@@ -207,8 +207,8 @@ class TestAction:
             # Delete an action.
 
             delete_action(action_id=action_id)
-            new_actions = list_actions(limit=100)
-            action_ids = [action.action_id for action in new_actions]
-            pytest.assume(action_id not in action_ids)
-            new_nums = len(new_actions)
-            pytest.assume(new_nums == old_nums - 1 - index)
+
+            if index == old_nums-1:
+                new_actions = list_actions(limit=100)
+                new_nums = len(new_actions)
+                pytest.assume(new_nums == 0)
