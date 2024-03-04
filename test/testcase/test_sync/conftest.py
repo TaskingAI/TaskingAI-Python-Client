@@ -1,6 +1,6 @@
 import pytest
 
-from taskingai.retrieval import list_collections, list_records
+from taskingai.retrieval import list_collections, list_records, list_chunks
 from taskingai.assistant import list_assistants, list_chats, list_messages
 from taskingai.tool import list_actions
 
@@ -38,6 +38,13 @@ def record_id(collection_id):
     res = list_records(str(collection_id))
     record_id = res[0].record_id
     return record_id
+
+
+@pytest.fixture(scope="session")
+def chunk_id(collection_id):
+    res = list_chunks(str(collection_id))
+    chunk_id = res[0].chunk_id
+    return chunk_id
 
 
 @pytest.fixture(scope="session")

@@ -1,23 +1,24 @@
 import pytest
-
 from taskingai.inference import *
-from test.config import embedding_model_id, chat_completion_model_id
+from test.config import Config
 from test.common.logger import logger
-import re
+from test.common.utils import assume_text_embedding_result
 
 
 @pytest.mark.test_sync
 class TestChatCompletion:
+
     @pytest.mark.run(order=1)
     def test_chat_completion(self):
+
         # normal chat completion.
 
         normal_res = chat_completion(
-            model_id=chat_completion_model_id,
+            model_id=Config.chat_completion_model_id,
             messages=[
                 SystemMessage("You are a professional assistant."),
                 UserMessage("Hi"),
-            ],
+            ]
         )
         pytest.assume(normal_res.finish_reason == "stop")
         pytest.assume(normal_res.message.content)
@@ -27,13 +28,16 @@ class TestChatCompletion:
         # multi round chat completion.
 
         multi_round_res = chat_completion(
-            model_id=chat_completion_model_id,
+            model_id=Config.chat_completion_model_id,
             messages=[
                 SystemMessage("You are a professional assistant."),
                 UserMessage("Hi"),
                 AssistantMessage("Hello! How can I assist you today?"),
                 UserMessage("Can you tell me a joke?"),
-            ],
+                AssistantMessage(
+                    "Sure, here is a joke for you: Why don't scientists trust atoms? Because they make up everything!"),
+                UserMessage("That's funny. Can you tell me another one?"),
+            ]
         )
 
         pytest.assume(multi_round_res.finish_reason == "stop")
@@ -44,14 +48,19 @@ class TestChatCompletion:
         # config max tokens chat completion.
 
         max_tokens_res = chat_completion(
-            model_id=chat_completion_model_id,
+            model_id=Config.chat_completion_model_id,
             messages=[
                 SystemMessage("You are a professional assistant."),
                 UserMessage("Hi"),
                 AssistantMessage("Hello! How can I assist you today?"),
                 UserMessage("Can you tell me a joke?"),
+                AssistantMessage(
+                    "Sure, here is a joke for you: Why don't scientists trust atoms? Because they make up everything!"),
+                UserMessage("That's funny. Can you tell me another one?"),
             ],
-            configs={"max_tokens": 10},
+            configs={
+                "max_tokens": 10
+            }
         )
         pytest.assume(max_tokens_res.finish_reason == "length")
         pytest.assume(max_tokens_res.message.content)
@@ -60,47 +69,44 @@ class TestChatCompletion:
 
         # chat completion with stream.
 
-        stream_res = chat_completion(
-            model_id=chat_completion_model_id,
-            messages=[
-                SystemMessage("You are a professional assistant."),
-                UserMessage("count from 1 to 10 and separate numbers by comma."),
-            ],
-            stream=True,
-        )
-        except_list = [i + 1 for i in range(10)]
-        real_str = ""
+        stream_res = chat_completion(model_id=Config.chat_completion_model_id,
+                                     messages=[
+                                            SystemMessage("You are a professional assistant."),
+                                            UserMessage("count from 1 to 50 and separate numbers by comma."),
+                                        ],
+                                     stream=True
+                                     )
+        except_list = [i+1 for i in range(50)]
+        real_list = []
         for item in stream_res:
             if isinstance(item, ChatCompletionChunk):
                 logger.info(f"Message: {item.delta}")
-                real_str += item.delta
+                if item.delta.isdigit():
+                    real_list.append(int(item.delta))
             elif isinstance(item, ChatCompletion):
                 logger.info(f"Message: {item.finish_reason}")
                 pytest.assume(item.finish_reason == "stop")
-
-        real_list = [int(num) for num in re.findall(r"\b\d+\b", real_str)]
+        logger.info(f"except_list: {except_list} real_list: {real_list}")
         pytest.assume(set(except_list) == set(real_list))
 
 
 @pytest.mark.test_sync
 class TestTextEmbedding:
+
     @pytest.mark.run(order=0)
     def test_text_embedding(self):
+
         # Text embedding with str.
 
         input_str = "Machine learning is a subfield of artificial intelligence (AI) that involves the development of algorithms that allow computers to learn from and make decisions or predictions based on data."
-        str_res = text_embedding(model_id=embedding_model_id, input=input_str)
-        pytest.assume(len(str_res) > 0)
-        for score in str_res:
-            pytest.assume(float(-1) <= score <= float(1))
+        str_res = text_embedding(model_id=Config.text_embedding_model_id, input=input_str)
+        assume_text_embedding_result(str_res)
 
         # Text embedding with str_list.
 
         input_list = ["hello", "world"]
         input_list_length = len(input_list)
-        list_res = text_embedding(model_id=embedding_model_id, input=input_list)
+        list_res = text_embedding(model_id=Config.text_embedding_model_id, input=input_list)
         pytest.assume(len(list_res) == input_list_length)
-        for str_res in list_res:
-            pytest.assume(len(str_res) > 0)
-            for score in str_res:
-                pytest.assume(float(-1) <= score <= float(1))
+        for res in list_res:
+            assume_text_embedding_result(res)
