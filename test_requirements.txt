@@ -9,7 +9,7 @@ pytest-ordering==0.6
 pytest-xdist==3.5.0
 PyYAML==6.0.1
 pytest-assume==2.4.3
-pytest-asyncio==0.23.5
+pytest-asyncio==0.23.5.post1
 asyncio==3.4.3
 pytest-tornasync>=0.6.0
 pytest-trio==0.8.0
