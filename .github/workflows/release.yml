@@ -1,8 +1,9 @@
 name: Publish Package
 
 on:
-  push:
-    tags: ["v*.*.*"]
+  release:
+    types: [ published ]
+    tags: ["*.*.*"]
     paths-ignore:
       - '**.md'
       - '**.svg'
@@ -37,12 +38,13 @@ jobs:
         python-version: 3.x
 
     - name: Install Dependencies
-      run: pip install -r requirements.txt
-
+      run: |
+        pip install -r requirements.txt
+        pip install -r test_requirements.txt
+        
     - name: Run Version Verification
       run: |
-        python -c "from config import CONFIG; import os; current_tag = os.getenv('IMAGE_TAG'); assert CONFIG.VERSION == current_tag, 'Version mismatch: Expected {} but got {}'.format(CONFIG.VERSION, current_tag); print('Version matched!')"
-
+        python -c "from taskingai import __version__; import os; current_tag = os.getenv('IMAGE_TAG'); assert __version__ == current_tag, 'Version mismatch: Expected {} but got {}'.format(__version__, current_tag); print('Version matched!')"
 
     - name: Install Twine
       run: |
@@ -62,17 +64,5 @@ jobs:
     - name: Publish Package
       run: twine upload dist/*
       env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-
-    - name: Create Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ env.IMAGE_TAG }}
-        release_name: Release ${{ env.IMAGE_TAG }}
-        body: |
-          This is the release for version ${{ env.IMAGE_TAG }}.
-        draft: false
-        prerelease: false
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
