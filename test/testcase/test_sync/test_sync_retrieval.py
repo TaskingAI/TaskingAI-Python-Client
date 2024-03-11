@@ -248,7 +248,7 @@ class TestChunk:
 
         query_text = "Machine learning"
         top_k = 1
-        res = query_chunks(collection_id=collection_id, query_text=query_text, top_k=top_k)
+        res = query_chunks(collection_id=collection_id, query_text=query_text, top_k=top_k, max_tokens=20000)
         pytest.assume(len(res) == top_k)
         for chunk in res:
             chunk_dict = vars(chunk)
