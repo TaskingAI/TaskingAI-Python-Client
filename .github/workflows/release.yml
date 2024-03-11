@@ -42,7 +42,7 @@ jobs:
 
     - name: Run Version Verification
       run: |
-        python -c "from config import CONFIG; import os; current_tag = os.getenv('IMAGE_TAG'); assert CONFIG.VERSION == current_tag, 'Version mismatch: Expected {} but got {}'.format(CONFIG.VERSION, current_tag); print('Version matched!')"
+        python -c "from taskingai import __version__; import os; current_tag = os.getenv('IMAGE_TAG'); assert __version__ == current_tag, 'Version mismatch: Expected {} but got {}'.format(__version__, current_tag); print('Version matched!')"
 
 
     - name: Install Twine
