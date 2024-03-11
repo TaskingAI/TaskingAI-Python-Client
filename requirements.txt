@@ -4,5 +4,5 @@ python_dateutil>=2.5.3
 setuptools>=21.0.0
 httpx>=0.23.0
 pydantic>=2.5.0
-wheel==0.41.2
+wheel==0.43.0
 
