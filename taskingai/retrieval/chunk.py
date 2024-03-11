@@ -241,18 +241,21 @@ def query_chunks(
     collection_id: str,
     query_text: str,
     top_k: int = 3,
+    max_tokens: Optional[int] = None,
 ) -> List[Chunk]:
     """
     Query chunks in a collection.
     :param collection_id: The ID of the collection.
     :param query_text: The query text.
     :param top_k: The number of most relevant chunks to return.
+    :param max_tokens: The maximum number of tokens to return.
     """
 
     # only add non-None parameters
     body = ChunkQueryRequest(
         top_k=top_k,
         query_text=query_text,
+        max_tokens=max_tokens,
     )
     response: ChunkQueryResponse = api_query_collection_chunks(
         collection_id=collection_id,
@@ -265,18 +268,21 @@ async def a_query_chunks(
     collection_id: str,
     query_text: str,
     top_k: int = 3,
+    max_tokens: Optional[int] = None,
 ) -> List[Chunk]:
     """
     Query chunks in a collection.
     :param collection_id: The ID of the collection.
     :param query_text: The query text.
     :param top_k: The number of most relevant chunks to return.
+    :param max_tokens: The maximum number of tokens to return.
     """
 
     # only add non-None parameters
     body = ChunkQueryRequest(
         top_k=top_k,
         query_text=query_text,
+        max_tokens=max_tokens,
     )
     response: ChunkQueryResponse = await async_api_query_collection_chunks(
         collection_id=collection_id,

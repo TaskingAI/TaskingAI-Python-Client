@@ -8,7 +8,6 @@ Do not modify the file manually
 
 Author: James Yao
 Organization: TaskingAI
-Created: 03-Mar-2024
 License: Apache 2.0
 """
 
@@ -18,7 +17,12 @@ from ..models import ChatUpdateRequest, ChatUpdateResponse
 __all__ = ["api_update_chat", "async_api_update_chat"]
 
 
-def api_update_chat(assistant_id: str, chat_id: str, payload: ChatUpdateRequest, **kwargs) -> ChatUpdateResponse:
+def api_update_chat(
+    assistant_id: str,
+    chat_id: str,
+    payload: ChatUpdateRequest,
+    **kwargs,
+) -> ChatUpdateResponse:
     # get api client
     sync_api_client = get_api_client(async_client=False)
 
@@ -52,7 +56,10 @@ def api_update_chat(assistant_id: str, chat_id: str, payload: ChatUpdateRequest,
 
 
 async def async_api_update_chat(
-    assistant_id: str, chat_id: str, payload: ChatUpdateRequest, **kwargs
+    assistant_id: str,
+    chat_id: str,
+    payload: ChatUpdateRequest,
+    **kwargs,
 ) -> ChatUpdateResponse:
     # get api client
     async_api_client = get_api_client(async_client=True)

@@ -8,7 +8,6 @@ Do not modify the file manually
 
 Author: James Yao
 Organization: TaskingAI
-Created: 03-Mar-2024
 License: Apache 2.0
 """
 
@@ -19,7 +18,10 @@ __all__ = ["api_update_record", "async_api_update_record"]
 
 
 def api_update_record(
-    collection_id: str, record_id: str, payload: RecordUpdateRequest, **kwargs
+    collection_id: str,
+    record_id: str,
+    payload: RecordUpdateRequest,
+    **kwargs,
 ) -> RecordUpdateResponse:
     # get api client
     sync_api_client = get_api_client(async_client=False)
@@ -54,7 +56,10 @@ def api_update_record(
 
 
 async def async_api_update_record(
-    collection_id: str, record_id: str, payload: RecordUpdateRequest, **kwargs
+    collection_id: str,
+    record_id: str,
+    payload: RecordUpdateRequest,
+    **kwargs,
 ) -> RecordUpdateResponse:
     # get api client
     async_api_client = get_api_client(async_client=True)

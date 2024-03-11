@@ -8,7 +8,6 @@ Do not modify the file manually
 
 Author: James Yao
 Organization: TaskingAI
-Created: 03-Mar-2024
 License: Apache 2.0
 """
 
@@ -18,7 +17,11 @@ from ..models import ChunkListRequest, ChunkListResponse
 __all__ = ["api_list_chunks", "async_api_list_chunks"]
 
 
-def api_list_chunks(collection_id: str, payload: ChunkListRequest, **kwargs) -> ChunkListResponse:
+def api_list_chunks(
+    collection_id: str,
+    payload: ChunkListRequest,
+    **kwargs,
+) -> ChunkListResponse:
     # get api client
     sync_api_client = get_api_client(async_client=False)
 
@@ -50,7 +53,11 @@ def api_list_chunks(collection_id: str, payload: ChunkListRequest, **kwargs) -> 
     )
 
 
-async def async_api_list_chunks(collection_id: str, payload: ChunkListRequest, **kwargs) -> ChunkListResponse:
+async def async_api_list_chunks(
+    collection_id: str,
+    payload: ChunkListRequest,
+    **kwargs,
+) -> ChunkListResponse:
     # get api client
     async_api_client = get_api_client(async_client=True)
 

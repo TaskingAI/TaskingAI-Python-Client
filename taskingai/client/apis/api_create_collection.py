@@ -8,7 +8,6 @@ Do not modify the file manually
 
 Author: James Yao
 Organization: TaskingAI
-Created: 03-Mar-2024
 License: Apache 2.0
 """
 
@@ -18,7 +17,10 @@ from ..models import CollectionCreateRequest, CollectionCreateResponse
 __all__ = ["api_create_collection", "async_api_create_collection"]
 
 
-def api_create_collection(payload: CollectionCreateRequest, **kwargs) -> CollectionCreateResponse:
+def api_create_collection(
+    payload: CollectionCreateRequest,
+    **kwargs,
+) -> CollectionCreateResponse:
     # get api client
     sync_api_client = get_api_client(async_client=False)
 
@@ -48,7 +50,10 @@ def api_create_collection(payload: CollectionCreateRequest, **kwargs) -> Collect
     )
 
 
-async def async_api_create_collection(payload: CollectionCreateRequest, **kwargs) -> CollectionCreateResponse:
+async def async_api_create_collection(
+    payload: CollectionCreateRequest,
+    **kwargs,
+) -> CollectionCreateResponse:
     # get api client
     async_api_client = get_api_client(async_client=True)
 
