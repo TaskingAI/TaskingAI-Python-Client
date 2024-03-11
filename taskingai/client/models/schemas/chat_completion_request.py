@@ -8,16 +8,15 @@ Do not modify the file manually
 
 Author: James Yao
 Organization: TaskingAI
-Created: 03-Mar-2024
 License: Apache 2.0
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional, Dict, List, Union
-from ..entities.chat_completion_user_message import ChatCompletionUserMessage
-from ..entities.chat_completion_system_message import ChatCompletionSystemMessage
-from ..entities.chat_completion_function_message import ChatCompletionFunctionMessage
+from typing import Optional, List, Dict, Union
 from ..entities.chat_completion_assistant_message import ChatCompletionAssistantMessage
+from ..entities.chat_completion_system_message import ChatCompletionSystemMessage
+from ..entities.chat_completion_user_message import ChatCompletionUserMessage
+from ..entities.chat_completion_function_message import ChatCompletionFunctionMessage
 from ..entities.chat_completion_function import ChatCompletionFunction
 
 __all__ = ["ChatCompletionRequest"]
@@ -29,9 +28,9 @@ class ChatCompletionRequest(BaseModel):
     stream: bool = Field(False)
     messages: List[
         Union[
-            ChatCompletionUserMessage,
-            ChatCompletionAssistantMessage,
             ChatCompletionFunctionMessage,
+            ChatCompletionAssistantMessage,
+            ChatCompletionUserMessage,
             ChatCompletionSystemMessage,
         ]
     ] = Field(...)

@@ -8,7 +8,6 @@ Do not modify the file manually
 
 Author: James Yao
 Organization: TaskingAI
-Created: 03-Mar-2024
 License: Apache 2.0
 """
 
@@ -28,6 +27,7 @@ from .assistant_list_request import *
 from .assistant_list_response import *
 from .assistant_update_request import *
 from .assistant_update_response import *
+from .base_data_response import *
 from .base_empty_response import *
 from .chat_completion_request import *
 from .chat_completion_response import *

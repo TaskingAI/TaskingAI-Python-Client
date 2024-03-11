@@ -8,7 +8,6 @@ Do not modify the file manually
 
 Author: James Yao
 Organization: TaskingAI
-Created: 03-Mar-2024
 License: Apache 2.0
 """
 
@@ -19,7 +18,10 @@ __all__ = ["api_create_message", "async_api_create_message"]
 
 
 def api_create_message(
-    assistant_id: str, chat_id: str, payload: MessageCreateRequest, **kwargs
+    assistant_id: str,
+    chat_id: str,
+    payload: MessageCreateRequest,
+    **kwargs,
 ) -> MessageCreateResponse:
     # get api client
     sync_api_client = get_api_client(async_client=False)
@@ -54,7 +56,10 @@ def api_create_message(
 
 
 async def async_api_create_message(
-    assistant_id: str, chat_id: str, payload: MessageCreateRequest, **kwargs
+    assistant_id: str,
+    chat_id: str,
+    payload: MessageCreateRequest,
+    **kwargs,
 ) -> MessageCreateResponse:
     # get api client
     async_api_client = get_api_client(async_client=True)
