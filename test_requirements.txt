@@ -16,3 +16,4 @@ pytest-trio==0.8.0
 pytest-twisted==1.14.0
 Twisted==24.3.0
 python-dotenv==1.0.0
+pytest-rerunfailures==13.0
