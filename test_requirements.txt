@@ -4,7 +4,7 @@ pluggy>=0.3.1
 py>=1.4.31
 randomize>=0.13
 pytest==7.4.4
-allure-pytest==2.13.2
+allure-pytest==2.13.3
 pytest-ordering==0.6
 pytest-xdist==3.5.0
 PyYAML==6.0.1
