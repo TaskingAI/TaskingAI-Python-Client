@@ -246,7 +246,7 @@ def generate_message(
     """
 
     body = MessageGenerateRequest(
-        system_prompt_variables=system_prompt_variables,
+        system_prompt_variables=system_prompt_variables or {},
         stream=stream,
     )
 
@@ -281,7 +281,7 @@ async def a_generate_message(
     """
 
     body = MessageGenerateRequest(
-        system_prompt_variables=system_prompt_variables,
+        system_prompt_variables=system_prompt_variables or {},
         stream=stream,
     )
 
