@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict
+from typing import Any, Optional, List, Dict, Union
 from taskingai.client.models import *
 from taskingai.client.apis import *
 
@@ -11,6 +11,8 @@ __all__ = [
     "ToolType",
     "RetrievalRef",
     "RetrievalType",
+    "RetrievalConfig",
+    "RetrievalMethod",
     "AssistantRetrievalType",
     "get_assistant",
     "list_assistants",
@@ -122,7 +124,7 @@ def create_assistant(
     system_prompt_template: Optional[List[str]] = None,
     tools: Optional[List[AssistantTool]] = None,
     retrievals: Optional[List[AssistantRetrieval]] = None,
-    retrieval_configs: Optional[RetrievalConfig] = None,
+    retrieval_configs: Optional[Union[RetrievalConfig, Dict[str, Any]]] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Assistant:
     """
@@ -138,6 +140,12 @@ def create_assistant(
     :param metadata: The assistant metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The created assistant object.
     """
+    if retrieval_configs:
+        retrieval_configs = (
+            retrieval_configs
+            if isinstance(retrieval_configs, RetrievalConfig)
+            else RetrievalConfig(**retrieval_configs)
+        )
 
     body = AssistantCreateRequest(
         model_id=model_id,
@@ -162,7 +170,7 @@ async def a_create_assistant(
     system_prompt_template: Optional[List[str]] = None,
     tools: Optional[List[AssistantTool]] = None,
     retrievals: Optional[List[AssistantRetrieval]] = None,
-    retrieval_configs: Optional[RetrievalConfig] = None,
+    retrieval_configs: Optional[Union[RetrievalConfig, Dict[str, Any]]] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Assistant:
     """
@@ -178,6 +186,12 @@ async def a_create_assistant(
     :param metadata: The assistant metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The created assistant object.
     """
+    if retrieval_configs:
+        retrieval_configs = (
+            retrieval_configs
+            if isinstance(retrieval_configs, RetrievalConfig)
+            else RetrievalConfig(**retrieval_configs)
+        )
 
     body = AssistantCreateRequest(
         model_id=model_id,
@@ -203,7 +217,7 @@ def update_assistant(
     memory: Optional[AssistantMemory] = None,
     tools: Optional[List[AssistantTool]] = None,
     retrievals: Optional[List[AssistantRetrieval]] = None,
-    retrieval_configs: Optional[RetrievalConfig] = None,
+    retrieval_configs: Optional[Union[RetrievalConfig, Dict[str, Any]]] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Assistant:
     """
@@ -221,6 +235,12 @@ def update_assistant(
     :return: The updated assistant object.
     """
 
+    if retrieval_configs:
+        retrieval_configs = (
+            retrieval_configs
+            if isinstance(retrieval_configs, RetrievalConfig)
+            else RetrievalConfig(**retrieval_configs)
+        )
     body = AssistantUpdateRequest(
         model_id=model_id,
         name=name,
@@ -245,7 +265,7 @@ async def a_update_assistant(
     memory: Optional[AssistantMemory] = None,
     tools: Optional[List[AssistantTool]] = None,
     retrievals: Optional[List[AssistantRetrieval]] = None,
-    retrieval_configs: Optional[RetrievalConfig] = None,
+    retrieval_configs: Optional[Union[RetrievalConfig, Dict[str, Any]]] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Assistant:
     """
@@ -263,6 +283,12 @@ async def a_update_assistant(
     :return: The updated assistant object.
     """
 
+    if retrieval_configs:
+        retrieval_configs = (
+            retrieval_configs
+            if isinstance(retrieval_configs, RetrievalConfig)
+            else RetrievalConfig(**retrieval_configs)
+        )
     body = AssistantUpdateRequest(
         model_id=model_id,
         name=name,

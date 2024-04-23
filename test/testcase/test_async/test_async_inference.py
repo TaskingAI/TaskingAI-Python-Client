@@ -15,7 +15,7 @@ class TestChatCompletion:
         # normal chat completion.
 
         normal_res = await a_chat_completion(
-            model_id=Config.chat_completion_model_id,
+            model_id=Config.openai_chat_completion_model_id,
             messages=[
                 SystemMessage("You are a professional assistant."),
                 UserMessage("Hi"),
@@ -29,7 +29,7 @@ class TestChatCompletion:
         # multi round chat completion.
 
         multi_round_res = await a_chat_completion(
-            model_id=Config.chat_completion_model_id,
+            model_id=Config.openai_chat_completion_model_id,
             messages=[
                 SystemMessage("You are a professional assistant."),
                 UserMessage("Hi"),
@@ -49,7 +49,7 @@ class TestChatCompletion:
         # config max tokens chat completion.
 
         max_tokens_res = await a_chat_completion(
-            model_id=Config.chat_completion_model_id,
+            model_id=Config.openai_chat_completion_model_id,
             messages=[
                 SystemMessage("You are a professional assistant."),
                 UserMessage("Hi"),
@@ -68,9 +68,66 @@ class TestChatCompletion:
         pytest.assume(max_tokens_res.message.role == "assistant")
         pytest.assume(max_tokens_res.message.function_calls is None)
 
+        # chat completion with function call.
+
+        function = Function(
+            name="plus_a_and_b",
+            description="Sum up a and b and return the result",
+            parameters={
+                "type": "object",
+                "properties": {
+                    "a": {
+                        "type": "integer",
+                        "description": "The first number"
+                    },
+                    "b": {
+                        "type": "integer",
+                        "description": "The second number"
+                    }
+                },
+                "required": ["a", "b"]
+            },
+        )
+
+        function_call_res = await a_chat_completion(
+            model_id=Config.openai_chat_completion_model_id,
+            messages=[
+                UserMessage("What is the result of 112 plus 22?"),
+            ],
+            functions=[function]
+        )
+        pytest.assume(function_call_res.finish_reason == "function_calls")
+        pytest.assume(function_call_res.message.content is None)
+        pytest.assume(function_call_res.message.role == "assistant")
+        pytest.assume(function_call_res.message.function_calls is not None)
+
+        # get the function call result
+        def plus_a_and_b(a, b):
+            return a + b
+
+        arguments = function_call_res.message.function_calls[0].arguments
+        function_id = function_call_res.message.function_calls[0].id
+        function_call_result = plus_a_and_b(**arguments)
+
+        # chat completion with the function result
+
+        function_call_result_res = await a_chat_completion(
+            model_id=Config.openai_chat_completion_model_id,
+            messages=[
+                UserMessage("What is the result of 112 plus 22?"),
+                function_call_res.message,
+                FunctionMessage(id=function_id, content=str(function_call_result))
+            ],
+            functions=[function]
+        )
+        pytest.assume(function_call_result_res.finish_reason == "stop")
+        pytest.assume(function_call_result_res.message.content)
+        pytest.assume(function_call_result_res.message.role == "assistant")
+        pytest.assume(function_call_result_res.message.function_calls is None)
+
         # chat completion with stream.
 
-        stream_res = await a_chat_completion(model_id=Config.chat_completion_model_id,
+        stream_res = await a_chat_completion(model_id=Config.openai_chat_completion_model_id,
                                              messages=[
                                                  SystemMessage("You are a professional assistant."),
                                                  UserMessage("count from 1 to 50 and separate numbers by comma."),
@@ -100,14 +157,14 @@ class TestTextEmbedding:
         # Text embedding with str.
 
         input_str = "Machine learning is a subfield of artificial intelligence (AI) that involves the development of algorithms that allow computers to learn from and make decisions or predictions based on data."
-        str_res = await a_text_embedding(model_id=Config.text_embedding_model_id, input=input_str)
+        str_res = await a_text_embedding(model_id=Config.openai_text_embedding_model_id, input=input_str)
         assume_text_embedding_result(str_res)
 
         # Text embedding with str_list.
 
         input_list = ["hello", "world"]
         input_list_length = len(input_list)
-        list_res = await a_text_embedding(model_id=Config.text_embedding_model_id, input=input_list)
+        list_res = await a_text_embedding(model_id=Config.openai_text_embedding_model_id, input=input_list)
         pytest.assume(len(list_res) == input_list_length)
         for res in list_res:
             assume_text_embedding_result(res)

@@ -7,13 +7,17 @@ load_dotenv()
 
 class Config:
 
-    chat_completion_model_id = os.environ.get("CHAT_COMPLETION_MODEL_ID")
-    if not chat_completion_model_id:
-        raise ValueError("chat_completion_model_id is not defined")
+    openai_chat_completion_model_id = os.environ.get("OPENAI_CHAT_COMPLETION_MODEL_ID")
+    if not openai_chat_completion_model_id:
+        raise ValueError("openai_chat_completion_model_id is not defined")
 
-    text_embedding_model_id = os.environ.get("TEXT_EMBEDDING_MODEL_ID")
-    if not chat_completion_model_id:
-        raise ValueError("chat_completion_model_id is not defined")
+    openai_text_embedding_model_id = os.environ.get("OPENAI_TEXT_EMBEDDING_MODEL_ID")
+    if not openai_chat_completion_model_id:
+        raise ValueError("openai_chat_completion_model_id is not defined")
+
+    anthropic_chat_completion_model_id = os.environ.get("ANTHROPIC_CHAT_COMPLETION_MODEL_ID")
+    if not openai_chat_completion_model_id:
+        raise ValueError("anthropic_chat_completion_model_id is not defined")
 
     taskingai_host = os.environ.get("TASKINGAI_HOST")
     if not taskingai_host:

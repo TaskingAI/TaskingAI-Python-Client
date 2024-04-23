@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# chat_update_request.py
+# upload_file_response.py
 
 """
 This script is automatically generated for TaskingAI python client
@@ -12,12 +12,11 @@ License: Apache 2.0
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional, Dict
+from ..entities.file_id_data import FileIdData
+
+__all__ = ["UploadFileResponse"]
 
 
-__all__ = ["ChatUpdateRequest"]
-
-
-class ChatUpdateRequest(BaseModel):
-    name: Optional[str] = Field(None)
-    metadata: Optional[Dict[str, str]] = Field(None)
+class UploadFileResponse(BaseModel):
+    status: str = Field("success")
+    data: FileIdData = Field(...)

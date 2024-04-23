@@ -107,10 +107,17 @@ def assume_collection_result(create_dict: dict, res_dict: dict):
 
 
 def assume_record_result(create_record_data: dict, res_dict: dict):
-    for key in create_record_data:
-        if key == "text_splitter":
+    for key, value in create_record_data.items():
+        if key in ["text_splitter"]:
             continue
-        pytest.assume(res_dict[key] == create_record_data[key])
+        elif key in ["url"]:
+            assert create_record_data[key] in res_dict.get("content")
+        elif key == "file_id":
+            assert create_record_data[key] in res_dict.get("content")
+            assert int(res_dict.get("content").split('\"file_size\":')[-1].strip("}").strip()) > 0
+        else:
+            pytest.assume(res_dict[key] == create_record_data[key])
+
     pytest.assume(res_dict["status"] == "ready")
 
 
@@ -131,6 +138,8 @@ def assume_assistant_result(assistant_dict: dict, res: dict):
         elif key in ["memory", "tool", "retrievals"]:
             continue
         else:
+            if key == 'retrieval_configs':
+                res[key] = vars(res[key])
             pytest.assume(res[key] == assistant_dict[key])
 
 

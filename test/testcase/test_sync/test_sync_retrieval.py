@@ -1,7 +1,9 @@
 import pytest
+import os
 
 from taskingai.retrieval import Record, TokenTextSplitter
 from taskingai.retrieval import list_collections, create_collection, get_collection, update_collection, delete_collection, list_records, create_record, get_record, update_record, delete_record, query_chunks, create_chunk, update_chunk, get_chunk, delete_chunk, list_chunks
+from taskingai.file import upload_file
 from test.config import Config
 from test.common.logger import logger
 from test.common.utils import assume_collection_result, assume_record_result, assume_chunk_result, assume_query_chunk_result
@@ -29,7 +31,7 @@ class TestCollection:
         # Create a collection.
         create_dict = {
             "capacity": 1000,
-            "embedding_model_id": Config.text_embedding_model_id,
+            "embedding_model_id": Config.openai_text_embedding_model_id,
             "name": "test",
             "description": "description",
             "metadata": {
@@ -132,14 +134,36 @@ class TestRecord:
                     "created_timestamp",
                     "status"]
     record_keys = set(record_list)
-    
+    text_splitter_list = [
+        {
+            "type": "token",  # "type": "token
+            "chunk_size": 100,
+            "chunk_overlap": 10
+        },
+        TokenTextSplitter(chunk_size=200, chunk_overlap=20)
+    ]
+    upload_file_data_list = []
+
+    base_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+    files = os.listdir(base_path + "/files")
+    for file in files:
+        filepath = os.path.join(base_path, "files", file)
+        if os.path.isfile(filepath):
+            upload_file_dict = {
+                "purpose": "record_file"
+            }
+            upload_file_dict.update({"file": filepath})
+            upload_file_data_list.append(upload_file_dict)
+
     @pytest.mark.run(order=31)
-    def test_create_record(self, collection_id):
+    def test_create_record_by_text(self, collection_id):
 
         # Create a text record.
         text_splitter = TokenTextSplitter(chunk_size=200, chunk_overlap=20)
         text = "Machine learning is a subfield of artificial intelligence (AI) that involves the development of algorithms that allow computers to learn from and make decisions or predictions based on data."
         create_record_data = {
+            "type": "text",
+            "title": "Machine learning",
             "collection_id": collection_id,
             "content": text,
             "text_splitter": text_splitter,
@@ -149,10 +173,67 @@ class TestRecord:
             }
         }
         for x in range(2):
+            if x == 0:
+                create_record_data.update(
+                                            {"text_splitter": {
+                                                    "type": "token",
+                                                    "chunk_size": 100,
+                                                    "chunk_overlap": 10
+                                            }})
             res = create_record(**create_record_data)
             res_dict = vars(res)
             pytest.assume(res_dict.keys() == self.record_keys)
             assume_record_result(create_record_data, res_dict)
+
+    @pytest.mark.run(order=31)
+    def test_create_record_by_web(self, collection_id):
+
+        # Create a web record.
+        text_splitter = TokenTextSplitter(chunk_size=200, chunk_overlap=20)
+        create_record_data = {
+            "type": "web",
+            "title": "TaskingAI",
+            "collection_id": collection_id,
+            "url": "https://docs.tasking.ai/docs/guide/getting_started/overview/",
+            "text_splitter": text_splitter,
+            "metadata": {
+                "key1": "value1",
+                "key2": "value2"
+            }
+        }
+
+        res = create_record(**create_record_data)
+        res_dict = vars(res)
+        pytest.assume(res_dict.keys() == self.record_keys)
+        assume_record_result(create_record_data, res_dict)
+
+    @pytest.mark.run(order=31)
+    @pytest.mark.parametrize("upload_file_data", upload_file_data_list[:2])
+    def test_create_record_by_file(self, collection_id, upload_file_data):
+
+        # upload file
+        upload_file_res = upload_file(**upload_file_data)
+        upload_file_dict = vars(upload_file_res)
+        file_id = upload_file_dict["file_id"]
+        pytest.assume(file_id is not None)
+
+        text_splitter = TokenTextSplitter(chunk_size=200, chunk_overlap=20)
+        create_record_data = {
+            "type": "file",
+            "title": "TaskingAI",
+            "collection_id": collection_id,
+            "file_id": file_id,
+            "text_splitter": text_splitter,
+            "metadata": {
+                "key1": "value1",
+                "key2": "value2"
+            }
+        }
+
+        res = create_record(**create_record_data)
+        res_dict = vars(res)
+        pytest.assume(res_dict.keys() == self.record_keys)
+        assume_record_result(create_record_data, res_dict)
 
     @pytest.mark.run(order=32)
     def test_list_records(self, collection_id):
@@ -195,15 +276,65 @@ class TestRecord:
             pytest.assume(res_dict["status"] == "ready")
 
     @pytest.mark.run(order=34)
-    def test_update_record(self, collection_id, record_id):
+    @pytest.mark.parametrize("text_splitter", text_splitter_list)
+    def test_update_record_by_text(self, collection_id, record_id, text_splitter):
 
         # Update a record.
 
         update_record_data = {
+            "type": "text",
+            "title": "TaskingAI",
             "collection_id": collection_id,
             "record_id": record_id,
             "content": "TaskingAI is an AI-native application development platform that unifies modules like Model, Retrieval, Assistant, and Tool into one seamless ecosystem, streamlining the creation and deployment of applications for developers.",
-            "text_splitter": TokenTextSplitter(chunk_size=200, chunk_overlap=20),
+            "text_splitter": text_splitter,
+            "metadata": {"test": "test"}
+        }
+        res = update_record(**update_record_data)
+        res_dict = vars(res)
+        pytest.assume(res_dict.keys() == self.record_keys)
+        assume_record_result(update_record_data, res_dict)
+
+    @pytest.mark.run(order=34)
+    @pytest.mark.parametrize("text_splitter", text_splitter_list)
+    def test_update_record_by_web(self, collection_id, record_id, text_splitter):
+
+        # Update a record.
+
+        update_record_data = {
+            "type": "web",
+            "title": "TaskingAI",
+            "collection_id": collection_id,
+            "record_id": record_id,
+            "url": "https://docs.tasking.ai/docs/guide/getting_started/overview/",
+            "text_splitter": text_splitter,
+            "metadata": {"test": "test"}
+        }
+        res = update_record(**update_record_data)
+        res_dict = vars(res)
+        pytest.assume(res_dict.keys() == self.record_keys)
+        assume_record_result(update_record_data, res_dict)
+
+    @pytest.mark.run(order=34)
+    @pytest.mark.parametrize("upload_file_data", upload_file_data_list[2:3])
+    def test_update_record_by_file(self, collection_id, record_id, upload_file_data):
+
+        # upload file
+        upload_file_res = upload_file(**upload_file_data)
+        upload_file_dict = vars(upload_file_res)
+        file_id = upload_file_dict["file_id"]
+        pytest.assume(file_id is not None)
+
+        # Update a record.
+        text_splitter = TokenTextSplitter(chunk_size=200, chunk_overlap=20)
+
+        update_record_data = {
+            "type": "file",
+            "title": "TaskingAI",
+            "collection_id": collection_id,
+            "record_id": record_id,
+            "file_id": file_id,
+            "text_splitter": text_splitter,
             "metadata": {"test": "test"}
         }
         res = update_record(**update_record_data)
@@ -327,8 +458,7 @@ class TestChunk:
 
         # List chunks.
 
-        chunks = list_chunks(collection_id=collection_id)
-        old_nums = len(chunks)
+        chunks = list_chunks(collection_id=collection_id, limit=5)
         for index, chunk in enumerate(chunks):
             chunk_id = chunk.chunk_id
 
@@ -337,7 +467,7 @@ class TestChunk:
             delete_chunk(collection_id=collection_id, chunk_id=chunk_id)
 
             # List chunks.
-            if index == old_nums-1:
-                new_chunks = list_chunks(collection_id=collection_id)
-                new_nums = len(new_chunks)
-                pytest.assume(new_nums == 0)
+
+            new_chunks = list_chunks(collection_id=collection_id)
+            chunk_ids = [chunk.chunk_id for chunk in new_chunks]
+            pytest.assume(chunk_id not in chunk_ids)

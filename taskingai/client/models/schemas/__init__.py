@@ -72,3 +72,4 @@ from .record_update_request import *
 from .record_update_response import *
 from .text_embedding_request import *
 from .text_embedding_response import *
+from .upload_file_response import *

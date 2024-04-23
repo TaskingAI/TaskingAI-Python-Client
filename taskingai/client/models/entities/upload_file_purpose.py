@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# record_type.py
+# upload_file_purpose.py
 
 """
 This script is automatically generated for TaskingAI python client
@@ -13,10 +13,8 @@ License: Apache 2.0
 
 from enum import Enum
 
-__all__ = ["RecordType"]
+__all__ = ["UploadFilePurpose"]
 
 
-class RecordType(str, Enum):
-    TEXT = "text"
-    FILE = "file"
-    WEB = "web"
+class UploadFilePurpose(str, Enum):
+    RECORD_FILE = "record_file"
