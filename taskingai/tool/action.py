@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict
+from typing import Any, Optional, List, Dict, Union
 
 from taskingai.client.models import *
 from taskingai.client.apis import *
@@ -105,7 +105,7 @@ async def a_get_action(action_id: str) -> Action:
 
 def bulk_create_actions(
     openapi_schema: Dict,
-    authentication: Optional[ActionAuthentication] = None,
+    authentication: Optional[Union[ActionAuthentication, Dict[str, Any]]] = None,
 ) -> List[Action]:
     """
     Create actions from an OpenAPI schema.
@@ -115,10 +115,12 @@ def bulk_create_actions(
     :return: The created action object.
     """
 
-    if authentication is None:
-        authentication = ActionAuthentication(
-            type=ActionAuthenticationType.NONE,
-        )
+    authentication = (
+        authentication
+        if isinstance(authentication, ActionAuthentication)
+        else ActionAuthentication(**(authentication or ActionAuthentication(type=ActionAuthenticationType.NONE)))
+    )
+
     body = ActionBulkCreateRequest(
         openapi_schema=openapi_schema,
         authentication=authentication,
@@ -129,7 +131,7 @@ def bulk_create_actions(
 
 async def a_bulk_create_actions(
     openapi_schema: Dict,
-    authentication: Optional[ActionAuthentication] = None,
+    authentication: Optional[Union[ActionAuthentication, Dict[str, Any]]] = None,
 ) -> List[Action]:
     """
     Create actions from an OpenAPI schema in async mode.
@@ -139,10 +141,12 @@ async def a_bulk_create_actions(
     :return: The created action object.
     """
 
-    if authentication is None:
-        authentication = ActionAuthentication(
-            type=ActionAuthenticationType.NONE,
-        )
+    authentication = (
+        authentication
+        if isinstance(authentication, ActionAuthentication)
+        else ActionAuthentication(**(authentication or ActionAuthentication(type=ActionAuthenticationType.NONE)))
+    )
+
     body = ActionBulkCreateRequest(
         openapi_schema=openapi_schema,
         authentication=authentication,
@@ -154,7 +158,7 @@ async def a_bulk_create_actions(
 def update_action(
     action_id: str,
     openapi_schema: Optional[Dict] = None,
-    authentication: Optional[ActionAuthentication] = None,
+    authentication: Optional[Union[ActionAuthentication, Dict[str, Any]]] = None,
 ) -> Action:
     """
     Update an action.
@@ -164,6 +168,12 @@ def update_action(
     :param authentication: The action API authentication.
     :return: The updated action object.
     """
+    if authentication:
+        authentication = (
+            authentication
+            if isinstance(authentication, ActionAuthentication)
+            else ActionAuthentication(**authentication)
+        )
     body = ActionUpdateRequest(
         openapi_schema=openapi_schema,
         authentication=authentication,
@@ -175,7 +185,7 @@ def update_action(
 async def a_update_action(
     action_id: str,
     openapi_schema: Optional[Dict] = None,
-    authentication: Optional[ActionAuthentication] = None,
+    authentication: Optional[Union[ActionAuthentication, Dict[str, Any]]] = None,
 ) -> Action:
     """
     Update an action in async mode.
@@ -185,6 +195,12 @@ async def a_update_action(
     :param authentication: The action API authentication.
     :return: The updated action object.
     """
+    if authentication:
+        authentication = (
+            authentication
+            if isinstance(authentication, ActionAuthentication)
+            else ActionAuthentication(**authentication)
+        )
     body = ActionUpdateRequest(
         openapi_schema=openapi_schema,
         authentication=authentication,

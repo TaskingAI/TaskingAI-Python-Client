@@ -12,7 +12,7 @@ License: Apache 2.0
 """
 
 from pydantic import BaseModel, Field
-from typing import Dict
+from typing import List, Dict
 from .message_content import MessageContent
 
 __all__ = ["Message"]
@@ -25,5 +25,6 @@ class Message(BaseModel):
     role: str = Field(..., min_length=1, max_length=20)
     content: MessageContent = Field(...)
     metadata: Dict[str, str] = Field({}, min_length=0, max_length=16)
+    logs: List[Dict] = Field([])
     updated_timestamp: int = Field(..., ge=0)
     created_timestamp: int = Field(..., ge=0)

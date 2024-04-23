@@ -19,4 +19,5 @@ __all__ = ["ChatCreateRequest"]
 
 
 class ChatCreateRequest(BaseModel):
+    name: str = Field("")
     metadata: Dict[str, str] = Field({})

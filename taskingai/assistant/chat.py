@@ -116,17 +116,20 @@ async def a_get_chat(assistant_id: str, chat_id: str) -> Chat:
 
 def create_chat(
     assistant_id: str,
+    name: str,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Chat:
     """
     Create a chat.
 
     :param assistant_id: The ID of the assistant.
+    :param name: The name of the chat.
     :param metadata: The chat metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The created chat object.
     """
 
     body = ChatCreateRequest(
+        name=name,
         metadata=metadata or {},
     )
     response: ChatCreateResponse = api_create_chat(assistant_id=assistant_id, payload=body)
@@ -135,17 +138,20 @@ def create_chat(
 
 async def a_create_chat(
     assistant_id: str,
+    name: str,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Chat:
     """
     Create a chat in async mode.
 
     :param assistant_id: The ID of the assistant.
+    :param name: The name of the chat.
     :param metadata: The chat metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The created chat object.
     """
 
     body = ChatCreateRequest(
+        name=name,
         metadata=metadata or {},
     )
     response: ChatCreateResponse = await async_api_create_chat(assistant_id=assistant_id, payload=body)
@@ -155,18 +161,21 @@ async def a_create_chat(
 def update_chat(
     assistant_id: str,
     chat_id: str,
-    metadata: Dict[str, str],
+    name: Optional[str] = None,
+    metadata: Optional[Dict[str, str]] = None,
 ) -> Chat:
     """
     Update a chat.
 
     :param assistant_id: The ID of the assistant.
     :param chat_id: The ID of the chat.
+    :param name: The name of the chat.
     :param metadata: The assistant metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The updated chat object.
     """
 
     body = ChatUpdateRequest(
+        name=name,
         metadata=metadata,
     )
     response: ChatUpdateResponse = api_update_chat(assistant_id=assistant_id, chat_id=chat_id, payload=body)
@@ -176,18 +185,21 @@ def update_chat(
 async def a_update_chat(
     assistant_id: str,
     chat_id: str,
-    metadata: Dict[str, str],
+    name: Optional[str] = None,
+    metadata: Optional[Dict[str, str]] = None,
 ) -> Chat:
     """
     Update a chat in async mode.
 
     :param assistant_id: The ID of the assistant.
     :param chat_id: The ID of the chat.
+    :param name: The name of the chat.
     :param metadata: The assistant metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The updated chat object.
     """
 
     body = ChatUpdateRequest(
+        name=name,
         metadata=metadata,
     )
     response: ChatUpdateResponse = await async_api_update_chat(assistant_id=assistant_id, chat_id=chat_id, payload=body)

@@ -1,10 +1,11 @@
-from typing import Optional, List, Dict
+from typing import Any, Dict, List, Optional, Union
 
-from taskingai.client.models import *
 from taskingai.client.apis import *
+from taskingai.client.models import *
 
 __all__ = [
     "Record",
+    "RecordType",
     "get_record",
     "list_records",
     "create_record",
@@ -16,6 +17,25 @@ __all__ = [
     "a_update_record",
     "a_delete_record",
 ]
+
+
+def _validate_record_type(
+    type: Union[RecordType, str],
+    content: Optional[str] = None,
+    file_id: Optional[str] = None,
+    url: Optional[str] = None,
+):
+    type = type if isinstance(type, RecordType) else RecordType(type)
+    if type == RecordType.TEXT and not content:
+        raise ValueError("Content must be provided when type is 'text'.")
+    if type == RecordType.FILE and not file_id:
+        raise ValueError("File ID must be provided when type is 'file'.")
+    if type == RecordType.WEB:
+        if not url:
+            raise ValueError("URL must be provided when type is 'web'.")
+        if not url.startswith("https://"):
+            raise ValueError("URL only supports https.")
+    return type
 
 
 def list_records(
@@ -113,24 +133,35 @@ async def a_get_record(collection_id: str, record_id: str) -> Record:
 
 def create_record(
     collection_id: str,
-    content: str,
-    text_splitter: TextSplitter,
+    title: str,
+    type: Union[RecordType, str],
+    text_splitter: Union[TextSplitter, Dict[str, Any]],
+    content: Optional[str] = None,
+    file_id: Optional[str] = None,
+    url: Optional[str] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Record:
     """
     Create a record.
 
     :param collection_id: The ID of the collection.
+    :param type: The type of the record. It can be "text", "web" or "file".
+    :param title: The title of the record.
     :param content: The content of the record.
     :param text_splitter: The text splitter to split records into chunks.
     :param metadata: The collection metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The created record object.
     """
+    type = _validate_record_type(type, content, file_id, url)
+    text_splitter = text_splitter if isinstance(text_splitter, TextSplitter) else TextSplitter(**text_splitter)
 
     body = RecordCreateRequest(
-        type="text",
-        content=content,
+        title=title,
+        type=type,
         text_splitter=text_splitter,
+        content=content,
+        file_id=file_id,
+        url=url,
         metadata=metadata or {},
     )
     response: RecordCreateResponse = api_create_record(collection_id=collection_id, payload=body)
@@ -139,24 +170,36 @@ def create_record(
 
 async def a_create_record(
     collection_id: str,
-    content: str,
-    text_splitter: TextSplitter,
+    title: str,
+    type: Union[RecordType, str],
+    text_splitter: Union[TextSplitter, Dict[str, Any]],
+    content: Optional[str] = None,
+    file_id: Optional[str] = None,
+    url: Optional[str] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Record:
     """
     Create a record in async mode.
 
     :param collection_id: The ID of the collection.
+    :param type: The type of the record. It can be "text", "web" or "file".
+    :param title: The title of the record.
     :param content: The content of the record.
     :param text_splitter: The text splitter to split records into chunks.
     :param metadata: The collection metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The created record object.
     """
 
+    type = _validate_record_type(type, content, file_id, url)
+    text_splitter = text_splitter if isinstance(text_splitter, TextSplitter) else TextSplitter(**text_splitter)
+
     body = RecordCreateRequest(
-        type="text",
-        content=content,
+        title=title,
+        type=type,
         text_splitter=text_splitter,
+        content=content,
+        file_id=file_id,
+        url=url,
         metadata=metadata or {},
     )
     response: RecordCreateResponse = await async_api_create_record(collection_id=collection_id, payload=body)
@@ -164,10 +207,14 @@ async def a_create_record(
 
 
 def update_record(
-    collection_id: str,
     record_id: str,
+    collection_id: str,
+    title: Optional[str] = None,
+    type: Optional[Union[RecordType, str]] = None,
+    text_splitter: Optional[Union[TextSplitter, Dict[str, Any]]] = None,
     content: Optional[str] = None,
-    text_splitter: Optional[TextSplitter] = None,
+    file_id: Optional[str] = None,
+    url: Optional[str] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Record:
     """
@@ -175,6 +222,7 @@ def update_record(
 
     :param collection_id: The ID of the collection.
     :param record_id: The ID of the record.
+    :param type: The type of the record. It can be "text", "web" or "file".
     :param content: The content of the record.
     :param text_splitter: The text splitter to split records into chunks.
     :param metadata: The collection metadata. It can store up to 16 key-value pairs where each key's length is less
@@ -182,24 +230,33 @@ def update_record(
     :return: The collection object.
     """
 
-    type = None
-    if content and text_splitter:
-        type = "text"
+    if type:
+        type = type if isinstance(type, RecordType) else RecordType(type)
+    if text_splitter:
+        text_splitter = text_splitter if isinstance(text_splitter, TextSplitter) else TextSplitter(**text_splitter)
+
     body = RecordUpdateRequest(
+        title=title,
         type=type,
-        content=content,
         text_splitter=text_splitter,
-        metadata=metadata,
+        content=content,
+        file_id=file_id,
+        url=url,
+        metadata=metadata or {},
     )
     response: RecordUpdateResponse = api_update_record(collection_id=collection_id, record_id=record_id, payload=body)
     return response.data
 
 
 async def a_update_record(
-    collection_id: str,
     record_id: str,
+    collection_id: str,
+    title: Optional[str] = None,
+    type: Optional[Union[RecordType, str]] = None,
+    text_splitter: Optional[Union[TextSplitter, Dict[str, Any]]] = None,
     content: Optional[str] = None,
-    text_splitter: Optional[TextSplitter] = None,
+    file_id: Optional[str] = None,
+    url: Optional[str] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Record:
     """
@@ -207,21 +264,26 @@ async def a_update_record(
 
     :param collection_id: The ID of the collection.
     :param record_id: The ID of the record.
+    :param type: The type of the record. It can be "text", "web" or "file".
     :param content: The content of the record.
     :param text_splitter: The text splitter to split records into chunks.
     :param metadata: The collection metadata. It can store up to 16 key-value pairs where each key's length is less
     than 64 and value's length is less than 512.
     :return: The collection object.
     """
+    if type:
+        type = type if isinstance(type, RecordType) else RecordType(type)
+    if text_splitter:
+        text_splitter = text_splitter if isinstance(text_splitter, TextSplitter) else TextSplitter(**text_splitter)
 
-    type = None
-    if content and text_splitter:
-        type = "text"
     body = RecordUpdateRequest(
+        title=title,
         type=type,
-        content=content,
         text_splitter=text_splitter,
-        metadata=metadata,
+        content=content,
+        file_id=file_id,
+        url=url,
+        metadata=metadata or {},
     )
     response: RecordUpdateResponse = await async_api_update_record(
         collection_id=collection_id, record_id=record_id, payload=body

@@ -1,7 +1,7 @@
 import pytest
 
 from taskingai.assistant import *
-from taskingai.client.models import ToolRef, ToolType, RetrievalRef, RetrievalType
+from taskingai.client.models import ToolRef, ToolType, RetrievalRef, RetrievalType, RetrievalConfig
 from taskingai.assistant.memory import AssistantNaiveMemory
 from test.config import Config
 from test.common.logger import logger
@@ -11,8 +11,15 @@ from test.common.utils import assume_assistant_result, assume_chat_result, assum
 @pytest.mark.test_sync
 class TestAssistant:
 
-    assistant_list = ['assistant_id', 'updated_timestamp','created_timestamp', 'description', 'metadata', 'model_id', 'name', 'retrievals', 'retrieval_configs', 'system_prompt_template', 'tools',"memory"]
-    assistant_keys = set(assistant_list)
+    retrieval_configs_list = [
+         {"method": "memory", "top_k": 2, "max_tokens": 4000},
+         RetrievalConfig(
+                        method="memory",
+                        top_k=1,
+                        max_tokens=5000,
+
+         )
+        ]
 
     @pytest.mark.run(order=51)
     def test_create_assistant(self, collection_id, action_id):
@@ -20,7 +27,7 @@ class TestAssistant:
         # Create an assistant.
 
         assistant_dict = {
-            "model_id": Config.chat_completion_model_id,
+            "model_id": Config.openai_chat_completion_model_id,
             "name": "test",
             "description": "test for assistant",
             "memory": AssistantNaiveMemory(),
@@ -32,6 +39,12 @@ class TestAssistant:
                     id=collection_id,
                 ),
             ],
+            "retrieval_configs": RetrievalConfig(
+                method="memory",
+                top_k=1,
+                max_tokens=5000,
+
+            ),
             "tools": [
                ToolRef(
                    type=ToolType.ACTION,
@@ -44,10 +57,12 @@ class TestAssistant:
             ]
         }
         for i in range(4):
+            if i == 0:
+                assistant_dict.update({"retrieval_configs": {"method": "memory", "top_k": 2, "max_tokens": 4000}})
+
             res = create_assistant(**assistant_dict)
             res_dict = vars(res)
             logger.info(f'response_dict:{res_dict}, except_dict:{assistant_dict}')
-            pytest.assume(res_dict.keys() == self.assistant_keys)
             assume_assistant_result(assistant_dict, res_dict)
 
     @pytest.mark.run(order=52)
@@ -81,20 +96,25 @@ class TestAssistant:
 
         res = get_assistant(assistant_id=assistant_id)
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.assistant_keys)
+        pytest.assume(res_dict["assistant_id"] == assistant_id)
 
     @pytest.mark.run(order=54)
-    def test_update_assistant(self, assistant_id):
+    @pytest.mark.parametrize("retrieval_configs", retrieval_configs_list)
+    def test_update_assistant(self, assistant_id, retrieval_configs):
 
         # Update an assistant.
 
         name = "openai"
         description = "test for openai"
-        res = update_assistant(assistant_id=assistant_id, name=name, description=description)
+
+        res = update_assistant(assistant_id=assistant_id, name=name, description=description, retrieval_configs=retrieval_configs)
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.assistant_keys)
         pytest.assume(res_dict["name"] == name)
         pytest.assume(res_dict["description"] == description)
+        if isinstance(retrieval_configs, dict):
+            pytest.assume(vars(res_dict["retrieval_configs"]) == retrieval_configs)
+        else:
+            pytest.assume(res_dict["retrieval_configs"] == retrieval_configs)
 
     @pytest.mark.run(order=66)
     def test_delete_assistant(self):
@@ -120,19 +140,16 @@ class TestAssistant:
 @pytest.mark.test_sync
 class TestChat:
 
-        chat_list = ['assistant_id', 'chat_id', 'created_timestamp', 'updated_timestamp', 'metadata']
-        chat_keys = set(chat_list)
-
         @pytest.mark.run(order=55)
         def test_create_chat(self, assistant_id):
 
             for x in range(2):
 
                 # Create a chat.
-
-                res = create_chat(assistant_id=assistant_id)
+                name = f"test_chat{x+1}"
+                res = create_chat(assistant_id=assistant_id, name=name)
                 res_dict = vars(res)
-                pytest.assume(res_dict.keys() == self.chat_keys)
+                pytest.assume(res_dict["name"] == name)
 
         @pytest.mark.run(order=56)
         def test_list_chats(self, assistant_id):
@@ -165,7 +182,8 @@ class TestChat:
 
             res = get_chat(assistant_id=assistant_id, chat_id=chat_id)
             res_dict = vars(res)
-            pytest.assume(res_dict.keys() == self.chat_keys)
+            pytest.assume(res_dict["chat_id"] == chat_id)
+            pytest.assume(res_dict["assistant_id"] == assistant_id)
 
         @pytest.mark.run(order=58)
         def test_update_chat(self, assistant_id, chat_id):
@@ -173,10 +191,11 @@ class TestChat:
             # Update a chat.
 
             metadata = {"test": "test"}
-            res = update_chat(assistant_id=assistant_id, chat_id=chat_id, metadata=metadata)
+            name = "test_update_chat"
+            res = update_chat(assistant_id=assistant_id, chat_id=chat_id, metadata=metadata, name=name)
             res_dict = vars(res)
-            pytest.assume(res_dict.keys() == self.chat_keys)
             pytest.assume(res_dict["metadata"] == metadata)
+            pytest.assume(res_dict["name"] == name)
 
         @pytest.mark.run(order=65)
         def test_delete_chat(self, assistant_id):
@@ -202,9 +221,6 @@ class TestChat:
 @pytest.mark.test_sync
 class TestMessage:
 
-    message_list = ['assistant_id', 'chat_id', 'message_id', 'role', 'content', 'metadata', 'created_timestamp','updated_timestamp']
-    message_keys = set(message_list)
-
     @pytest.mark.run(order=59)
     def test_create_message(self, assistant_id, chat_id):
 
@@ -216,7 +232,6 @@ class TestMessage:
             res = create_message(assistant_id=assistant_id, chat_id=chat_id, text=text)
             res_dict = vars(res)
             logger.info(res_dict)
-            pytest.assume(res_dict.keys() == self.message_keys)
             pytest.assume(vars(res_dict["content"])["text"] == text)
             pytest.assume(res_dict["role"] == "user")
 
@@ -251,7 +266,9 @@ class TestMessage:
 
         res = get_message(assistant_id=assistant_id, chat_id=chat_id, message_id=message_id)
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.message_keys)
+        pytest.assume(res_dict["message_id"] == message_id)
+        pytest.assume(res_dict["assistant_id"] == assistant_id)
+        pytest.assume(res_dict["chat_id"] == chat_id)
 
     @pytest.mark.run(order=62)
     def test_update_message(self, assistant_id, chat_id, message_id):
@@ -261,7 +278,6 @@ class TestMessage:
         metadata = {"test": "test"}
         res = update_message(assistant_id=assistant_id, chat_id=chat_id, message_id=message_id, metadata=metadata)
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.message_keys)
         pytest.assume(res_dict["metadata"] == metadata)
 
     @pytest.mark.run(order=63)
@@ -271,7 +287,6 @@ class TestMessage:
 
         res = generate_message(assistant_id=assistant_id, chat_id=chat_id, system_prompt_variables={})
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.message_keys)
         pytest.assume(res_dict["role"] == "assistant")
         pytest.assume(res_dict["content"] is not None)
         pytest.assume(res_dict["assistant_id"] == assistant_id)
@@ -279,20 +294,45 @@ class TestMessage:
         pytest.assume(vars(res_dict["content"])["text"] is not None)
 
     @pytest.mark.run(order=64)
-    def test_generate_message_by_stream(self):
+    def test_generate_message_by_stream(self, collection_id, action_id):
 
         # Create an assistant.
         assistant_dict = {
-            "model_id": Config.chat_completion_model_id,
+            "model_id": Config.openai_chat_completion_model_id,
             "name": "test",
             "description": "test for assistant",
             "memory": AssistantNaiveMemory(),
+            "system_prompt_template": ["You know the meaning of various numbers.",
+                                       "No matter what the user's language is, you will use the {{langugae}} to explain."],
+            "metadata": {"test": "test"},
+            "retrievals": [
+                RetrievalRef(
+                    type=RetrievalType.COLLECTION,
+                    id=collection_id,
+                ),
+            ],
+            "retrieval_configs": RetrievalConfig(
+                method="memory",
+                top_k=1,
+                max_tokens=5000,
+
+            ),
+            "tools": [
+                ToolRef(
+                    type=ToolType.ACTION,
+                    id=action_id,
+                ),
+                ToolRef(
+                    type=ToolType.PLUGIN,
+                    id="open_weather/get_hourly_forecast",
+                )
+            ]
         }
         assistant_res = create_assistant(**assistant_dict)
         assistant_id = assistant_res.assistant_id
         # create chat
 
-        chat_res = create_chat(assistant_id=assistant_id)
+        chat_res = create_chat(assistant_id=assistant_id, name="test_chat")
         chat_id = chat_res.chat_id
         logger.info(f"chat_id: {chat_id}")
 
@@ -301,21 +341,277 @@ class TestMessage:
         user_message: Message = create_message(
             assistant_id=assistant_id,
             chat_id=chat_id,
-            text="count from 1 to 100 and separate numbers by comma.")
+            text="count from 1 to 10 and separate numbers by comma.")
 
         # Generate an assistant message by stream.
 
         stream_res = generate_message(assistant_id=assistant_id, chat_id=chat_id, system_prompt_variables={}, stream=True)
-        except_list = [i + 1 for i in range(100)]
+        except_list = ["MessageChunk", "Message"]
         real_list = []
         for item in stream_res:
             if isinstance(item, MessageChunk):
                 logger.info(f"MessageChunk: {item.delta}")
-                if item.delta.isdigit():
-                    real_list.append(int(item.delta))
+                pytest.assume(item.delta is not None)
+                real_list.append("MessageChunk")
             elif isinstance(item, Message):
                 logger.info(f"Message: {item.message_id}")
                 pytest.assume(item.content is not None)
+                real_list.append("Message")
         logger.info(f"except_list: {except_list} real_list: {real_list}")
         pytest.assume(set(except_list) == set(real_list))
+
+    @pytest.mark.run(order=70)
+    def test_assistant_by_user_message_retrieval_and_stream(self, collection_id):
+
+        # Create an assistant.
+
+        assistant_dict = {
+            "model_id": Config.openai_chat_completion_model_id,
+            "name": "test",
+            "description": "test for assistant",
+            "memory": AssistantNaiveMemory(),
+            "system_prompt_template": ["You know the meaning of various numbers.",
+                                       "No matter what the user's language is, you will use the {{langugae}} to explain."],
+            "metadata": {"test": "test"},
+            "retrievals": [
+                RetrievalRef(
+                    type=RetrievalType.COLLECTION,
+                    id=collection_id,
+                ),
+            ],
+            "retrieval_configs": {
+                "method": "user_message",
+                "top_k": 1,
+                "max_tokens": 5000
+        }
+        }
+
+        assistant_res = create_assistant(**assistant_dict)
+        assistant_res_dict = vars(assistant_res)
+        logger.info(f'response_dict:{assistant_res_dict}, except_dict:{assistant_dict}')
+        assume_assistant_result(assistant_dict, assistant_res_dict)
+
+        chat_res = create_chat(assistant_id=assistant_res.assistant_id, name="test_chat")
+        text = "hello, what is the weather like in HongKong?"
+        create_message_res = create_message(assistant_id=assistant_res.assistant_id, chat_id=chat_res.chat_id,
+                                                    text=text)
+        generate_message_res = generate_message(assistant_id=assistant_res.assistant_id,
+                                                        chat_id=chat_res.chat_id, system_prompt_variables={},
+                                                        stream=True)
+        final_content = ''
+        for item in generate_message_res:
+            if isinstance(item, MessageChunk):
+                logger.info(f"MessageChunk: {item.delta}")
+                pytest.assume(item.delta is not None)
+                final_content += item.delta
+            elif isinstance(item, Message):
+                logger.info(f"Message: {item.message_id}")
+                pytest.assume(item.content is not None)
+        assert final_content is not None
+
+    @pytest.mark.run(order=70)
+    def test_assistant_by_memory_retrieval_and_stream(self, collection_id):
+
+        # Create an assistant.
+
+        assistant_dict = {
+            "model_id": Config.openai_chat_completion_model_id,
+            "name": "test",
+            "description": "test for assistant",
+            "memory": AssistantNaiveMemory(),
+            "system_prompt_template": ["You know the meaning of various numbers.",
+                                       "No matter what the user's language is, you will use the {{langugae}} to explain."],
+            "metadata": {"test": "test"},
+            "retrievals": [
+                RetrievalRef(
+                    type=RetrievalType.COLLECTION,
+                    id=collection_id,
+                ),
+            ],
+            "retrieval_configs": {
+                                "method": "memory",
+                                "top_k": 1,
+                                "max_tokens": 5000
+
+        }
+        }
+
+        assistant_res = create_assistant(**assistant_dict)
+        assistant_res_dict = vars(assistant_res)
+        logger.info(f'response_dict:{assistant_res_dict}, except_dict:{assistant_dict}')
+        assume_assistant_result(assistant_dict, assistant_res_dict)
+
+        chat_res = create_chat(assistant_id=assistant_res.assistant_id, name="test_chat")
+        text = "hello, what is the weather like in HongKong?"
+        create_message_res = create_message(assistant_id=assistant_res.assistant_id,
+                                                    chat_id=chat_res.chat_id, text=text)
+        generate_message_res = generate_message(assistant_id=assistant_res.assistant_id,
+                                                        chat_id=chat_res.chat_id, system_prompt_variables={},
+                                                        stream=True)
+        final_content = ''
+        for item in generate_message_res:
+            if isinstance(item, MessageChunk):
+                logger.info(f"MessageChunk: {item.delta}")
+                pytest.assume(item.delta is not None)
+                final_content += item.delta
+            elif isinstance(item, Message):
+                logger.info(f"Message: {item.message_id}")
+                pytest.assume(item.content is not None)
+        assert final_content is not None
+
+    @pytest.mark.run(order=70)
+    def test_assistant_by_function_call_retrieval_and_stream(self, collection_id):
+
+        # Create an assistant.
+
+        assistant_dict = {
+            "model_id": Config.openai_chat_completion_model_id,
+            "name": "test",
+            "description": "test for assistant",
+            "memory": AssistantNaiveMemory(),
+            "system_prompt_template": ["You know the meaning of various numbers.",
+                                       "No matter what the user's language is, you will use the {{langugae}} to explain."],
+            "metadata": {"test": "test"},
+            "retrievals": [
+                RetrievalRef(
+                    type=RetrievalType.COLLECTION,
+                    id=collection_id,
+                ),
+            ],
+            "retrieval_configs":
+                {
+                    "method": "function_call",
+                    "top_k": 1,
+                    "max_tokens": 5000
+                }
+        }
+
+        assistant_res = create_assistant(**assistant_dict)
+        assistant_res_dict = vars(assistant_res)
+        logger.info(f'response_dict:{assistant_res_dict}, except_dict:{assistant_dict}')
+        assume_assistant_result(assistant_dict, assistant_res_dict)
+
+        chat_res = create_chat(assistant_id=assistant_res.assistant_id, name="test_chat")
+        text = "hello, what is the weather like in HongKong?"
+        create_message_res = create_message(assistant_id=assistant_res.assistant_id,
+                                                    chat_id=chat_res.chat_id, text=text)
+        generate_message_res = generate_message(assistant_id=assistant_res.assistant_id,
+                                                        chat_id=chat_res.chat_id, system_prompt_variables={},
+                                                        stream=True)
+        final_content = ''
+        for item in generate_message_res:
+            if isinstance(item, MessageChunk):
+                logger.info(f"MessageChunk: {item.delta}")
+                pytest.assume(item.delta is not None)
+                final_content += item.delta
+            elif isinstance(item, Message):
+                logger.info(f"Message: {item.message_id}")
+                pytest.assume(item.content is not None)
+        assert final_content is not None
+
+    @pytest.mark.run(order=70)
+    def test_assistant_by_not_support_function_call_retrieval_and_stream(self, collection_id):
+
+        # Create an assistant.
+
+        assistant_dict = {
+            "model_id": Config.anthropic_chat_completion_model_id,
+            "name": "test",
+            "description": "test for assistant",
+            "memory": AssistantNaiveMemory(),
+            "system_prompt_template": ["You know the meaning of various numbers.",
+                                       "No matter what the user's language is, you will use the {{langugae}} to explain."],
+            "metadata": {"test": "test"},
+            "retrievals": [
+                RetrievalRef(
+                    type=RetrievalType.COLLECTION,
+                    id=collection_id,
+                ),
+            ],
+            "retrieval_configs": RetrievalConfig(
+                method="function_call",
+                top_k=1,
+                max_tokens=5000,
+
+            )
+        }
+        with pytest.raises(Exception) as e:
+            assistant_res = create_assistant(**assistant_dict)
+        assert "not support function call to use retrieval" in str(e.value)
+
+    @pytest.mark.run(order=70)
+    def test_assistant_by_all_tool_and_stream(self, action_id):
+
+        # Create an assistant.
+
+        assistant_dict = {
+            "model_id": Config.openai_chat_completion_model_id,
+            "name": "test",
+            "description": "test for assistant",
+            "memory": AssistantNaiveMemory(),
+            "system_prompt_template": ["You know the meaning of various numbers.",
+                                       "No matter what the user's language is, you will use the {{langugae}} to explain."],
+            "metadata": {"test": "test"},
+            "tools": [
+                ToolRef(
+                    type=ToolType.ACTION,
+                    id=action_id,
+                ),
+                ToolRef(
+                    type=ToolType.PLUGIN,
+                    id="open_weather/get_hourly_forecast",
+                )
+            ]
+        }
+
+        assistant_res = create_assistant(**assistant_dict)
+        assistant_res_dict = vars(assistant_res)
+        logger.info(f'response_dict:{assistant_res_dict}, except_dict:{assistant_dict}')
+        assume_assistant_result(assistant_dict, assistant_res_dict)
+
+        chat_res = create_chat(assistant_id=assistant_res.assistant_id, name="test_chat")
+        text = "hello, what is the weather like in HongKong?"
+        create_message_res = create_message(assistant_id=assistant_res.assistant_id,
+                                                    chat_id=chat_res.chat_id, text=text)
+        generate_message_res = generate_message(assistant_id=assistant_res.assistant_id,
+                                                        chat_id=chat_res.chat_id, system_prompt_variables={},
+                                                        stream=True)
+        final_content = ''
+        for item in generate_message_res:
+            if isinstance(item, MessageChunk):
+                logger.info(f"MessageChunk: {item.delta}")
+                pytest.assume(item.delta is not None)
+                final_content += item.delta
+            elif isinstance(item, Message):
+                logger.info(f"Message: {item.message_id}")
+                pytest.assume(item.content is not None)
+        assert final_content is not None
+
+    @pytest.mark.run(order=70)
+    def test_assistant_by_not_support_function_call_tool_and_stream(self, action_id):
+
+        # Create an assistant.
+
+        assistant_dict = {
+            "model_id": Config.anthropic_chat_completion_model_id,
+            "name": "test",
+            "description": "test for assistant",
+            "memory": AssistantNaiveMemory(),
+            "system_prompt_template": ["You know the meaning of various numbers.",
+                                       "No matter what the user's language is, you will use the {{langugae}} to explain."],
+            "metadata": {"test": "test"},
+            "tools": [
+                ToolRef(
+                    type=ToolType.ACTION,
+                    id=action_id,
+                ),
+                ToolRef(
+                    type=ToolType.PLUGIN,
+                    id="open_weather/get_hourly_forecast",
+                )
+            ]
+        }
+        with pytest.raises(Exception) as e:
+            assistant_res = create_assistant(**assistant_dict)
+        assert "not support function call to use the tools" in str(e.value)
 

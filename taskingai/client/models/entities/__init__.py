@@ -38,6 +38,7 @@ from .chat_memory import *
 from .chat_memory_message import *
 from .chunk import *
 from .collection import *
+from .file_id_data import *
 from .message import *
 from .message_chunk import *
 from .message_content import *
@@ -57,3 +58,4 @@ from .text_splitter import *
 from .text_splitter_type import *
 from .tool_ref import *
 from .tool_type import *
+from .upload_file_purpose import *
