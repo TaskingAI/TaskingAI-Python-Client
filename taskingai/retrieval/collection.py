@@ -19,6 +19,7 @@ __all__ = [
 
 
 def list_collections(
+    *,
     order: str = "desc",
     limit: int = 20,
     after: Optional[str] = None,
@@ -49,6 +50,7 @@ def list_collections(
 
 
 async def a_list_collections(
+    *,
     order: str = "desc",
     limit: int = 20,
     after: Optional[str] = None,
@@ -101,6 +103,7 @@ async def a_get_collection(collection_id: str) -> Collection:
 
 
 def create_collection(
+    *,
     embedding_model_id: str,
     capacity: int = 1000,
     name: Optional[str] = None,
@@ -130,6 +133,7 @@ def create_collection(
 
 
 async def a_create_collection(
+    *,
     embedding_model_id: str,
     capacity: int = 1000,
     name: Optional[str] = None,
@@ -161,6 +165,7 @@ async def a_create_collection(
 
 def update_collection(
     collection_id: str,
+    *,
     name: Optional[str] = None,
     description: Optional[str] = None,
     metadata: Optional[Dict[str, str]] = None,
@@ -185,6 +190,7 @@ def update_collection(
 
 async def a_update_collection(
     collection_id: str,
+    *,
     name: Optional[str] = None,
     description: Optional[str] = None,
     metadata: Optional[Dict[str, str]] = None,

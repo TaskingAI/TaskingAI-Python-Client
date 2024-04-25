@@ -27,12 +27,12 @@ def _validate_record_type(
 ):
     type = type if isinstance(type, RecordType) else RecordType(type)
     if type == RecordType.TEXT and not content:
-        raise ValueError("Content must be provided when type is 'text'.")
+        raise ValueError("A valid content must be provided when type is 'text'.")
     if type == RecordType.FILE and not file_id:
-        raise ValueError("File ID must be provided when type is 'file'.")
+        raise ValueError("A valid file ID must be provided when type is 'file'.")
     if type == RecordType.WEB:
         if not url:
-            raise ValueError("URL must be provided when type is 'web'.")
+            raise ValueError("A valid url must be provided when type is 'web'.")
         if not url.startswith("https://"):
             raise ValueError("URL only supports https.")
     return type
@@ -40,6 +40,7 @@ def _validate_record_type(
 
 def list_records(
     collection_id: str,
+    *,
     order: str = "desc",
     limit: int = 20,
     after: Optional[str] = None,
@@ -72,6 +73,7 @@ def list_records(
 
 async def a_list_records(
     collection_id: str,
+    *,
     order: str = "desc",
     limit: int = 20,
     after: Optional[str] = None,
@@ -133,9 +135,10 @@ async def a_get_record(collection_id: str, record_id: str) -> Record:
 
 def create_record(
     collection_id: str,
-    title: str,
+    *,
     type: Union[RecordType, str],
     text_splitter: Union[TextSplitter, Dict[str, Any]],
+    title: Optional[str] = None,
     content: Optional[str] = None,
     file_id: Optional[str] = None,
     url: Optional[str] = None,
@@ -146,9 +149,11 @@ def create_record(
 
     :param collection_id: The ID of the collection.
     :param type: The type of the record. It can be "text", "web" or "file".
-    :param title: The title of the record.
-    :param content: The content of the record.
     :param text_splitter: The text splitter to split records into chunks.
+    :param title: The title of the record.
+    :param content: The content of the record. It is required when the type is "text".
+    :param file_id: The file ID of the record. It is required when the type is "file".
+    :param url: The URL of the record. It is required when the type is "web".
     :param metadata: The collection metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The created record object.
     """
@@ -170,9 +175,10 @@ def create_record(
 
 async def a_create_record(
     collection_id: str,
-    title: str,
+    *,
     type: Union[RecordType, str],
     text_splitter: Union[TextSplitter, Dict[str, Any]],
+    title: Optional[str] = None,
     content: Optional[str] = None,
     file_id: Optional[str] = None,
     url: Optional[str] = None,
@@ -183,9 +189,11 @@ async def a_create_record(
 
     :param collection_id: The ID of the collection.
     :param type: The type of the record. It can be "text", "web" or "file".
-    :param title: The title of the record.
-    :param content: The content of the record.
     :param text_splitter: The text splitter to split records into chunks.
+    :param title: The title of the record.
+    :param content: The content of the record. It is required when the type is "text".
+    :param file_id: The file ID of the record. It is required when the type is "file".
+    :param url: The URL of the record. It is required when the type is "web".
     :param metadata: The collection metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The created record object.
     """
@@ -209,9 +217,10 @@ async def a_create_record(
 def update_record(
     record_id: str,
     collection_id: str,
-    title: Optional[str] = None,
+    *,
     type: Optional[Union[RecordType, str]] = None,
     text_splitter: Optional[Union[TextSplitter, Dict[str, Any]]] = None,
+    title: Optional[str] = None,
     content: Optional[str] = None,
     file_id: Optional[str] = None,
     url: Optional[str] = None,
@@ -221,13 +230,14 @@ def update_record(
     Update a record.
 
     :param collection_id: The ID of the collection.
-    :param record_id: The ID of the record.
     :param type: The type of the record. It can be "text", "web" or "file".
-    :param content: The content of the record.
     :param text_splitter: The text splitter to split records into chunks.
-    :param metadata: The collection metadata. It can store up to 16 key-value pairs where each key's length is less
-    than 64 and value's length is less than 512.
-    :return: The collection object.
+    :param title: The title of the record.
+    :param content: The content of the record. It is required when the type is "text".
+    :param file_id: The file ID of the record. It is required when the type is "file".
+    :param url: The URL of the record. It is required when the type is "web".
+    :param metadata: The collection metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
+    :return: The created record object.
     """
 
     if type:
@@ -251,9 +261,10 @@ def update_record(
 async def a_update_record(
     record_id: str,
     collection_id: str,
-    title: Optional[str] = None,
+    *,
     type: Optional[Union[RecordType, str]] = None,
     text_splitter: Optional[Union[TextSplitter, Dict[str, Any]]] = None,
+    title: Optional[str] = None,
     content: Optional[str] = None,
     file_id: Optional[str] = None,
     url: Optional[str] = None,
@@ -263,14 +274,16 @@ async def a_update_record(
     Update a record in async mode.
 
     :param collection_id: The ID of the collection.
-    :param record_id: The ID of the record.
     :param type: The type of the record. It can be "text", "web" or "file".
-    :param content: The content of the record.
     :param text_splitter: The text splitter to split records into chunks.
-    :param metadata: The collection metadata. It can store up to 16 key-value pairs where each key's length is less
-    than 64 and value's length is less than 512.
-    :return: The collection object.
+    :param title: The title of the record.
+    :param content: The content of the record. It is required when the type is "text".
+    :param file_id: The file ID of the record. It is required when the type is "file".
+    :param url: The URL of the record. It is required when the type is "web".
+    :param metadata: The collection metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
+    :return: The created record object.
     """
+
     if type:
         type = type if isinstance(type, RecordType) else RecordType(type)
     if text_splitter:

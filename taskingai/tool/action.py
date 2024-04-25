@@ -24,6 +24,7 @@ __all__ = [
 
 
 def list_actions(
+    *,
     order: str = "desc",
     limit: int = 20,
     after: Optional[str] = None,
@@ -53,6 +54,7 @@ def list_actions(
 
 
 async def a_list_actions(
+    *,
     order: str = "desc",
     limit: int = 20,
     after: Optional[str] = None,
@@ -104,6 +106,7 @@ async def a_get_action(action_id: str) -> Action:
 
 
 def bulk_create_actions(
+    *,
     openapi_schema: Dict,
     authentication: Optional[Union[ActionAuthentication, Dict[str, Any]]] = None,
 ) -> List[Action]:
@@ -130,6 +133,7 @@ def bulk_create_actions(
 
 
 async def a_bulk_create_actions(
+    *,
     openapi_schema: Dict,
     authentication: Optional[Union[ActionAuthentication, Dict[str, Any]]] = None,
 ) -> List[Action]:
@@ -157,6 +161,7 @@ async def a_bulk_create_actions(
 
 def update_action(
     action_id: str,
+    *,
     openapi_schema: Optional[Dict] = None,
     authentication: Optional[Union[ActionAuthentication, Dict[str, Any]]] = None,
 ) -> Action:
@@ -184,6 +189,7 @@ def update_action(
 
 async def a_update_action(
     action_id: str,
+    *,
     openapi_schema: Optional[Dict] = None,
     authentication: Optional[Union[ActionAuthentication, Dict[str, Any]]] = None,
 ) -> Action:
@@ -231,6 +237,7 @@ async def a_delete_action(action_id: str) -> None:
 
 def run_action(
     action_id: str,
+    *,
     parameters: Dict,
 ) -> Dict:
     """
@@ -251,6 +258,7 @@ def run_action(
 
 async def a_run_action(
     action_id: str,
+    *,
     parameters: Dict,
 ) -> Dict:
     """

@@ -3,6 +3,7 @@ from . import assistant
 from . import tool
 from . import retrieval
 from . import inference
+from . import file
 from ._version import __version__
 
 __all__ = [
