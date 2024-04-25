@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict, Union
+from typing import Any, Optional, List, Dict, Union
 from ..client.stream import Stream, AsyncStream
 
 from taskingai.client.models import *
@@ -44,12 +44,35 @@ class FunctionMessage(ChatCompletionFunctionMessage):
         super().__init__(role=ChatCompletionRole.FUNCTION, id=id, content=content)
 
 
+def _get_completion_dict_params(
+    messages: List[Union[SystemMessage, UserMessage, AssistantMessage, FunctionMessage, Dict[str, Any]]],
+    functions: Optional[List[Union[Function, Dict[str, Any]]]] = None,
+):
+    def _build_message(message: Union[SystemMessage, UserMessage, AssistantMessage, FunctionMessage, Dict[str, Any]]):
+        if isinstance(message, Dict):
+            if message["role"] == ChatCompletionRole.SYSTEM.value:
+                return SystemMessage(**message)
+            if message["role"] == ChatCompletionRole.USER.value:
+                return UserMessage(**message)
+            if message["role"] == ChatCompletionRole.ASSISTANT.value:
+                return AssistantMessage(**message)
+            if message["role"] == ChatCompletionRole.FUNCTION.value:
+                return FunctionMessage(**message)
+        return message
+
+    messages = [_build_message(message) for message in messages]
+    functions = [
+        function if isinstance(function, Function) else Function(**function) for function in (functions or [])
+    ] or None
+    return messages, functions
+
+
 def chat_completion(
     model_id: str,
-    messages: List[Union[SystemMessage, UserMessage, AssistantMessage, FunctionMessage]],
+    messages: List[Union[SystemMessage, UserMessage, AssistantMessage, FunctionMessage, Dict[str, Any]]],
     configs: Optional[Dict] = None,
     function_call: Optional[str] = None,
-    functions: Optional[List[Function]] = None,
+    functions: Optional[List[Union[Function, Dict[str, Any]]]] = None,
     stream: bool = False,
 ) -> Union[ChatCompletion, Stream]:
     """
@@ -63,6 +86,9 @@ def chat_completion(
     :param stream: Whether to request in stream mode.
     :return: The list of assistants.
     """
+
+    messages, functions = _get_completion_dict_params(messages, functions)
+
     # only add non-None parameters
     body = ChatCompletionRequest(
         model_id=model_id,
@@ -82,10 +108,10 @@ def chat_completion(
 
 async def a_chat_completion(
     model_id: str,
-    messages: List[Union[SystemMessage, UserMessage, AssistantMessage, FunctionMessage]],
+    messages: List[Union[SystemMessage, UserMessage, AssistantMessage, FunctionMessage, Dict[str, Any]]],
     configs: Optional[Dict] = None,
     function_call: Optional[str] = None,
-    functions: Optional[List[Function]] = None,
+    functions: Optional[List[Union[Function, Dict[str, Any]]]] = None,
     stream: bool = False,
 ) -> Union[ChatCompletion, AsyncStream]:
     """
@@ -99,6 +125,9 @@ async def a_chat_completion(
     :param stream: Whether to request in stream mode.
     :return: The list of assistants.
     """
+
+    messages, functions = _get_completion_dict_params(messages, functions)
+
     # only add non-None parameters
     body = ChatCompletionRequest(
         model_id=model_id,
