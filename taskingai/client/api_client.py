@@ -8,7 +8,6 @@ from __future__ import absolute_import
 
 import datetime
 import json
-import mimetypes
 import os
 import re
 import tempfile
@@ -100,32 +99,6 @@ class BaseApiClient(object):
             data = response.data
 
         return response_type(**data)
-
-    def prepare_post_parameters(self, post_params=None, files=None):
-        """Builds form parameters.
-
-        :param post_params: Normal form parameters.
-        :param files: File parameters.
-        :return: Form parameters with files.
-        """
-        params = []
-
-        if post_params:
-            params = post_params
-
-        if files:
-            for k, v in six.iteritems(files):
-                if not v:
-                    continue
-                file_names = v if type(v) is list else [v]
-                for n in file_names:
-                    with open(n, "rb") as f:
-                        filename = os.path.basename(f.name)
-                        filedata = f.read()
-                        mimetype = mimetypes.guess_type(filename)[0] or "application/octet-stream"
-                        params.append(tuple([k, tuple([filename, filedata, mimetype])]))
-
-        return params
 
     def select_header_accept(self, accepts):
         """Returns `Accept` based on an array of accepts provided.
@@ -252,10 +225,6 @@ class SyncApiClient(BaseApiClient):
                 # specified safe chars, encode everything
                 resource_path = resource_path.replace("{%s}" % k, quote(str(v), safe=config.safe_chars_for_path_param))
 
-        # post parameters
-        if post_params or files:
-            post_params = self.prepare_post_parameters(post_params, files)
-
         # auth setting
         self.update_params_for_auth(header_params, query_params, auth_settings)
 
@@ -272,6 +241,7 @@ class SyncApiClient(BaseApiClient):
             query_params=query_params,
             headers=header_params,
             post_params=post_params,
+            files=files,
             body=body,
             _preload_content=_preload_content,
             _request_timeout=_request_timeout,
@@ -367,6 +337,7 @@ class SyncApiClient(BaseApiClient):
         query_params=None,
         headers=None,
         post_params=None,
+        files=None,
         body=None,
         _preload_content=True,
         _request_timeout=None,
@@ -408,6 +379,7 @@ class SyncApiClient(BaseApiClient):
                 query_params=query_params,
                 headers=headers,
                 post_params=post_params,
+                files=files,
                 _preload_content=_preload_content,
                 _request_timeout=_request_timeout,
                 body=body,
@@ -419,6 +391,7 @@ class SyncApiClient(BaseApiClient):
                 query_params=query_params,
                 headers=headers,
                 post_params=post_params,
+                files=files,
                 _preload_content=_preload_content,
                 _request_timeout=_request_timeout,
                 body=body,
@@ -430,6 +403,7 @@ class SyncApiClient(BaseApiClient):
                 query_params=query_params,
                 headers=headers,
                 post_params=post_params,
+                files=files,
                 _preload_content=_preload_content,
                 _request_timeout=_request_timeout,
                 body=body,
@@ -489,10 +463,6 @@ class AsyncApiClient(BaseApiClient):
                 # specified safe chars, encode everything
                 resource_path = resource_path.replace("{%s}" % k, quote(str(v), safe=config.safe_chars_for_path_param))
 
-        # post parameters
-        if post_params or files:
-            post_params = self.prepare_post_parameters(post_params, files)
-
         # auth setting
         self.update_params_for_auth(header_params, query_params, auth_settings)
 
@@ -509,6 +479,7 @@ class AsyncApiClient(BaseApiClient):
             query_params=query_params,
             headers=header_params,
             post_params=post_params,
+            files=files,
             body=body,
             _preload_content=_preload_content,
             _request_timeout=_request_timeout,
@@ -601,6 +572,7 @@ class AsyncApiClient(BaseApiClient):
         query_params=None,
         headers=None,
         post_params=None,
+        files=None,
         body=None,
         _preload_content=True,
         _request_timeout=None,
@@ -642,6 +614,7 @@ class AsyncApiClient(BaseApiClient):
                 query_params=query_params,
                 headers=headers,
                 post_params=post_params,
+                files=files,
                 _preload_content=_preload_content,
                 _request_timeout=_request_timeout,
                 body=body,
@@ -653,6 +626,7 @@ class AsyncApiClient(BaseApiClient):
                 query_params=query_params,
                 headers=headers,
                 post_params=post_params,
+                files=files,
                 _preload_content=_preload_content,
                 _request_timeout=_request_timeout,
                 body=body,
@@ -664,6 +638,7 @@ class AsyncApiClient(BaseApiClient):
                 query_params=query_params,
                 headers=headers,
                 post_params=post_params,
+                files=files,
                 _preload_content=_preload_content,
                 _request_timeout=_request_timeout,
                 body=body,

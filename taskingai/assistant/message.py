@@ -24,6 +24,7 @@ __all__ = [
 def list_messages(
     assistant_id: str,
     chat_id: str,
+    *,
     order: str = "desc",
     limit: int = 20,
     after: Optional[str] = None,
@@ -61,6 +62,7 @@ def list_messages(
 async def a_list_messages(
     assistant_id: str,
     chat_id: str,
+    *,
     order: str = "desc",
     limit: int = 20,
     after: Optional[str] = None,
@@ -132,6 +134,7 @@ async def a_get_message(assistant_id: str, chat_id: str, message_id: str) -> Mes
 def create_message(
     assistant_id: str,
     chat_id: str,
+    *,
     text: str,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Message:
@@ -157,6 +160,7 @@ def create_message(
 async def a_create_message(
     assistant_id: str,
     chat_id: str,
+    *,
     text: str,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Message:
@@ -185,12 +189,14 @@ def update_message(
     assistant_id: str,
     chat_id: str,
     message_id: str,
+    *,
     metadata: Dict[str, str],
 ) -> Message:
     """
     Update a message.
 
     :param assistant_id: The ID of the assistant.
+    :param chat_id: The ID of the chat.
     :param message_id: The ID of the message.
     :param metadata: The assistant metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The updated message object.
@@ -209,12 +215,14 @@ async def a_update_message(
     assistant_id: str,
     chat_id: str,
     message_id: str,
+    *,
     metadata: Dict[str, str],
 ) -> Message:
     """
     Update a message in async mode.
 
     :param assistant_id: The ID of the assistant.
+    :param chat_id: The ID of the chat.
     :param message_id: The ID of the message.
     :param metadata: The assistant metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The updated message object.
@@ -232,6 +240,7 @@ async def a_update_message(
 def generate_message(
     assistant_id: str,
     chat_id: str,
+    *,
     system_prompt_variables: Optional[Dict] = None,
     stream: bool = False,
 ) -> Union[Message, Stream]:
@@ -267,6 +276,7 @@ def generate_message(
 async def a_generate_message(
     assistant_id: str,
     chat_id: str,
+    *,
     system_prompt_variables: Optional[Dict] = None,
     stream: bool = False,
 ) -> Union[Message, AsyncStream]:

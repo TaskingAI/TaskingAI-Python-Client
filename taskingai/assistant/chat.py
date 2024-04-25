@@ -20,6 +20,7 @@ __all__ = [
 
 def list_chats(
     assistant_id: str,
+    *,
     order: str = "desc",
     limit: int = 20,
     after: Optional[str] = None,
@@ -53,6 +54,7 @@ def list_chats(
 
 async def a_list_chats(
     assistant_id: str,
+    *,
     order: str = "desc",
     limit: int = 20,
     after: Optional[str] = None,
@@ -116,7 +118,8 @@ async def a_get_chat(assistant_id: str, chat_id: str) -> Chat:
 
 def create_chat(
     assistant_id: str,
-    name: str,
+    *,
+    name: Optional[str] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Chat:
     """
@@ -129,7 +132,7 @@ def create_chat(
     """
 
     body = ChatCreateRequest(
-        name=name,
+        name=name or "",
         metadata=metadata or {},
     )
     response: ChatCreateResponse = api_create_chat(assistant_id=assistant_id, payload=body)
@@ -138,7 +141,8 @@ def create_chat(
 
 async def a_create_chat(
     assistant_id: str,
-    name: str,
+    *,
+    name: Optional[str] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Chat:
     """
@@ -151,7 +155,7 @@ async def a_create_chat(
     """
 
     body = ChatCreateRequest(
-        name=name,
+        name=name or "",
         metadata=metadata or {},
     )
     response: ChatCreateResponse = await async_api_create_chat(assistant_id=assistant_id, payload=body)
@@ -161,6 +165,7 @@ async def a_create_chat(
 def update_chat(
     assistant_id: str,
     chat_id: str,
+    *,
     name: Optional[str] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Chat:
@@ -185,6 +190,7 @@ def update_chat(
 async def a_update_chat(
     assistant_id: str,
     chat_id: str,
+    *,
     name: Optional[str] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Chat:

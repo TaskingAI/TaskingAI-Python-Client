@@ -56,6 +56,7 @@ def _get_assistant_dict_params(
 
 
 def list_assistants(
+    *,
     order: str = "desc",
     limit: int = 20,
     after: Optional[str] = None,
@@ -87,13 +88,14 @@ def list_assistants(
 
 
 async def a_list_assistants(
+    *,
     order: str = "desc",
     limit: int = 20,
     after: Optional[str] = None,
     before: Optional[str] = None,
 ) -> List[Assistant]:
     """
-    List assistants.
+    List assistants in async mode.
 
     :param order: The order of the assistants. It can be "asc" or "desc".
     :param limit: The maximum number of assistants to return.
@@ -139,6 +141,7 @@ async def a_get_assistant(assistant_id: str) -> Assistant:
 
 
 def create_assistant(
+    *,
     model_id: str,
     memory: Union[AssistantMemory, Dict[str, Any]],
     name: Optional[str] = None,
@@ -159,6 +162,7 @@ def create_assistant(
     :param system_prompt_template: A list of system prompt chunks where prompt variables are wrapped by curly brackets, e.g. {{variable}}.
     :param tools: The assistant tools.
     :param retrievals: The assistant retrievals.
+    :param retrieval_configs: The assistant retrieval configurations.
     :param metadata: The assistant metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The created assistant object.
     """
@@ -182,6 +186,7 @@ def create_assistant(
 
 
 async def a_create_assistant(
+    *,
     model_id: str,
     memory: Union[AssistantMemory, Dict[str, Any]],
     name: Optional[str] = None,
@@ -202,6 +207,7 @@ async def a_create_assistant(
     :param system_prompt_template: A list of system prompt chunks where prompt variables are wrapped by curly brackets, e.g. {{variable}}.
     :param tools: The assistant tools.
     :param retrievals: The assistant retrievals.
+    :param retrieval_configs: The assistant retrieval configurations.
     :param metadata: The assistant metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The created assistant object.
     """
@@ -226,6 +232,7 @@ async def a_create_assistant(
 
 def update_assistant(
     assistant_id: str,
+    *,
     model_id: Optional[str] = None,
     name: Optional[str] = None,
     description: Optional[str] = None,
@@ -247,6 +254,7 @@ def update_assistant(
     :param memory: The assistant memory.
     :param tools: The assistant tools.
     :param retrievals: The assistant retrievals.
+    :param retrieval_configs: The assistant retrieval configurations.
     :param metadata: The assistant metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The updated assistant object.
     """
@@ -272,6 +280,7 @@ def update_assistant(
 
 async def a_update_assistant(
     assistant_id: str,
+    *,
     model_id: Optional[str] = None,
     name: Optional[str] = None,
     description: Optional[str] = None,
@@ -293,6 +302,7 @@ async def a_update_assistant(
     :param memory: The assistant memory.
     :param tools: The assistant tools.
     :param retrievals: The assistant retrievals.
+    :param retrieval_configs: The assistant retrieval configurations.
     :param metadata: The assistant metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The updated assistant object.
     """

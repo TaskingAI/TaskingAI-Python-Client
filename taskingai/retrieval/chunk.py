@@ -22,6 +22,7 @@ __all__ = [
 
 def list_chunks(
     collection_id: str,
+    *,
     order: str = "desc",
     limit: int = 20,
     after: Optional[str] = None,
@@ -54,6 +55,7 @@ def list_chunks(
 
 async def a_list_chunks(
     collection_id: str,
+    *,
     order: str = "desc",
     limit: int = 20,
     after: Optional[str] = None,
@@ -115,6 +117,7 @@ async def a_get_chunk(collection_id: str, chunk_id: str) -> Chunk:
 
 def create_chunk(
     collection_id: str,
+    *,
     content: str,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Chunk:
@@ -137,6 +140,7 @@ def create_chunk(
 
 async def a_create_chunk(
     collection_id: str,
+    *,
     content: str,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Chunk:
@@ -160,6 +164,7 @@ async def a_create_chunk(
 def update_chunk(
     collection_id: str,
     chunk_id: str,
+    *,
     content: Optional[str] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Chunk:
@@ -185,6 +190,7 @@ def update_chunk(
 async def a_update_chunk(
     collection_id: str,
     chunk_id: str,
+    *,
     content: Optional[str] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Chunk:
@@ -239,6 +245,7 @@ async def a_delete_chunk(
 
 def query_chunks(
     collection_id: str,
+    *,
     query_text: str,
     top_k: int = 3,
     max_tokens: Optional[int] = None,
@@ -266,6 +273,7 @@ def query_chunks(
 
 async def a_query_chunks(
     collection_id: str,
+    *,
     query_text: str,
     top_k: int = 3,
     max_tokens: Optional[int] = None,

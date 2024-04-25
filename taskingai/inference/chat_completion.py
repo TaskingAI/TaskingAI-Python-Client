@@ -44,31 +44,59 @@ class FunctionMessage(ChatCompletionFunctionMessage):
         super().__init__(role=ChatCompletionRole.FUNCTION, id=id, content=content)
 
 
-def _get_completion_dict_params(
+def _validate_chat_completion_params(
     messages: List[Union[SystemMessage, UserMessage, AssistantMessage, FunctionMessage, Dict[str, Any]]],
     functions: Optional[List[Union[Function, Dict[str, Any]]]] = None,
 ):
-    def _build_message(message: Union[SystemMessage, UserMessage, AssistantMessage, FunctionMessage, Dict[str, Any]]):
-        if isinstance(message, Dict):
-            if message["role"] == ChatCompletionRole.SYSTEM.value:
-                return SystemMessage(**message)
-            if message["role"] == ChatCompletionRole.USER.value:
-                return UserMessage(**message)
-            if message["role"] == ChatCompletionRole.ASSISTANT.value:
-                return AssistantMessage(**message)
-            if message["role"] == ChatCompletionRole.FUNCTION.value:
-                return FunctionMessage(**message)
-        return message
+    """
+    Get the completion dictionary parameters.
 
-    messages = [_build_message(message) for message in messages]
-    functions = [
-        function if isinstance(function, Function) else Function(**function) for function in (functions or [])
-    ] or None
+    :param messages: The list of messages. Each message can be a dictionary or an instance of a message class.
+    :param functions: The list of functions.
+    :return: The list of messages and functions.
+    """
+
+    def _validate_message(msg: Union[SystemMessage, UserMessage, AssistantMessage, FunctionMessage, Dict[str, Any]]):
+        if isinstance(msg, Dict):
+            if msg["role"] == ChatCompletionRole.SYSTEM.value:
+                return SystemMessage(**msg)
+            elif msg["role"] == ChatCompletionRole.USER.value:
+                return UserMessage(**msg)
+            elif msg["role"] == ChatCompletionRole.ASSISTANT.value:
+                return AssistantMessage(**msg)
+            elif msg["role"] == ChatCompletionRole.FUNCTION.value:
+                return FunctionMessage(**msg)
+            else:
+                raise ValueError("Invalid message role.")
+
+        elif (
+            isinstance(msg, SystemMessage)
+            or isinstance(msg, UserMessage)
+            or isinstance(msg, AssistantMessage)
+            or isinstance(msg, FunctionMessage)
+        ):
+            return msg
+
+        raise ValueError("Invalid message type.")
+
+    def _validate_function(func: Union[Function, Dict[str, Any]]):
+        if isinstance(func, Dict):
+            return Function(**func)
+        elif isinstance(func, Function):
+            return func
+        raise ValueError("Invalid function type.")
+
+    if not messages:
+        raise ValueError("Messages cannot be empty.")
+    messages = [_validate_message(msg) for msg in messages]
+    if functions:
+        functions = [_validate_function(func) for func in functions]
     return messages, functions
 
 
 def chat_completion(
     model_id: str,
+    *,
     messages: List[Union[SystemMessage, UserMessage, AssistantMessage, FunctionMessage, Dict[str, Any]]],
     configs: Optional[Dict] = None,
     function_call: Optional[str] = None,
@@ -79,15 +107,15 @@ def chat_completion(
     Chat completion model inference.
 
     :param model_id: The ID of the model.
-    :param messages: The list of messages.
-    :param configs: The configurations.
-    :param function_call: The function call.
+    :param messages: The list of messages. Each message can be a dictionary or an instance of a message class: SystemMessage, UserMessage, AssistantMessage, FunctionMessage.
+    :param configs: The model configurations.
+    :param function_call: Controls whether a specific function is invoked by the model. If set to 'none', the model will generate a message without calling a function. If set to 'auto', the model can choose between generating a message or calling a function. Defining a specific function using {'name': 'my_function'} instructs the model to call that particular function. By default, 'none' is selected when there are no chat_completion_functions available, and 'auto' is selected when one or more chat_completion_functions are present.
     :param functions: The list of functions.
-    :param stream: Whether to request in stream mode.
+    :param stream: Indicates whether the response should be streamed. If set to True, the response will be streamed using Server-Sent Events (SSE).
     :return: The list of assistants.
     """
 
-    messages, functions = _get_completion_dict_params(messages, functions)
+    messages, functions = _validate_chat_completion_params(messages, functions)
 
     # only add non-None parameters
     body = ChatCompletionRequest(
@@ -108,6 +136,7 @@ def chat_completion(
 
 async def a_chat_completion(
     model_id: str,
+    *,
     messages: List[Union[SystemMessage, UserMessage, AssistantMessage, FunctionMessage, Dict[str, Any]]],
     configs: Optional[Dict] = None,
     function_call: Optional[str] = None,
@@ -118,15 +147,15 @@ async def a_chat_completion(
     Chat completion model inference in async mode.
 
     :param model_id: The ID of the model.
-    :param messages: The list of messages.
-    :param configs: The configurations.
-    :param function_call: The function call.
+    :param messages: The list of messages. Each message can be a dictionary or an instance of a message class: SystemMessage, UserMessage, AssistantMessage, FunctionMessage.
+    :param configs: The model configurations.
+    :param function_call: Controls whether a specific function is invoked by the model. If set to 'none', the model will generate a message without calling a function. If set to 'auto', the model can choose between generating a message or calling a function. Defining a specific function using {'name': 'my_function'} instructs the model to call that particular function. By default, 'none' is selected when there are no chat_completion_functions available, and 'auto' is selected when one or more chat_completion_functions are present.
     :param functions: The list of functions.
-    :param stream: Whether to request in stream mode.
+    :param stream: Indicates whether the response should be streamed. If set to True, the response will be streamed using Server-Sent Events (SSE).
     :return: The list of assistants.
     """
 
-    messages, functions = _get_completion_dict_params(messages, functions)
+    messages, functions = _validate_chat_completion_params(messages, functions)
 
     # only add non-None parameters
     body = ChatCompletionRequest(
