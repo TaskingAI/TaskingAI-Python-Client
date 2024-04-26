@@ -2,7 +2,7 @@ import pytest
 
 from taskingai.assistant import *
 from taskingai.client.models import ToolRef, ToolType, RetrievalRef, RetrievalType, RetrievalConfig
-from taskingai.assistant.memory import AssistantNaiveMemory
+from taskingai.assistant.memory import AssistantNaiveMemory, AssistantZeroMemory
 from test.config import Config
 from test.common.logger import logger
 from test.common.utils import assume_assistant_result, assume_chat_result, assume_message_result
@@ -10,16 +10,6 @@ from test.common.utils import assume_assistant_result, assume_chat_result, assum
 
 @pytest.mark.test_sync
 class TestAssistant:
-
-    retrieval_configs_list = [
-         {"method": "memory", "top_k": 2, "max_tokens": 4000},
-         RetrievalConfig(
-                        method="memory",
-                        top_k=1,
-                        max_tokens=5000,
-
-         )
-        ]
 
     @pytest.mark.run(order=51)
     def test_create_assistant(self, collection_id, action_id):
@@ -58,7 +48,10 @@ class TestAssistant:
         }
         for i in range(4):
             if i == 0:
+                assistant_dict.update({"memory": {"type": "naive"}})
+                assistant_dict.update({"retrievals": [{"type": "collection", "id": collection_id}]})
                 assistant_dict.update({"retrieval_configs": {"method": "memory", "top_k": 2, "max_tokens": 4000}})
+                assistant_dict.update({"tools": [{"type": "action", "id": action_id}, {"type": "plugin", "id": "open_weather/get_hourly_forecast"}]})
 
             res = create_assistant(**assistant_dict)
             res_dict = vars(res)
@@ -99,22 +92,55 @@ class TestAssistant:
         pytest.assume(res_dict["assistant_id"] == assistant_id)
 
     @pytest.mark.run(order=54)
-    @pytest.mark.parametrize("retrieval_configs", retrieval_configs_list)
-    def test_update_assistant(self, assistant_id, retrieval_configs):
+    def test_update_assistant(self, collection_id, action_id, assistant_id):
 
         # Update an assistant.
 
-        name = "openai"
-        description = "test for openai"
+        update_data_list = [
+            {
+                "name": "openai",
+                "description": "test for openai",
+                "memory": AssistantZeroMemory(),
+                "retrievals": [
+                    RetrievalRef(
+                        type=RetrievalType.COLLECTION,
+                        id=collection_id,
+                    ),
+                ],
+                "retrieval_configs": RetrievalConfig(
+                    method="memory",
+                    top_k=2,
+                    max_tokens=4000,
 
-        res = update_assistant(assistant_id=assistant_id, name=name, description=description, retrieval_configs=retrieval_configs)
-        res_dict = vars(res)
-        pytest.assume(res_dict["name"] == name)
-        pytest.assume(res_dict["description"] == description)
-        if isinstance(retrieval_configs, dict):
-            pytest.assume(vars(res_dict["retrieval_configs"]) == retrieval_configs)
-        else:
-            pytest.assume(res_dict["retrieval_configs"] == retrieval_configs)
+                ),
+                "tools": [
+                    ToolRef(
+                        type=ToolType.ACTION,
+                        id=action_id,
+                    ),
+                    ToolRef(
+                        type=ToolType.PLUGIN,
+                        id="open_weather/get_hourly_forecast",
+                    )
+                ]
+            },
+            {
+                "name": "openai",
+                "description": "test for openai",
+                "memory": {"type": "naive"},
+                "retrievals": [{"type": "collection", "id": collection_id}],
+                "retrieval_configs": {"method": "memory", "top_k": 2, "max_tokens": 4000},
+                "tools": [{"type": "action", "id": action_id}, {"type": "plugin", "id": "open_weather/get_hourly_forecast"}]
+
+            }
+        ]
+
+        for update_data in update_data_list:
+
+            res = update_assistant(assistant_id=assistant_id, **update_data)
+            res_dict = vars(res)
+            logger.info(f'response_dict:{res_dict}, except_dict:{update_data}')
+            assume_assistant_result(update_data, res_dict)
 
     @pytest.mark.run(order=66)
     def test_delete_assistant(self):

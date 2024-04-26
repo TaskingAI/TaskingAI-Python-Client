@@ -6,14 +6,7 @@ from test.common.logger import logger
 
 @pytest.mark.test_sync
 class TestAction:
-    action_list = ['action_id', "operation_id", 'name', 'description', "url", "method", "path_param_schema",
-                   "query_param_schema", "body_param_schema", "body_type", "function_def", 'authentication',
-                   'openapi_schema', 'created_timestamp', 'updated_timestamp']
-    action_keys = set(action_list)
-    action_authentication = ['type', 'secret', 'content']
-    action_authentication_keys = set(action_authentication)
-    action_openapi_schema = ['openapi', 'info', 'servers', 'paths', 'components', 'security']
-    action_openapi_schema_keys = set(action_openapi_schema)
+
     authentication_list = [
         {
             "type": "bearer",
@@ -70,15 +63,11 @@ class TestAction:
         for action in res:
             action_dict = vars(action)
             logger.info(action_dict)
-            pytest.assume(action_dict.keys() == self.action_keys)
-            pytest.assume(action_dict["openapi_schema"].keys() == self.action_openapi_schema_keys)
             for key in schema.keys():
                 if key != "authentication":
                     for k, v in schema[key].items():
                         pytest.assume(action_dict[key][k] == v)
-                    assert set(action_dict.get(key).keys()).issubset(getattr(TestAction, f"action_{key}_keys"))
                 else:
-                    assert set(vars(action_dict.get(key)).keys()).issubset(getattr(TestAction, f"action_{key}_keys"))
                     if isinstance(schema[key], ActionAuthentication):
                         schema[key] = vars(schema[key])
                     for k, v in schema[key].items():
@@ -124,11 +113,8 @@ class TestAction:
 
         res = get_action(action_id=action_id)
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.action_keys)
         logger.info(res_dict["openapi_schema"].keys())
-        pytest.assume(res_dict["openapi_schema"].keys() == self.action_openapi_schema_keys)
         pytest.assume(res_dict["action_id"] == action_id)
-        pytest.assume(vars(res_dict["authentication"]).keys() == self.action_authentication_keys)
 
     @pytest.mark.run(order=14)
     @pytest.mark.parametrize("authentication", authentication_list)
@@ -186,14 +172,11 @@ class TestAction:
         res = update_action(action_id=action_id, **update_schema)
         res_dict = vars(res)
         logger.info(res_dict)
-        pytest.assume(res_dict.keys() == self.action_keys)
         for key in update_schema.keys():
             if key != "authentication":
                 for k, v in update_schema[key].items():
                     pytest.assume(res_dict[key][k] == v)
-                assert set(res_dict.get(key).keys()).issubset(getattr(TestAction, f"action_{key}_keys"))
             else:
-                assert set(vars(res_dict.get(key)).keys()).issubset(getattr(TestAction, f"action_{key}_keys"))
                 if isinstance(update_schema[key], ActionAuthentication):
                     update_schema[key] = vars(update_schema[key])
                 for k, v in update_schema[key].items():

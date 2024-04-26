@@ -59,21 +59,25 @@ def _validate_chat_completion_params(
     def _validate_message(msg: Union[SystemMessage, UserMessage, AssistantMessage, FunctionMessage, Dict[str, Any]]):
         if isinstance(msg, Dict):
             if msg["role"] == ChatCompletionRole.SYSTEM.value:
+                msg.pop("role")
                 return SystemMessage(**msg)
             elif msg["role"] == ChatCompletionRole.USER.value:
+                msg.pop("role")
                 return UserMessage(**msg)
             elif msg["role"] == ChatCompletionRole.ASSISTANT.value:
+                msg.pop("role")
                 return AssistantMessage(**msg)
             elif msg["role"] == ChatCompletionRole.FUNCTION.value:
+                msg.pop("role")
                 return FunctionMessage(**msg)
             else:
                 raise ValueError("Invalid message role.")
 
         elif (
-            isinstance(msg, SystemMessage)
-            or isinstance(msg, UserMessage)
-            or isinstance(msg, AssistantMessage)
-            or isinstance(msg, FunctionMessage)
+            isinstance(msg, ChatCompletionSystemMessage)
+            or isinstance(msg, ChatCompletionUserMessage)
+            or isinstance(msg, ChatCompletionAssistantMessage)
+            or isinstance(msg, ChatCompletionFunctionMessage)
         ):
             return msg
 

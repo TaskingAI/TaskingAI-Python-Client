@@ -2,7 +2,7 @@ import pytest
 
 from taskingai.assistant import *
 from taskingai.client.models import ToolRef, ToolType, RetrievalRef, RetrievalType, RetrievalConfig
-from taskingai.assistant.memory import AssistantNaiveMemory
+from taskingai.assistant.memory import AssistantNaiveMemory, AssistantZeroMemory
 from test.config import Config
 from test.common.logger import logger
 from test.common.utils import list_to_dict
@@ -12,16 +12,6 @@ from test.testcase.test_async import Base
 
 @pytest.mark.test_async
 class TestAssistant(Base):
-
-    retrieval_configs_list = [
-       {"method": "memory", "top_k": 2, "max_tokens": 4000},
-       RetrievalConfig(
-            method="memory",
-            top_k=1,
-            max_tokens=5000,
-
-        )
-    ]
 
     @pytest.mark.run(order=51)
     @pytest.mark.asyncio
@@ -62,7 +52,11 @@ class TestAssistant(Base):
         }
         for i in range(4):
             if i == 0:
+                assistant_dict.update({"memory": {"type": "naive"}})
+                assistant_dict.update({"retrievals": [{"type": "collection", "id": self.collection_id}]})
                 assistant_dict.update({"retrieval_configs": {"method": "memory", "top_k": 2, "max_tokens": 4000}})
+                assistant_dict.update({"tools": [{"type": "action", "id": self.action_id},
+                                                 {"type": "plugin", "id": "open_weather/get_hourly_forecast"}]})
             res = await a_create_assistant(**assistant_dict)
             res_dict = vars(res)
             logger.info(f'response_dict:{res_dict}, except_dict:{assistant_dict}')
@@ -106,22 +100,54 @@ class TestAssistant(Base):
 
     @pytest.mark.run(order=54)
     @pytest.mark.asyncio
-    @pytest.mark.parametrize("retrieval_configs", retrieval_configs_list)
-    async def test_a_update_assistant(self, retrieval_configs):
+    async def test_a_update_assistant(self):
 
         # Update an assistant.
 
-        name = "openai"
-        description = "test for openai"
+        update_data_list = [
+            {
+                "name": "openai",
+                "description": "test for openai",
+                "memory": AssistantZeroMemory(),
+                "retrievals": [
+                    RetrievalRef(
+                        type=RetrievalType.COLLECTION,
+                        id=self.collection_id,
+                    ),
+                ],
+                "retrieval_configs": RetrievalConfig(
+                    method="memory",
+                    top_k=2,
+                    max_tokens=4000,
 
-        res = await a_update_assistant(assistant_id=self.assistant_id, name=name, description=description, retrieval_configs=retrieval_configs)
-        res_dict = vars(res)
-        pytest.assume(res_dict["name"] == name)
-        pytest.assume(res_dict["description"] == description)
-        if isinstance(retrieval_configs, dict):
-            pytest.assume(vars(res_dict["retrieval_configs"]) == retrieval_configs)
-        else:
-            pytest.assume(res_dict["retrieval_configs"] == retrieval_configs)
+                ),
+                "tools": [
+                    ToolRef(
+                        type=ToolType.ACTION,
+                        id=self.action_id,
+                    ),
+                    ToolRef(
+                        type=ToolType.PLUGIN,
+                        id="open_weather/get_hourly_forecast",
+                    )
+                ]
+            },
+            {
+                "name": "openai",
+                "description": "test for openai",
+                "memory": {"type": "naive"},
+                "retrievals": [{"type": "collection", "id": self.collection_id}],
+                "retrieval_configs": {"method": "memory", "top_k": 2, "max_tokens": 4000},
+                "tools": [{"type": "action", "id": self.action_id},
+                          {"type": "plugin", "id": "open_weather/get_hourly_forecast"}]
+
+            }
+        ]
+        for update_data in update_data_list:
+            res = await a_update_assistant(assistant_id=self.assistant_id, **update_data)
+            res_dict = vars(res)
+            logger.info(f'response_dict:{res_dict}, except_dict:{update_data}')
+            assume_assistant_result(update_data, res_dict)
 
     @pytest.mark.run(order=66)
     @pytest.mark.asyncio
