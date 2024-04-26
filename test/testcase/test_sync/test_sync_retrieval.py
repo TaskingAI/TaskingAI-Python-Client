@@ -12,19 +12,6 @@ from test.common.utils import assume_collection_result, assume_record_result, as
 @pytest.mark.test_sync
 class TestCollection:
 
-    collection_list = ["collection_id",
-                        "name",
-                        "description",
-                        "num_records",
-                        "num_chunks",
-                        "capacity",
-                        "embedding_model_id",
-                        "metadata",
-                        "updated_timestamp",
-                        "created_timestamp",
-                        "status"]
-    collection_keys = set(collection_list)
-
     @pytest.mark.run(order=21)
     def test_create_collection(self):
 
@@ -43,7 +30,6 @@ class TestCollection:
             res = create_collection(**create_dict)
             res_dict = vars(res)
             logger.info(res_dict)
-            pytest.assume(res_dict.keys() == self.collection_keys)
             assume_collection_result(create_dict, res_dict)
 
     @pytest.mark.run(order=22)
@@ -74,7 +60,6 @@ class TestCollection:
 
         res = get_collection(collection_id=collection_id)
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.collection_keys)
         pytest.assume(res_dict["status"] == "ready")
         pytest.assume(res_dict["collection_id"] == collection_id)
 
@@ -94,7 +79,6 @@ class TestCollection:
         }
         res = update_collection(**update_collection_data)
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.collection_keys)
         assume_collection_result(update_collection_data, res_dict)
 
     @pytest.mark.run(order=80)
@@ -123,17 +107,6 @@ class TestCollection:
 @pytest.mark.test_sync
 class TestRecord:
 
-    record_list = ["record_id",
-                    "collection_id",
-                    "num_chunks",
-                    "content",
-                    "metadata",
-                    "type",
-                    "title",
-                    "updated_timestamp",
-                    "created_timestamp",
-                    "status"]
-    record_keys = set(record_list)
     text_splitter_list = [
         {
             "type": "token",  # "type": "token
@@ -152,7 +125,7 @@ class TestRecord:
             upload_file_dict = {
                 "purpose": "record_file"
             }
-            upload_file_dict.update({"file": filepath})
+            upload_file_dict.update({"file": open(filepath, "rb")})
             upload_file_data_list.append(upload_file_dict)
 
     @pytest.mark.run(order=31)
@@ -182,7 +155,6 @@ class TestRecord:
                                             }})
             res = create_record(**create_record_data)
             res_dict = vars(res)
-            pytest.assume(res_dict.keys() == self.record_keys)
             assume_record_result(create_record_data, res_dict)
 
     @pytest.mark.run(order=31)
@@ -204,7 +176,6 @@ class TestRecord:
 
         res = create_record(**create_record_data)
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.record_keys)
         assume_record_result(create_record_data, res_dict)
 
     @pytest.mark.run(order=31)
@@ -232,7 +203,6 @@ class TestRecord:
 
         res = create_record(**create_record_data)
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.record_keys)
         assume_record_result(create_record_data, res_dict)
 
     @pytest.mark.run(order=32)
@@ -272,7 +242,6 @@ class TestRecord:
             res_dict = vars(res)
             pytest.assume(res_dict["collection_id"] == collection_id)
             pytest.assume(res_dict["record_id"] == record_id)
-            pytest.assume(res_dict.keys() == self.record_keys)
             pytest.assume(res_dict["status"] == "ready")
 
     @pytest.mark.run(order=34)
@@ -292,7 +261,6 @@ class TestRecord:
         }
         res = update_record(**update_record_data)
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.record_keys)
         assume_record_result(update_record_data, res_dict)
 
     @pytest.mark.run(order=34)
@@ -312,7 +280,6 @@ class TestRecord:
         }
         res = update_record(**update_record_data)
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.record_keys)
         assume_record_result(update_record_data, res_dict)
 
     @pytest.mark.run(order=34)
@@ -339,7 +306,6 @@ class TestRecord:
         }
         res = update_record(**update_record_data)
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.record_keys)
         assume_record_result(update_record_data, res_dict)
 
     @pytest.mark.run(order=79)

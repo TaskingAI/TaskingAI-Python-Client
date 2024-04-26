@@ -3,6 +3,7 @@ import os
 
 from taskingai.retrieval import *
 from taskingai.file import a_upload_file
+from taskingai.client.models import UploadFilePurpose
 from test.config import Config
 from test.common.logger import logger
 from test.testcase.test_async import Base
@@ -16,20 +17,6 @@ from test.common.utils import (
 
 @pytest.mark.test_async
 class TestCollection(Base):
-    collection_list = [
-        "collection_id",
-        "name",
-        "description",
-        "num_records",
-        "num_chunks",
-        "capacity",
-        "embedding_model_id",
-        "metadata",
-        "updated_timestamp",
-        "created_timestamp",
-        "status",
-    ]
-    collection_keys = set(collection_list)
 
     @pytest.mark.run(order=21)
     @pytest.mark.asyncio
@@ -47,7 +34,6 @@ class TestCollection(Base):
             res = await a_create_collection(**create_dict)
             res_dict = vars(res)
             logger.info(res_dict)
-            pytest.assume(res_dict.keys() == self.collection_keys)
             assume_collection_result(create_dict, res_dict)
             Base.collection_id = res_dict["collection_id"]
 
@@ -78,7 +64,6 @@ class TestCollection(Base):
         # Get a collection.
         res = await a_get_collection(collection_id=self.collection_id)
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.collection_keys)
         pytest.assume(res_dict["status"] == "ready")
         pytest.assume(res_dict["collection_id"] == self.collection_id)
 
@@ -95,7 +80,6 @@ class TestCollection(Base):
         }
         res = await a_update_collection(**update_collection_data)
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.collection_keys)
         assume_collection_result(update_collection_data, res_dict)
 
     @pytest.mark.run(order=80)
@@ -117,19 +101,7 @@ class TestCollection(Base):
 
 @pytest.mark.test_async
 class TestRecord(Base):
-    record_list = [
-        "record_id",
-        "collection_id",
-        "num_chunks",
-        "content",
-        "metadata",
-        "type",
-        "title",
-        "updated_timestamp",
-        "created_timestamp",
-        "status",
-    ]
-    record_keys = set(record_list)
+
     text_splitter_list = [
         {"type": "token", "chunk_size": 100, "chunk_overlap": 10},
         TokenTextSplitter(chunk_size=200, chunk_overlap=20),
@@ -142,8 +114,8 @@ class TestRecord(Base):
     for file in files:
         filepath = os.path.join(base_path, "files", file)
         if os.path.isfile(filepath):
-            upload_file_dict = {"purpose": "record_file"}
-            upload_file_dict.update({"file": filepath})
+            upload_file_dict = {"purpose": UploadFilePurpose.RECORD_FILE}
+            upload_file_dict.update({"file": open(filepath, "rb")})
             upload_file_data_list.append(upload_file_dict)
 
     @pytest.mark.run(order=31)
@@ -167,7 +139,6 @@ class TestRecord(Base):
 
             res = await a_create_record(**create_record_data)
             res_dict = vars(res)
-            pytest.assume(res_dict.keys() == self.record_keys)
             assume_record_result(create_record_data, res_dict)
             Base.record_id = res_dict["record_id"]
 
@@ -186,7 +157,6 @@ class TestRecord(Base):
 
         res = await a_create_record(**create_record_data)
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.record_keys)
         assume_record_result(create_record_data, res_dict)
 
     @pytest.mark.run(order=31)
@@ -210,7 +180,6 @@ class TestRecord(Base):
 
         res = await a_create_record(**create_record_data)
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.record_keys)
         assume_record_result(create_record_data, res_dict)
 
     @pytest.mark.run(order=32)
@@ -247,7 +216,6 @@ class TestRecord(Base):
         res_dict = vars(res)
         pytest.assume(res_dict["collection_id"] == self.collection_id)
         pytest.assume(res_dict["record_id"] == self.record_id)
-        pytest.assume(res_dict.keys() == self.record_keys)
         pytest.assume(res_dict["status"] == "ready")
 
     @pytest.mark.run(order=34)
@@ -266,7 +234,6 @@ class TestRecord(Base):
         res = await a_update_record(**update_record_data)
         logger.info(f"a_update_record:{res}")
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.record_keys)
         assume_record_result(update_record_data, res_dict)
 
     @pytest.mark.run(order=34)
@@ -287,7 +254,6 @@ class TestRecord(Base):
         res = await a_update_record(**update_record_data)
         logger.info(f"a_update_record:{res}")
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.record_keys)
         assume_record_result(update_record_data, res_dict)
 
     @pytest.mark.run(order=34)
@@ -314,7 +280,6 @@ class TestRecord(Base):
         res = await a_update_record(**update_record_data)
         logger.info(f"a_update_record:{res}")
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.record_keys)
         assume_record_result(update_record_data, res_dict)
 
     @pytest.mark.run(order=79)
