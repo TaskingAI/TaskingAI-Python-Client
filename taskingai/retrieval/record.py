@@ -161,7 +161,7 @@ def create_record(
     text_splitter = text_splitter if isinstance(text_splitter, TextSplitter) else TextSplitter(**text_splitter)
 
     body = RecordCreateRequest(
-        title=title,
+        title=title or "",
         type=type,
         text_splitter=text_splitter,
         content=content,
@@ -202,7 +202,7 @@ async def a_create_record(
     text_splitter = text_splitter if isinstance(text_splitter, TextSplitter) else TextSplitter(**text_splitter)
 
     body = RecordCreateRequest(
-        title=title,
+        title=title or "",
         type=type,
         text_splitter=text_splitter,
         content=content,
