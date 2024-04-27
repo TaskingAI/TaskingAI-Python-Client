@@ -1,5 +1,5 @@
 from typing import Union, Dict, BinaryIO
-from io import BufferedReader
+import os
 
 from taskingai.client.models import FileIdData, UploadFilePurpose, UploadFileResponse
 from taskingai.client.utils import get_api_client
@@ -16,14 +16,25 @@ def __prepare_files(file: BinaryIO, purpose: Union[UploadFilePurpose, str]) -> D
     :param purpose: The purpose of the upload, either as a string or UploadFilePurpose enum.
     :return: A dictionary formatted for the API call.
     """
-    if not isinstance(file, BufferedReader):
-        raise ValueError("Unsupported file type: Expected a BufferedReader")
+    if not hasattr(file, "read"):
+        raise ValueError("Unsupported file type: Expected a file-like object with a read method")
 
-    file_bytes = file.read()
-    file_name = file.name
+    try:
+        file_bytes = file.read()
+    except Exception as e:
+        raise ValueError(f"Error reading file: {e}")
+
+    file_name = os.path.basename(file.name)
 
     if isinstance(purpose, str):
-        purpose = UploadFilePurpose(purpose)
+        try:
+            purpose = UploadFilePurpose(purpose)
+        except ValueError:
+            raise ValueError(f"Invalid purpose value: {purpose}")
+
+    if not isinstance(purpose, UploadFilePurpose):
+        raise ValueError("Purpose must be an instance of UploadFilePurpose or a valid string")
+
     return {
         "file": (file_name, file_bytes, "application/octet-stream"),
         "purpose": (None, str(purpose.value)),
