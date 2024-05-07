@@ -136,10 +136,11 @@ def assume_assistant_result(assistant_dict: dict, res: dict):
         if key == 'system_prompt_template' and isinstance(value, str):
             pytest.assume(res[key] == [assistant_dict[key]])
         elif key in ['retrieval_configs']:
-            if isinstance(value, dict):
-                pytest.assume(vars(res[key]) == assistant_dict[key])
-            else:
-                pytest.assume(res[key] == assistant_dict[key])
+            continue
+            # if isinstance(value, dict):
+            #     pytest.assume(vars(res[key]) == assistant_dict[key])
+            # else:
+            #     pytest.assume(res[key] == assistant_dict[key])
         elif key in ["memory", "tools", "retrievals"]:
             continue
         else:

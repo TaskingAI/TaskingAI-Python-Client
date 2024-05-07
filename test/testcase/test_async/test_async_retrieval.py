@@ -17,7 +17,6 @@ from test.common.utils import (
 
 @pytest.mark.test_async
 class TestCollection(Base):
-
     @pytest.mark.run(order=21)
     @pytest.mark.asyncio
     async def test_a_create_collection(self):
@@ -101,10 +100,11 @@ class TestCollection(Base):
 
 @pytest.mark.test_async
 class TestRecord(Base):
-
     text_splitter_list = [
-        {"type": "token", "chunk_size": 100, "chunk_overlap": 10},
-        TokenTextSplitter(chunk_size=200, chunk_overlap=20),
+        # {"type": "token", "chunk_size": 100, "chunk_overlap": 10},
+        # TokenTextSplitter(chunk_size=200, chunk_overlap=20),
+        {"type": "separator", "chunk_size": 100, "chunk_overlap": 10, "separators": [".", "!", "?"]},
+        TextSplitter(type="separator", chunk_size=200, chunk_overlap=20, separators=[".", "!", "?"]),
     ]
 
     upload_file_data_list = []
@@ -120,8 +120,8 @@ class TestRecord(Base):
 
     @pytest.mark.run(order=31)
     @pytest.mark.asyncio
-    async def test_a_create_record_by_text(self):
-        text_splitter = TokenTextSplitter(chunk_size=200, chunk_overlap=100)
+    @pytest.mark.parametrize("text_splitter", text_splitter_list)
+    async def test_a_create_record_by_text(self, text_splitter):
         text = "Machine learning is a subfield of artificial intelligence (AI) that involves the development of algorithms that allow computers to learn from and make decisions or predictions based on data."
         create_record_data = {
             "type": "text",
@@ -131,16 +131,10 @@ class TestRecord(Base):
             "text_splitter": text_splitter,
             "metadata": {"key1": "value1", "key2": "value2"},
         }
-
-        for x in range(2):
-            # Create a record.
-            if x == 0:
-                create_record_data.update({"text_splitter": {"type": "token", "chunk_size": 100, "chunk_overlap": 10}})
-
-            res = await a_create_record(**create_record_data)
-            res_dict = vars(res)
-            assume_record_result(create_record_data, res_dict)
-            Base.record_id = res_dict["record_id"]
+        res = await a_create_record(**create_record_data)
+        res_dict = vars(res)
+        assume_record_result(create_record_data, res_dict)
+        Base.record_id = res_dict["record_id"]
 
     @pytest.mark.run(order=31)
     @pytest.mark.asyncio
@@ -332,13 +326,14 @@ class TestChunk(Base):
         query_text = "Machine learning"
         top_k = 1
         res = await a_query_chunks(
-            collection_id=self.collection_id, query_text=query_text, top_k=top_k, max_tokens=20000
+            collection_id=self.collection_id, query_text=query_text, top_k=top_k, max_tokens=20000, score_threshold=0.04
         )
         pytest.assume(len(res) == top_k)
         for chunk in res:
             chunk_dict = vars(chunk)
             assume_query_chunk_result(query_text, chunk_dict)
             pytest.assume(chunk_dict.keys() == self.chunk_keys)
+            pytest.assume(chunk_dict["score"] >= 0.04)
 
     @pytest.mark.run(order=42)
     @pytest.mark.asyncio

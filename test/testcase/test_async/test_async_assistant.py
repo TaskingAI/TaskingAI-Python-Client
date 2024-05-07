@@ -37,6 +37,7 @@ class TestAssistant(Base):
                 method="memory",
                 top_k=1,
                 max_tokens=5000,
+                score_threshold=0.5
 
             ),
             "tools": [
@@ -54,7 +55,7 @@ class TestAssistant(Base):
             if i == 0:
                 assistant_dict.update({"memory": {"type": "naive"}})
                 assistant_dict.update({"retrievals": [{"type": "collection", "id": self.collection_id}]})
-                assistant_dict.update({"retrieval_configs": {"method": "memory", "top_k": 2, "max_tokens": 4000}})
+                assistant_dict.update({"retrieval_configs": {"method": "memory", "top_k": 2, "max_tokens": 4000, "score_threshold": 0.5}})
                 assistant_dict.update({"tools": [{"type": "action", "id": self.action_id},
                                                  {"type": "plugin", "id": "open_weather/get_hourly_forecast"}]})
             res = await a_create_assistant(**assistant_dict)
@@ -119,6 +120,7 @@ class TestAssistant(Base):
                     method="memory",
                     top_k=2,
                     max_tokens=4000,
+                    score_threshold=0.5
 
                 ),
                 "tools": [
@@ -137,7 +139,7 @@ class TestAssistant(Base):
                 "description": "test for openai",
                 "memory": {"type": "naive"},
                 "retrievals": [{"type": "collection", "id": self.collection_id}],
-                "retrieval_configs": {"method": "memory", "top_k": 2, "max_tokens": 4000},
+                "retrieval_configs": {"method": "memory", "top_k": 2, "max_tokens": 4000, "score_threshold": 0.5},
                 "tools": [{"type": "action", "id": self.action_id},
                           {"type": "plugin", "id": "open_weather/get_hourly_forecast"}]
 
@@ -365,6 +367,7 @@ class TestMessage(Base):
                 method="memory",
                 top_k=1,
                 max_tokens=5000,
+                score_threshold=0.04
 
             ),
             "tools": [
@@ -435,7 +438,8 @@ class TestMessage(Base):
             "retrieval_configs": {
                 "method": "user_message",
                 "top_k": 1,
-                "max_tokens": 5000
+                "max_tokens": 5000,
+                "score_threshold": 0.5
             }
         }
 
@@ -482,7 +486,8 @@ class TestMessage(Base):
             "retrieval_configs": {
                 "method": "memory",
                 "top_k": 1,
-                "max_tokens": 5000
+                "max_tokens": 5000,
+                "score_threshold": 0.5
 
             }
         }
@@ -534,7 +539,8 @@ class TestMessage(Base):
                 {
                     "method": "function_call",
                     "top_k": 1,
-                    "max_tokens": 5000
+                    "max_tokens": 5000,
+                    "score_threshold": 0.5
                 }
         }
 
