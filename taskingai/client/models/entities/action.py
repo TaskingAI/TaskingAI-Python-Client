@@ -12,13 +12,9 @@ License: Apache 2.0
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional, Any, Dict
+from typing import Any, Dict
 from .action_method import ActionMethod
-from .action_param import ActionParam
-from .action_param import ActionParam
 from .action_body_type import ActionBodyType
-from .action_param import ActionParam
-from .chat_completion_function import ChatCompletionFunction
 from .action_authentication import ActionAuthentication
 
 __all__ = ["Action"]

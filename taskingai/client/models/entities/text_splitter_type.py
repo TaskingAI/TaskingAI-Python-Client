@@ -18,3 +18,4 @@ __all__ = ["TextSplitterType"]
 
 class TextSplitterType(str, Enum):
     TOKEN = "token"
+    SEPARATOR = "separator"
