@@ -14,9 +14,9 @@ License: Apache 2.0
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Union
 from ..entities.chat_completion_function_message import ChatCompletionFunctionMessage
-from ..entities.chat_completion_system_message import ChatCompletionSystemMessage
-from ..entities.chat_completion_user_message import ChatCompletionUserMessage
 from ..entities.chat_completion_assistant_message import ChatCompletionAssistantMessage
+from ..entities.chat_completion_user_message import ChatCompletionUserMessage
+from ..entities.chat_completion_system_message import ChatCompletionSystemMessage
 from ..entities.chat_completion_function import ChatCompletionFunction
 
 __all__ = ["ChatCompletionRequest"]

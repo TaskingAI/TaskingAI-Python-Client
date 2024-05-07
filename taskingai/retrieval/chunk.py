@@ -248,6 +248,7 @@ def query_chunks(
     *,
     query_text: str,
     top_k: int = 3,
+    score_threshold: Optional[float] = None,
     max_tokens: Optional[int] = None,
 ) -> List[Chunk]:
     """
@@ -262,6 +263,7 @@ def query_chunks(
     body = ChunkQueryRequest(
         top_k=top_k,
         query_text=query_text,
+        score_threshold=score_threshold,
         max_tokens=max_tokens,
     )
     response: ChunkQueryResponse = api_query_collection_chunks(
@@ -276,6 +278,7 @@ async def a_query_chunks(
     *,
     query_text: str,
     top_k: int = 3,
+    score_threshold: Optional[float] = None,
     max_tokens: Optional[int] = None,
 ) -> List[Chunk]:
     """
@@ -290,6 +293,7 @@ async def a_query_chunks(
     body = ChunkQueryRequest(
         top_k=top_k,
         query_text=query_text,
+        score_threshold=score_threshold,
         max_tokens=max_tokens,
     )
     response: ChunkQueryResponse = await async_api_query_collection_chunks(
