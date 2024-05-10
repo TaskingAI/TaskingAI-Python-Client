@@ -13,12 +13,13 @@ License: Apache 2.0
 
 from pydantic import BaseModel, Field
 from typing import Optional, List
-
+from .chat_completion_function_parameters_property_items import ChatCompletionFunctionParametersPropertyItems
 
 __all__ = ["ChatCompletionFunctionParametersProperty"]
 
 
 class ChatCompletionFunctionParametersProperty(BaseModel):
-    type: str = Field(..., pattern="^(string|number|integer|boolean)$")
-    description: str = Field("", max_length=256)
+    type: str = Field(..., pattern="^(string|number|integer|boolean|array)$")
+    description: str = Field("", max_length=512)
     enum: Optional[List[str]] = Field(None)
+    items: Optional[ChatCompletionFunctionParametersPropertyItems] = Field(None)

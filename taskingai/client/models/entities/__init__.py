@@ -30,9 +30,11 @@ from .chat_completion_function_call import *
 from .chat_completion_function_message import *
 from .chat_completion_function_parameters import *
 from .chat_completion_function_parameters_property import *
+from .chat_completion_function_parameters_property_items import *
 from .chat_completion_message import *
 from .chat_completion_role import *
 from .chat_completion_system_message import *
+from .chat_completion_usage import *
 from .chat_completion_user_message import *
 from .chat_memory import *
 from .chat_memory_message import *
@@ -54,6 +56,7 @@ from .sort_order_enum import *
 from .status import *
 from .text_embedding_input_type import *
 from .text_embedding_output import *
+from .text_embedding_usage import *
 from .text_splitter import *
 from .text_splitter_type import *
 from .tool_ref import *

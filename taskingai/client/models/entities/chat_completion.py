@@ -14,6 +14,7 @@ License: Apache 2.0
 from pydantic import BaseModel, Field
 from .chat_completion_finish_reason import ChatCompletionFinishReason
 from .chat_completion_assistant_message import ChatCompletionAssistantMessage
+from .chat_completion_usage import ChatCompletionUsage
 
 __all__ = ["ChatCompletion"]
 
@@ -22,3 +23,4 @@ class ChatCompletion(BaseModel):
     finish_reason: ChatCompletionFinishReason = Field(...)
     message: ChatCompletionAssistantMessage = Field(...)
     created_timestamp: int = Field(...)
+    usage: ChatCompletionUsage = Field(...)
