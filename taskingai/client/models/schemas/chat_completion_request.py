@@ -14,16 +14,16 @@ License: Apache 2.0
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Union
 from ..entities.chat_completion_function_message import ChatCompletionFunctionMessage
-from ..entities.chat_completion_assistant_message import ChatCompletionAssistantMessage
-from ..entities.chat_completion_user_message import ChatCompletionUserMessage
 from ..entities.chat_completion_system_message import ChatCompletionSystemMessage
+from ..entities.chat_completion_user_message import ChatCompletionUserMessage
+from ..entities.chat_completion_assistant_message import ChatCompletionAssistantMessage
 from ..entities.chat_completion_function import ChatCompletionFunction
 
 __all__ = ["ChatCompletionRequest"]
 
 
 class ChatCompletionRequest(BaseModel):
-    model_id: str = Field(..., min_length=8, max_length=8)
+    model_id: str = Field(..., min_length=1, max_length=255)
     configs: Optional[Dict] = Field(None)
     stream: bool = Field(False)
     messages: List[
@@ -36,3 +36,4 @@ class ChatCompletionRequest(BaseModel):
     ] = Field(...)
     function_call: Optional[str] = Field(None)
     functions: Optional[List[ChatCompletionFunction]] = Field(None)
+    save_logs: bool = Field(False)

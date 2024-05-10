@@ -19,6 +19,6 @@ __all__ = ["TextEmbeddingRequest"]
 
 
 class TextEmbeddingRequest(BaseModel):
-    model_id: str = Field(..., min_length=8, max_length=8)
+    model_id: str = Field(..., min_length=1, max_length=255)
     input: Union[str, List[str]] = Field(...)
     input_type: Optional[TextEmbeddingInputType] = Field(None)
