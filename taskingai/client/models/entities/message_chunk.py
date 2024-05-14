@@ -18,6 +18,7 @@ __all__ = ["MessageChunk"]
 
 
 class MessageChunk(BaseModel):
+    object: str = Field("MessageChunk")
     role: MessageRole = Field(...)
     index: int = Field(...)
     delta: str = Field(...)
