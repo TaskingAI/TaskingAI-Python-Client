@@ -19,6 +19,7 @@ __all__ = ["Chunk"]
 
 
 class Chunk(BaseModel):
+    object: str = Field("Chunk")
     chunk_id: str = Field(..., min_length=20, max_length=30)
     record_id: Optional[str] = Field(..., min_length=20, max_length=30)
     collection_id: str = Field(..., min_length=20, max_length=30)

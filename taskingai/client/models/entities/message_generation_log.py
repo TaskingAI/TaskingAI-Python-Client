@@ -19,6 +19,7 @@ __all__ = ["MessageGenerationLog"]
 
 
 class MessageGenerationLog(BaseModel):
+    object: str = Field("MessageGenerationLog")
     session_id: str = Field(..., min_length=20, max_length=30)
     event: str = Field(...)
     event_id: str = Field(..., min_length=20, max_length=30)

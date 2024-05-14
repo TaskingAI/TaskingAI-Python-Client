@@ -18,6 +18,7 @@ __all__ = ["ChatCompletionChunk"]
 
 
 class ChatCompletionChunk(BaseModel):
+    object: str = Field("ChatCompletionChunk")
     role: ChatCompletionRole = Field("assistant")
     index: int = Field(...)
     delta: str = Field(...)

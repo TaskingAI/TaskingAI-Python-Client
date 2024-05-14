@@ -19,6 +19,7 @@ __all__ = ["Message"]
 
 
 class Message(BaseModel):
+    object: str = Field("Message")
     message_id: str = Field(..., min_length=20, max_length=30)
     chat_id: str = Field(..., min_length=20, max_length=30)
     assistant_id: str = Field(None, min_length=20, max_length=30)

@@ -19,6 +19,7 @@ __all__ = ["Chat"]
 
 
 class Chat(BaseModel):
+    object: str = Field("Chat")
     chat_id: str = Field(..., min_length=20, max_length=30)
     assistant_id: str = Field(..., min_length=20, max_length=30)
     name: str = Field("", min_length=0, max_length=127)

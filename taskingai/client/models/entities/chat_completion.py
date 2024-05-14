@@ -20,6 +20,7 @@ __all__ = ["ChatCompletion"]
 
 
 class ChatCompletion(BaseModel):
+    object: str = Field("ChatCompletion")
     finish_reason: ChatCompletionFinishReason = Field(...)
     message: ChatCompletionAssistantMessage = Field(...)
     created_timestamp: int = Field(...)

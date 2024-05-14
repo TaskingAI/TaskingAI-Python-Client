@@ -19,6 +19,7 @@ __all__ = ["Collection"]
 
 
 class Collection(BaseModel):
+    object: str = Field("Collection")
     collection_id: str = Field(..., min_length=24, max_length=24)
     name: str = Field("", min_length=0, max_length=256)
     description: str = Field("", min_length=0, max_length=512)

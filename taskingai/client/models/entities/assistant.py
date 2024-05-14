@@ -22,6 +22,7 @@ __all__ = ["Assistant"]
 
 
 class Assistant(BaseModel):
+    object: str = Field("Assistant")
     assistant_id: str = Field(..., min_length=20, max_length=30)
     model_id: str = Field(..., min_length=8, max_length=8)
     name: str = Field("", min_length=0, max_length=256)

@@ -21,6 +21,7 @@ __all__ = ["Action"]
 
 
 class Action(BaseModel):
+    object: str = Field("Action")
     action_id: str = Field(..., min_length=20, max_length=30)
     name: str = Field(..., min_length=1, max_length=128)
     operation_id: str = Field(...)
