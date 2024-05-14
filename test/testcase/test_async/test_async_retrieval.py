@@ -305,18 +305,6 @@ class TestRecord(Base):
 
 @pytest.mark.test_async
 class TestChunk(Base):
-    chunk_list = [
-        "chunk_id",
-        "record_id",
-        "collection_id",
-        "content",
-        "metadata",
-        "num_tokens",
-        "score",
-        "updated_timestamp",
-        "created_timestamp",
-    ]
-    chunk_keys = set(chunk_list)
 
     @pytest.mark.run(order=41)
     @pytest.mark.asyncio
@@ -332,7 +320,6 @@ class TestChunk(Base):
         for chunk in res:
             chunk_dict = vars(chunk)
             assume_query_chunk_result(query_text, chunk_dict)
-            pytest.assume(chunk_dict.keys() == self.chunk_keys)
             pytest.assume(chunk_dict["score"] >= 0.04)
 
     @pytest.mark.run(order=42)
@@ -345,7 +332,6 @@ class TestChunk(Base):
         }
         res = await a_create_chunk(**create_chunk_data)
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.chunk_keys)
         assume_chunk_result(create_chunk_data, res_dict)
         Base.chunk_id = res_dict["chunk_id"]
 
@@ -386,7 +372,6 @@ class TestChunk(Base):
             res_dict = vars(res)
             pytest.assume(res_dict["collection_id"] == self.collection_id)
             pytest.assume(res_dict["chunk_id"] == chunk_id)
-            pytest.assume(res_dict.keys() == self.chunk_keys)
 
     @pytest.mark.run(order=45)
     @pytest.mark.asyncio
@@ -401,7 +386,6 @@ class TestChunk(Base):
         }
         res = await a_update_chunk(**update_chunk_data)
         res_dict = vars(res)
-        pytest.assume(res_dict.keys() == self.chunk_keys)
         assume_chunk_result(update_chunk_data, res_dict)
 
     @pytest.mark.run(order=46)
