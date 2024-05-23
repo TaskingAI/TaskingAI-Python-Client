@@ -36,4 +36,3 @@ class ChatCompletionRequest(BaseModel):
     ] = Field(...)
     function_call: Optional[str] = Field(None)
     functions: Optional[List[ChatCompletionFunction]] = Field(None)
-    save_logs: bool = Field(False)
