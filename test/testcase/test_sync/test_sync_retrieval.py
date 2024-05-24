@@ -1,6 +1,6 @@
 import pytest
 import os
-
+import time
 from taskingai.retrieval import TokenTextSplitter, TextSplitter
 from taskingai.retrieval import (
     list_collections,
@@ -171,7 +171,7 @@ class TestRecord:
         res_dict = vars(res)
         assume_record_result(create_record_data, res_dict)
 
-    @pytest.mark.run(order=31)
+    @pytest.mark.run(order=32)
     @pytest.mark.parametrize("upload_file_data", upload_file_data_list[:2])
     def test_create_record_by_file(self, collection_id, upload_file_data):
         # upload file
@@ -267,7 +267,7 @@ class TestRecord:
         res_dict = vars(res)
         assume_record_result(update_record_data, res_dict)
 
-    @pytest.mark.run(order=34)
+    @pytest.mark.run(order=35)
     @pytest.mark.parametrize("upload_file_data", upload_file_data_list[2:3])
     def test_update_record_by_file(self, collection_id, record_id, upload_file_data):
         # upload file
@@ -295,7 +295,7 @@ class TestRecord:
     @pytest.mark.run(order=79)
     def test_delete_record(self, collection_id):
         # List records.
-
+        time.sleep(Config.sleep_time)
         records = list_records(collection_id=collection_id, order="desc", limit=20, after=None, before=None)
         old_nums = len(records)
         for index, record in enumerate(records):
