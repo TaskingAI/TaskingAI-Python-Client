@@ -1,6 +1,6 @@
 import pytest
 import os
-
+import asyncio
 from taskingai.retrieval import *
 from taskingai.file import a_upload_file
 from taskingai.client.models import UploadFilePurpose
@@ -393,6 +393,8 @@ class TestChunk(Base):
     async def test_delete_chunk(self):
         # List chunks.
 
+        await asyncio.sleep(Config.sleep_time)
+
         chunks = await a_list_chunks(collection_id=self.collection_id, limit=5)
         old_nums = len(chunks)
         for index, chunk in enumerate(chunks):
@@ -404,6 +406,6 @@ class TestChunk(Base):
 
             # List chunks.
 
-            new_chunks = list_chunks(collection_id=self.collection_id)
+            new_chunks = await a_list_chunks(collection_id=self.collection_id)
             chunk_ids = [chunk.chunk_id for chunk in new_chunks]
             pytest.assume(chunk_id not in chunk_ids)

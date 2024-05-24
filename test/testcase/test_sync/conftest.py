@@ -36,7 +36,7 @@ def collection_id():
 @pytest.fixture(scope="session")
 def record_id(collection_id):
     res = list_records(str(collection_id))
-    record_id = res[0].record_id
+    record_id = res[-1].record_id
     return record_id
 
 
