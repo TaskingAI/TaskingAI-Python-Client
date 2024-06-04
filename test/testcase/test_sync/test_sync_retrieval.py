@@ -231,24 +231,24 @@ class TestRecord:
             pytest.assume(res_dict["record_id"] == record_id)
             # pytest.assume(res_dict["status"] == "ready")
 
-    # @pytest.mark.run(order=34)
-    # @pytest.mark.parametrize("text_splitter", text_splitter_list)
-    # def test_update_record_by_text(self, collection_id, record_id, text_splitter):
-    #     # Update a record.
-    #
-    #     update_record_data = {
-    #         "type": "text",
-    #         "title": "TaskingAI",
-    #         "collection_id": collection_id,
-    #         "record_id": record_id,
-    #         "content": "TaskingAI is an AI-native application development platform that unifies modules like Model, Retrieval, Assistant, and Tool into one seamless ecosystem, streamlining the creation and deployment of applications for developers.",
-    #         "text_splitter": text_splitter,
-    #         "metadata": {"test": "test"},
-    #     }
-    #     res = update_record(**update_record_data)
-    #     res_dict = vars(res)
-    #     assume_record_result(update_record_data, res_dict)
-    #
+    @pytest.mark.run(order=34)
+    @pytest.mark.parametrize("text_splitter", text_splitter_list)
+    def test_update_record_by_text(self, collection_id, record_id, text_splitter):
+        # Update a record.
+
+        update_record_data = {
+            "type": "text",
+            "title": "TaskingAI",
+            "collection_id": collection_id,
+            "record_id": record_id,
+            "content": "TaskingAI is an AI-native application development platform that unifies modules like Model, Retrieval, Assistant, and Tool into one seamless ecosystem, streamlining the creation and deployment of applications for developers.",
+            "text_splitter": text_splitter,
+            "metadata": {"test": "test"},
+        }
+        res = update_record(**update_record_data)
+        res_dict = vars(res)
+        assume_record_result(update_record_data, res_dict)
+
     # @pytest.mark.run(order=34)
     # @pytest.mark.parametrize("text_splitter", text_splitter_list)
     # def test_update_record_by_web(self, collection_id, record_id, text_splitter):
