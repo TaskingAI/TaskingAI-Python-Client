@@ -248,50 +248,55 @@ class TestRecord:
         res = update_record(**update_record_data)
         res_dict = vars(res)
         assume_record_result(update_record_data, res_dict)
+        time.sleep(2)
         records = list_records(collection_id=collection_id, order="desc", limit=20, after=None, before=None)
 
-    # @pytest.mark.run(order=34)
-    # @pytest.mark.parametrize("text_splitter", text_splitter_list)
-    # def test_update_record_by_web(self, collection_id, record_id, text_splitter):
-    #     # Update a record.
-    #
-    #     update_record_data = {
-    #         "type": "web",
-    #         "title": "TaskingAI",
-    #         "collection_id": collection_id,
-    #         "record_id": record_id,
-    #         "url": "https://docs.tasking.ai/docs/guide/getting_started/overview/",
-    #         "text_splitter": text_splitter,
-    #         "metadata": {"test": "test"},
-    #     }
-    #     res = update_record(**update_record_data)
-    #     res_dict = vars(res)
-    #     assume_record_result(update_record_data, res_dict)
-    #
-    # @pytest.mark.run(order=35)
-    # @pytest.mark.parametrize("upload_file_data", upload_file_data_list[2:3])
-    # def test_update_record_by_file(self, collection_id, record_id, upload_file_data):
-    #     # upload file
-    #     upload_file_res = upload_file(**upload_file_data)
-    #     upload_file_dict = vars(upload_file_res)
-    #     file_id = upload_file_dict["file_id"]
-    #     pytest.assume(file_id is not None)
-    #
-    #     # Update a record.
-    #     text_splitter = TokenTextSplitter(chunk_size=200, chunk_overlap=20)
-    #
-    #     update_record_data = {
-    #         "type": "file",
-    #         "title": "TaskingAI",
-    #         "collection_id": collection_id,
-    #         "record_id": record_id,
-    #         "file_id": file_id,
-    #         "text_splitter": text_splitter,
-    #         "metadata": {"test": "test"},
-    #     }
-    #     res = update_record(**update_record_data)
-    #     res_dict = vars(res)
-    #     assume_record_result(update_record_data, res_dict)
+    @pytest.mark.run(order=34)
+    @pytest.mark.parametrize("text_splitter", text_splitter_list)
+    def test_update_record_by_web(self, collection_id, record_id, text_splitter):
+        # Update a record.
+
+        update_record_data = {
+            "type": "web",
+            "title": "TaskingAI",
+            "collection_id": collection_id,
+            "record_id": record_id,
+            "url": "https://docs.tasking.ai/docs/guide/getting_started/overview/",
+            "text_splitter": text_splitter,
+            "metadata": {"test": "test"},
+        }
+        res = update_record(**update_record_data)
+        res_dict = vars(res)
+        assume_record_result(update_record_data, res_dict)
+        time.sleep(2)
+        records = list_records(collection_id=collection_id, order="desc", limit=20, after=None, before=None)
+
+    @pytest.mark.run(order=35)
+    @pytest.mark.parametrize("upload_file_data", upload_file_data_list[2:3])
+    def test_update_record_by_file(self, collection_id, record_id, upload_file_data):
+        # upload file
+        upload_file_res = upload_file(**upload_file_data)
+        upload_file_dict = vars(upload_file_res)
+        file_id = upload_file_dict["file_id"]
+        pytest.assume(file_id is not None)
+
+        # Update a record.
+        text_splitter = TokenTextSplitter(chunk_size=200, chunk_overlap=20)
+
+        update_record_data = {
+            "type": "file",
+            "title": "TaskingAI",
+            "collection_id": collection_id,
+            "record_id": record_id,
+            "file_id": file_id,
+            "text_splitter": text_splitter,
+            "metadata": {"test": "test"},
+        }
+        res = update_record(**update_record_data)
+        res_dict = vars(res)
+        assume_record_result(update_record_data, res_dict)
+        time.sleep(2)
+        records = list_records(collection_id=collection_id, order="desc", limit=20, after=None, before=None)
 
     @pytest.mark.run(order=79)
     def test_delete_record(self, collection_id):
