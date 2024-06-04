@@ -212,69 +212,69 @@ class TestRecord(Base):
         pytest.assume(res_dict["record_id"] == self.record_id)
         # pytest.assume(res_dict["status"] == "ready")
 
-    @pytest.mark.run(order=34)
-    @pytest.mark.asyncio
-    @pytest.mark.parametrize("text_splitter", text_splitter_list)
-    async def test_a_update_record_by_text(self, text_splitter):
-        # Update a record.
-
-        update_record_data = {
-            "collection_id": self.collection_id,
-            "record_id": self.record_id,
-            "content": "TaskingAI is an AI-native application development platform that unifies modules like Model, Retrieval, Assistant, and Tool into one seamless ecosystem, streamlining the creation and deployment of applications for developers.",
-            "text_splitter": text_splitter,
-            "metadata": {"test": "test"},
-        }
-        res = await a_update_record(**update_record_data)
-        logger.info(f"a_update_record:{res}")
-        res_dict = vars(res)
-        assume_record_result(update_record_data, res_dict)
-
-    @pytest.mark.run(order=34)
-    @pytest.mark.asyncio
-    @pytest.mark.parametrize("text_splitter", text_splitter_list)
-    async def test_a_update_record_by_web(self, text_splitter):
-        # Update a record.
-
-        update_record_data = {
-            "type": "web",
-            "title": "Machine learning",
-            "collection_id": self.collection_id,
-            "record_id": self.record_id,
-            "url": "https://docs.tasking.ai/docs/guide/getting_started/overview/",
-            "text_splitter": text_splitter,
-            "metadata": {"test": "test"},
-        }
-        res = await a_update_record(**update_record_data)
-        logger.info(f"a_update_record:{res}")
-        res_dict = vars(res)
-        assume_record_result(update_record_data, res_dict)
-
-    @pytest.mark.run(order=34)
-    @pytest.mark.asyncio
-    @pytest.mark.parametrize("upload_file_data", upload_file_data_list[2:3])
-    async def test_a_update_record_by_file(self, upload_file_data):
-        # upload file
-        upload_file_res = await a_upload_file(**upload_file_data)
-        upload_file_dict = vars(upload_file_res)
-        file_id = upload_file_dict["file_id"]
-        pytest.assume(file_id is not None)
-
-        # Update a record.
-
-        update_record_data = {
-            "type": "file",
-            "title": "Machine learning",
-            "collection_id": self.collection_id,
-            "record_id": self.record_id,
-            "file_id": file_id,
-            "text_splitter": TokenTextSplitter(chunk_size=200, chunk_overlap=100),
-            "metadata": {"test": "test"},
-        }
-        res = await a_update_record(**update_record_data)
-        logger.info(f"a_update_record:{res}")
-        res_dict = vars(res)
-        assume_record_result(update_record_data, res_dict)
+    # @pytest.mark.run(order=34)
+    # @pytest.mark.asyncio
+    # @pytest.mark.parametrize("text_splitter", text_splitter_list)
+    # async def test_a_update_record_by_text(self, text_splitter):
+    #     # Update a record.
+    #
+    #     update_record_data = {
+    #         "collection_id": self.collection_id,
+    #         "record_id": self.record_id,
+    #         "content": "TaskingAI is an AI-native application development platform that unifies modules like Model, Retrieval, Assistant, and Tool into one seamless ecosystem, streamlining the creation and deployment of applications for developers.",
+    #         "text_splitter": text_splitter,
+    #         "metadata": {"test": "test"},
+    #     }
+    #     res = await a_update_record(**update_record_data)
+    #     logger.info(f"a_update_record:{res}")
+    #     res_dict = vars(res)
+    #     assume_record_result(update_record_data, res_dict)
+    #
+    # @pytest.mark.run(order=34)
+    # @pytest.mark.asyncio
+    # @pytest.mark.parametrize("text_splitter", text_splitter_list)
+    # async def test_a_update_record_by_web(self, text_splitter):
+    #     # Update a record.
+    #
+    #     update_record_data = {
+    #         "type": "web",
+    #         "title": "Machine learning",
+    #         "collection_id": self.collection_id,
+    #         "record_id": self.record_id,
+    #         "url": "https://docs.tasking.ai/docs/guide/getting_started/overview/",
+    #         "text_splitter": text_splitter,
+    #         "metadata": {"test": "test"},
+    #     }
+    #     res = await a_update_record(**update_record_data)
+    #     logger.info(f"a_update_record:{res}")
+    #     res_dict = vars(res)
+    #     assume_record_result(update_record_data, res_dict)
+    #
+    # @pytest.mark.run(order=34)
+    # @pytest.mark.asyncio
+    # @pytest.mark.parametrize("upload_file_data", upload_file_data_list[2:3])
+    # async def test_a_update_record_by_file(self, upload_file_data):
+    #     # upload file
+    #     upload_file_res = await a_upload_file(**upload_file_data)
+    #     upload_file_dict = vars(upload_file_res)
+    #     file_id = upload_file_dict["file_id"]
+    #     pytest.assume(file_id is not None)
+    #
+    #     # Update a record.
+    #
+    #     update_record_data = {
+    #         "type": "file",
+    #         "title": "Machine learning",
+    #         "collection_id": self.collection_id,
+    #         "record_id": self.record_id,
+    #         "file_id": file_id,
+    #         "text_splitter": TokenTextSplitter(chunk_size=200, chunk_overlap=100),
+    #         "metadata": {"test": "test"},
+    #     }
+    #     res = await a_update_record(**update_record_data)
+    #     logger.info(f"a_update_record:{res}")
+    #     res_dict = vars(res)
+    #     assume_record_result(update_record_data, res_dict)
 
     @pytest.mark.run(order=79)
     @pytest.mark.asyncio

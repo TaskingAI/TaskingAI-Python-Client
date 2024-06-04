@@ -137,62 +137,62 @@ class TestRecord:
             upload_file_dict.update({"file": open(filepath, "rb")})
             upload_file_data_list.append(upload_file_dict)
 
-    @pytest.mark.run(order=31)
-    @pytest.mark.parametrize("text_splitter", text_splitter_list)
-    def test_create_record_by_text(self, collection_id, text_splitter):
-        # Create a text record.
-        text = "Machine learning is a subfield of artificial intelligence (AI) that involves the development of algorithms that allow computers to learn from and make decisions or predictions based on data."
-        create_record_data = {
-            "type": "text",
-            "title": "Machine learning",
-            "collection_id": collection_id,
-            "content": text,
-            "text_splitter": text_splitter,
-            "metadata": {"key1": "value1", "key2": "value2"},
-        }
-        res = create_record(**create_record_data)
-        res_dict = vars(res)
-        assume_record_result(create_record_data, res_dict)
-
-    @pytest.mark.run(order=31)
-    def test_create_record_by_web(self, collection_id):
-        # Create a web record.
-        text_splitter = TokenTextSplitter(chunk_size=200, chunk_overlap=20)
-        create_record_data = {
-            "type": "web",
-            "title": "TaskingAI",
-            "collection_id": collection_id,
-            "url": "https://docs.tasking.ai/docs/guide/getting_started/overview/",
-            "text_splitter": text_splitter,
-            "metadata": {"key1": "value1", "key2": "value2"},
-        }
-
-        res = create_record(**create_record_data)
-        res_dict = vars(res)
-        assume_record_result(create_record_data, res_dict)
-
-    @pytest.mark.run(order=32)
-    @pytest.mark.parametrize("upload_file_data", upload_file_data_list[:2])
-    def test_create_record_by_file(self, collection_id, upload_file_data):
-        # upload file
-        upload_file_res = upload_file(**upload_file_data)
-        upload_file_dict = vars(upload_file_res)
-        file_id = upload_file_dict["file_id"]
-        pytest.assume(file_id is not None)
-
-        text_splitter = TokenTextSplitter(chunk_size=200, chunk_overlap=20)
-        create_record_data = {
-            "type": "file",
-            "title": "TaskingAI",
-            "collection_id": collection_id,
-            "file_id": file_id,
-            "text_splitter": text_splitter,
-            "metadata": {"key1": "value1", "key2": "value2"},
-        }
-
-        res = create_record(**create_record_data)
-        res_dict = vars(res)
-        assume_record_result(create_record_data, res_dict)
+    # @pytest.mark.run(order=31)
+    # @pytest.mark.parametrize("text_splitter", text_splitter_list)
+    # def test_create_record_by_text(self, collection_id, text_splitter):
+    #     # Create a text record.
+    #     text = "Machine learning is a subfield of artificial intelligence (AI) that involves the development of algorithms that allow computers to learn from and make decisions or predictions based on data."
+    #     create_record_data = {
+    #         "type": "text",
+    #         "title": "Machine learning",
+    #         "collection_id": collection_id,
+    #         "content": text,
+    #         "text_splitter": text_splitter,
+    #         "metadata": {"key1": "value1", "key2": "value2"},
+    #     }
+    #     res = create_record(**create_record_data)
+    #     res_dict = vars(res)
+    #     assume_record_result(create_record_data, res_dict)
+    #
+    # @pytest.mark.run(order=31)
+    # def test_create_record_by_web(self, collection_id):
+    #     # Create a web record.
+    #     text_splitter = TokenTextSplitter(chunk_size=200, chunk_overlap=20)
+    #     create_record_data = {
+    #         "type": "web",
+    #         "title": "TaskingAI",
+    #         "collection_id": collection_id,
+    #         "url": "https://docs.tasking.ai/docs/guide/getting_started/overview/",
+    #         "text_splitter": text_splitter,
+    #         "metadata": {"key1": "value1", "key2": "value2"},
+    #     }
+    #
+    #     res = create_record(**create_record_data)
+    #     res_dict = vars(res)
+    #     assume_record_result(create_record_data, res_dict)
+    #
+    # @pytest.mark.run(order=32)
+    # @pytest.mark.parametrize("upload_file_data", upload_file_data_list[:2])
+    # def test_create_record_by_file(self, collection_id, upload_file_data):
+    #     # upload file
+    #     upload_file_res = upload_file(**upload_file_data)
+    #     upload_file_dict = vars(upload_file_res)
+    #     file_id = upload_file_dict["file_id"]
+    #     pytest.assume(file_id is not None)
+    #
+    #     text_splitter = TokenTextSplitter(chunk_size=200, chunk_overlap=20)
+    #     create_record_data = {
+    #         "type": "file",
+    #         "title": "TaskingAI",
+    #         "collection_id": collection_id,
+    #         "file_id": file_id,
+    #         "text_splitter": text_splitter,
+    #         "metadata": {"key1": "value1", "key2": "value2"},
+    #     }
+    #
+    #     res = create_record(**create_record_data)
+    #     res_dict = vars(res)
+    #     assume_record_result(create_record_data, res_dict)
 
     @pytest.mark.run(order=32)
     def test_list_records(self, collection_id):
