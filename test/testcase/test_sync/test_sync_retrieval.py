@@ -248,8 +248,7 @@ class TestRecord:
         res = update_record(**update_record_data)
         res_dict = vars(res)
         assume_record_result(update_record_data, res_dict)
-        time.sleep(2)
-        records = list_records(collection_id=collection_id, order="desc", limit=20, after=None, before=None)
+
 
     @pytest.mark.run(order=34)
     @pytest.mark.parametrize("text_splitter", text_splitter_list)
@@ -268,8 +267,7 @@ class TestRecord:
         res = update_record(**update_record_data)
         res_dict = vars(res)
         assume_record_result(update_record_data, res_dict)
-        time.sleep(2)
-        records = list_records(collection_id=collection_id, order="desc", limit=20, after=None, before=None)
+
 
     @pytest.mark.run(order=35)
     @pytest.mark.parametrize("upload_file_data", upload_file_data_list[2:3])
@@ -295,8 +293,7 @@ class TestRecord:
         res = update_record(**update_record_data)
         res_dict = vars(res)
         assume_record_result(update_record_data, res_dict)
-        time.sleep(2)
-        records = list_records(collection_id=collection_id, order="desc", limit=20, after=None, before=None)
+
 
     @pytest.mark.run(order=79)
     def test_delete_record(self, collection_id):
@@ -339,6 +336,7 @@ class TestChunk:
 
     @pytest.mark.run(order=42)
     def test_create_chunk(self, collection_id):
+        time.sleep(2)
         # Create a chunk.
         create_chunk_data = {
             "collection_id": collection_id,
@@ -399,23 +397,32 @@ class TestChunk:
         res = update_chunk(**update_chunk_data)
         res_dict = vars(res)
         assume_chunk_result(update_chunk_data, res_dict)
-        records = list_records(collection_id=collection_id, order="desc", limit=20, after=None, before=None)
+
 
     @pytest.mark.run(order=46)
-    def test_delete_chunk(self, collection_id):
+    def test_delete_chunk(self, collection_id, chunk_id):
         # List chunks.
 
-        chunks = list_chunks(collection_id=collection_id, limit=5)
-        for index, chunk in enumerate(chunks):
-            chunk_id = chunk.chunk_id
+        # chunks = list_chunks(collection_id=collection_id, limit=5)
+        # for index, chunk in enumerate(chunks):
+        #     chunk_id = chunk.chunk_id
+        #
+        #     # Delete a chunk.
+        #
+        #     delete_chunk(collection_id=collection_id, chunk_id=chunk_id)
+        #
+        #     # List chunks.
+        #
+        #     new_chunks = list_chunks(collection_id=collection_id)
+        #     chunk_ids = [chunk.chunk_id for chunk in new_chunks]
+        #     pytest.assume(chunk_id not in chunk_ids)
+        #     records = list_records(collection_id=collection_id, order="desc", limit=20, after=None, before=None)
+        #     for record in records:
+        delete_chunk(collection_id=collection_id, chunk_id=chunk_id)
 
-            # Delete a chunk.
+        # List chunks.
 
-            delete_chunk(collection_id=collection_id, chunk_id=chunk_id)
-
-            # List chunks.
-
-            new_chunks = list_chunks(collection_id=collection_id)
-            chunk_ids = [chunk.chunk_id for chunk in new_chunks]
-            pytest.assume(chunk_id not in chunk_ids)
-            records = list_records(collection_id=collection_id, order="desc", limit=20, after=None, before=None)
+        new_chunks = list_chunks(collection_id=collection_id)
+        chunk_ids = [chunk.chunk_id for chunk in new_chunks]
+        pytest.assume(chunk_id not in chunk_ids)
+        records = list_records(collection_id=collection_id, order="desc", limit=20, after=None, before=None)
