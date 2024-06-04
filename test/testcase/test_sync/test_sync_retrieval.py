@@ -314,99 +314,99 @@ class TestRecord:
                 pytest.assume(new_nums == 0)
 
 
-# @pytest.mark.test_sync
-# class TestChunk:
-#
-#     @pytest.mark.run(order=41)
-#     def test_query_chunks(self, collection_id):
-#         # Query chunks.
-#
-#         query_text = "Machine learning"
-#         top_k = 1
-#         res = query_chunks(
-#             collection_id=collection_id, query_text=query_text, top_k=top_k, max_tokens=20000, score_threshold=0.04
-#         )
-#         pytest.assume(len(res) == top_k)
-#         for chunk in res:
-#             chunk_dict = vars(chunk)
-#             assume_query_chunk_result(query_text, chunk_dict)
-#             pytest.assume(chunk_dict["score"] >= 0.04)
-#
-#     @pytest.mark.run(order=42)
-#     def test_create_chunk(self, collection_id):
-#         # Create a chunk.
-#         create_chunk_data = {
-#             "collection_id": collection_id,
-#             "content": "Machine learning is a subfield of artificial intelligence (AI) that involves the development of algorithms that allow computers to learn from and make decisions or predictions based on data.",
-#         }
-#         res = create_chunk(**create_chunk_data)
-#         res_dict = vars(res)
-#         assume_chunk_result(create_chunk_data, res_dict)
-#
-#     @pytest.mark.run(order=43)
-#     def test_list_chunks(self, collection_id):
-#         # List chunks.
-#
-#         nums_limit = 1
-#         res = list_chunks(limit=nums_limit, collection_id=collection_id)
-#         pytest.assume(len(res) == nums_limit)
-#
-#         after_id = res[-1].chunk_id
-#         after_res = list_chunks(limit=nums_limit, after=after_id, collection_id=collection_id)
-#         pytest.assume(len(after_res) == nums_limit)
-#
-#         twice_nums_list = list_chunks(limit=nums_limit * 2, collection_id=collection_id)
-#         pytest.assume(len(twice_nums_list) == nums_limit * 2)
-#         pytest.assume(after_res[-1] == twice_nums_list[-1])
-#         pytest.assume(after_res[0] == twice_nums_list[nums_limit])
-#
-#         before_id = after_res[0].chunk_id
-#         before_res = list_chunks(limit=nums_limit, before=before_id, collection_id=collection_id)
-#         pytest.assume(len(before_res) == nums_limit)
-#         pytest.assume(before_res[-1] == twice_nums_list[nums_limit - 1])
-#         pytest.assume(before_res[0] == twice_nums_list[0])
-#
-#     @pytest.mark.run(order=44)
-#     def test_get_chunk(self, collection_id):
-#         # list chunks
-#
-#         chunks = list_chunks(collection_id=collection_id)
-#         for chunk in chunks:
-#             chunk_id = chunk.chunk_id
-#             res = get_chunk(collection_id=collection_id, chunk_id=chunk_id)
-#             logger.info(f"get chunk response: {res}")
-#             res_dict = vars(res)
-#             pytest.assume(res_dict["collection_id"] == collection_id)
-#             pytest.assume(res_dict["chunk_id"] == chunk_id)
-#
-#     @pytest.mark.run(order=45)
-#     def test_update_chunk(self, collection_id, chunk_id):
-#         # Update a chunk.
-#
-#         update_chunk_data = {
-#             "collection_id": collection_id,
-#             "chunk_id": chunk_id,
-#             "content": "Machine learning is a subfield of artificial intelligence (AI) that involves the development of algorithms that allow computers to learn from and make decisions or predictions based on data.",
-#             "metadata": {"test": "test"},
-#         }
-#         res = update_chunk(**update_chunk_data)
-#         res_dict = vars(res)
-#         assume_chunk_result(update_chunk_data, res_dict)
-#
-#     @pytest.mark.run(order=46)
-#     def test_delete_chunk(self, collection_id):
-#         # List chunks.
-#
-#         chunks = list_chunks(collection_id=collection_id, limit=5)
-#         for index, chunk in enumerate(chunks):
-#             chunk_id = chunk.chunk_id
-#
-#             # Delete a chunk.
-#
-#             delete_chunk(collection_id=collection_id, chunk_id=chunk_id)
-#
-#             # List chunks.
-#
-#             new_chunks = list_chunks(collection_id=collection_id)
-#             chunk_ids = [chunk.chunk_id for chunk in new_chunks]
-#             pytest.assume(chunk_id not in chunk_ids)
+@pytest.mark.test_sync
+class TestChunk:
+
+    @pytest.mark.run(order=41)
+    def test_query_chunks(self, collection_id):
+        # Query chunks.
+
+        query_text = "Machine learning"
+        top_k = 1
+        res = query_chunks(
+            collection_id=collection_id, query_text=query_text, top_k=top_k, max_tokens=20000, score_threshold=0.04
+        )
+        pytest.assume(len(res) == top_k)
+        for chunk in res:
+            chunk_dict = vars(chunk)
+            assume_query_chunk_result(query_text, chunk_dict)
+            pytest.assume(chunk_dict["score"] >= 0.04)
+
+    @pytest.mark.run(order=42)
+    def test_create_chunk(self, collection_id):
+        # Create a chunk.
+        create_chunk_data = {
+            "collection_id": collection_id,
+            "content": "Machine learning is a subfield of artificial intelligence (AI) that involves the development of algorithms that allow computers to learn from and make decisions or predictions based on data.",
+        }
+        res = create_chunk(**create_chunk_data)
+        res_dict = vars(res)
+        assume_chunk_result(create_chunk_data, res_dict)
+
+    @pytest.mark.run(order=43)
+    def test_list_chunks(self, collection_id):
+        # List chunks.
+
+        nums_limit = 1
+        res = list_chunks(limit=nums_limit, collection_id=collection_id)
+        pytest.assume(len(res) == nums_limit)
+
+        after_id = res[-1].chunk_id
+        after_res = list_chunks(limit=nums_limit, after=after_id, collection_id=collection_id)
+        pytest.assume(len(after_res) == nums_limit)
+
+        twice_nums_list = list_chunks(limit=nums_limit * 2, collection_id=collection_id)
+        pytest.assume(len(twice_nums_list) == nums_limit * 2)
+        pytest.assume(after_res[-1] == twice_nums_list[-1])
+        pytest.assume(after_res[0] == twice_nums_list[nums_limit])
+
+        before_id = after_res[0].chunk_id
+        before_res = list_chunks(limit=nums_limit, before=before_id, collection_id=collection_id)
+        pytest.assume(len(before_res) == nums_limit)
+        pytest.assume(before_res[-1] == twice_nums_list[nums_limit - 1])
+        pytest.assume(before_res[0] == twice_nums_list[0])
+
+    @pytest.mark.run(order=44)
+    def test_get_chunk(self, collection_id):
+        # list chunks
+
+        chunks = list_chunks(collection_id=collection_id)
+        for chunk in chunks:
+            chunk_id = chunk.chunk_id
+            res = get_chunk(collection_id=collection_id, chunk_id=chunk_id)
+            logger.info(f"get chunk response: {res}")
+            res_dict = vars(res)
+            pytest.assume(res_dict["collection_id"] == collection_id)
+            pytest.assume(res_dict["chunk_id"] == chunk_id)
+
+    @pytest.mark.run(order=45)
+    def test_update_chunk(self, collection_id, chunk_id):
+        # Update a chunk.
+
+        update_chunk_data = {
+            "collection_id": collection_id,
+            "chunk_id": chunk_id,
+            "content": "Machine learning is a subfield of artificial intelligence (AI) that involves the development of algorithms that allow computers to learn from and make decisions or predictions based on data.",
+            "metadata": {"test": "test"},
+        }
+        res = update_chunk(**update_chunk_data)
+        res_dict = vars(res)
+        assume_chunk_result(update_chunk_data, res_dict)
+
+    @pytest.mark.run(order=46)
+    def test_delete_chunk(self, collection_id):
+        # List chunks.
+
+        chunks = list_chunks(collection_id=collection_id, limit=5)
+        for index, chunk in enumerate(chunks):
+            chunk_id = chunk.chunk_id
+
+            # Delete a chunk.
+
+            delete_chunk(collection_id=collection_id, chunk_id=chunk_id)
+
+            # List chunks.
+
+            new_chunks = list_chunks(collection_id=collection_id)
+            chunk_ids = [chunk.chunk_id for chunk in new_chunks]
+            pytest.assume(chunk_id not in chunk_ids)
