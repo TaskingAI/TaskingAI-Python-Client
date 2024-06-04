@@ -342,6 +342,8 @@ class TestChunk:
         res = create_chunk(**create_chunk_data)
         res_dict = vars(res)
         assume_chunk_result(create_chunk_data, res_dict)
+        records = list_records(collection_id=collection_id, order="desc", limit=20, after=None, before=None)
+
 
     @pytest.mark.run(order=43)
     def test_list_chunks(self, collection_id):
@@ -392,6 +394,7 @@ class TestChunk:
         res = update_chunk(**update_chunk_data)
         res_dict = vars(res)
         assume_chunk_result(update_chunk_data, res_dict)
+        records = list_records(collection_id=collection_id, order="desc", limit=20, after=None, before=None)
 
     @pytest.mark.run(order=46)
     def test_delete_chunk(self, collection_id):
@@ -410,3 +413,4 @@ class TestChunk:
             new_chunks = list_chunks(collection_id=collection_id)
             chunk_ids = [chunk.chunk_id for chunk in new_chunks]
             pytest.assume(chunk_id not in chunk_ids)
+            records = list_records(collection_id=collection_id, order="desc", limit=20, after=None, before=None)
