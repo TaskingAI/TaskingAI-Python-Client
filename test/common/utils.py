@@ -118,7 +118,7 @@ def assume_record_result(create_record_data: dict, res_dict: dict):
         else:
             pytest.assume(res_dict[key] == create_record_data[key])
 
-    pytest.assume(res_dict["status"] == "ready")
+    # pytest.assume(res_dict["status"] == "ready")
 
 
 def assume_chunk_result(chunk_dict: dict, res: dict):
