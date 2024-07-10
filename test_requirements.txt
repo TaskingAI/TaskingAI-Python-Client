@@ -13,7 +13,7 @@ pytest-asyncio==0.23.7
 asyncio==3.4.3
 pytest-tornasync>=0.6.0
 pytest-trio==0.8.0
-pytest-twisted==1.14.1
+pytest-twisted==1.14.2
 Twisted==24.3.0
 python-dotenv==1.0.0
 pytest-rerunfailures==14.0
