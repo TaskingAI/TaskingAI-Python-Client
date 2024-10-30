@@ -22,7 +22,7 @@ __all__ = ["CollectionCreateRequest"]
 
 class CollectionCreateRequest(BaseModel):
     name: str = Field("")
-    type: CollectionType = Field("text")
+    type: CollectionType = Field(CollectionType.TEXT)
     description: str = Field("")
     capacity: int = Field(1000)
     embedding_model_id: str = Field(...)
