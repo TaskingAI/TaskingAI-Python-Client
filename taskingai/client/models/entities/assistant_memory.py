@@ -20,5 +20,4 @@ __all__ = ["AssistantMemory"]
 
 class AssistantMemory(BaseModel):
     type: AssistantMemoryType = Field(...)
-    max_messages: Optional[int] = Field(None, ge=1, le=1024)
-    max_tokens: Optional[int] = Field(None, ge=1, le=8192)
+    max_tokens: Optional[int] = Field(None, ge=0, le=8192)

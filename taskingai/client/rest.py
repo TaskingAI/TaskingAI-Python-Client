@@ -139,11 +139,11 @@ class RESTSyncClientObject(object):
             elif headers["Content-Type"] == "multipart/form-data":
                 # In the case of multipart, we leave it to httpx to encode the files and data
                 request_content = post_params
-        elif body:
+        elif body is not None:
             if "Content-Type" not in headers:
                 headers["Content-Type"] = "application/json"
-            if body is not None:
-                request_content = json.dumps(body)
+            # if body is not None:
+            request_content = json.dumps(body)
         elif files:
             request_files = files
 
@@ -395,11 +395,11 @@ class RESTAsyncClientObject(object):
             elif headers["Content-Type"] == "multipart/form-data":
                 # In the case of multipart, we leave it to httpx to encode the files and data
                 request_content = post_params
-        elif body:
+        elif body is not None:
             if "Content-Type" not in headers:
                 headers["Content-Type"] = "application/json"
-            if body is not None:
-                request_content = json.dumps(body)
+            # if body is not None:
+            request_content = json.dumps(body)
         elif files:
             request_files = files
 

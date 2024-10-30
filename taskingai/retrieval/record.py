@@ -137,7 +137,7 @@ def create_record(
     collection_id: str,
     *,
     type: Union[RecordType, str],
-    text_splitter: Union[TextSplitter, Dict[str, Any]],
+    text_splitter: Optional[Union[TextSplitter, Dict[str, Any]]] = None,
     title: Optional[str] = None,
     content: Optional[str] = None,
     file_id: Optional[str] = None,
@@ -158,7 +158,8 @@ def create_record(
     :return: The created record object.
     """
     type = _validate_record_type(type, content, file_id, url)
-    text_splitter = text_splitter if isinstance(text_splitter, TextSplitter) else TextSplitter(**text_splitter)
+    if text_splitter:
+        text_splitter = text_splitter if isinstance(text_splitter, TextSplitter) else TextSplitter(**text_splitter)
 
     body = RecordCreateRequest(
         title=title or "",
@@ -177,7 +178,7 @@ async def a_create_record(
     collection_id: str,
     *,
     type: Union[RecordType, str],
-    text_splitter: Union[TextSplitter, Dict[str, Any]],
+    text_splitter: Optional[Union[TextSplitter, Dict[str, Any]]] = None,
     title: Optional[str] = None,
     content: Optional[str] = None,
     file_id: Optional[str] = None,
@@ -199,7 +200,8 @@ async def a_create_record(
     """
 
     type = _validate_record_type(type, content, file_id, url)
-    text_splitter = text_splitter if isinstance(text_splitter, TextSplitter) else TextSplitter(**text_splitter)
+    if text_splitter:
+        text_splitter = text_splitter if isinstance(text_splitter, TextSplitter) else TextSplitter(**text_splitter)
 
     body = RecordCreateRequest(
         title=title or "",

@@ -17,6 +17,4 @@ __all__ = ["AssistantMemoryType"]
 
 
 class AssistantMemoryType(str, Enum):
-    ZERO = "zero"
-    NAIVE = "naive"
     MESSAGE_WINDOW = "message_window"

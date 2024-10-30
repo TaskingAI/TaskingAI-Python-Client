@@ -29,4 +29,4 @@ class Config:
 
     taskingai.init(api_key=taskingai_apikey, host=taskingai_host)
 
-    sleep_time = 1
+    sleep_time = 4

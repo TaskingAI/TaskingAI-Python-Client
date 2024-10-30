@@ -20,3 +20,4 @@ class RecordType(str, Enum):
     TEXT = "text"
     FILE = "file"
     WEB = "web"
+    QA_SHEET = "qa_sheet"

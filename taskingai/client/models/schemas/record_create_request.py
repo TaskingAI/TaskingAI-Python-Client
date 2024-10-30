@@ -25,5 +25,5 @@ class RecordCreateRequest(BaseModel):
     url: Optional[str] = Field(None, min_length=1, max_length=2048)
     title: str = Field("", min_length=0, max_length=256)
     content: Optional[str] = Field(None, min_length=1, max_length=32768)
-    text_splitter: TextSplitter = Field(...)
+    text_splitter: Optional[TextSplitter] = Field(None)
     metadata: Dict[str, str] = Field({}, min_length=0, max_length=16)
