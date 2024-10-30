@@ -348,7 +348,7 @@ async def a_delete_assistant(assistant_id: str) -> None:
     await async_api_delete_assistant(assistant_id=assistant_id)
 
 
-def clean_chat_context(assistant_id: str, chat_id: str) -> ChatCleanContextResponse:
+def clean_chat_context(assistant_id: str, chat_id: str) -> Message:
     """
     Clean chat context.
 
@@ -356,10 +356,11 @@ def clean_chat_context(assistant_id: str, chat_id: str) -> ChatCleanContextRespo
     :param chat_id: The ID of the chat.
     """
 
-    api_clean_chat_context(assistant_id=assistant_id, chat_id=chat_id)
+    response = api_clean_chat_context(assistant_id=assistant_id, chat_id=chat_id)
+    return response.data
 
 
-async def a_clean_chat_context(assistant_id: str, chat_id: str) -> ChatCleanContextResponse:
+async def a_clean_chat_context(assistant_id: str, chat_id: str) -> Message:
     """
     Clean chat context in async mode.
 
@@ -367,4 +368,5 @@ async def a_clean_chat_context(assistant_id: str, chat_id: str) -> ChatCleanCont
     :param chat_id: The ID of the chat.
     """
 
-    await async_api_clean_chat_context(assistant_id=assistant_id, chat_id=chat_id)
+    response = await async_api_clean_chat_context(assistant_id=assistant_id, chat_id=chat_id)
+    return response.data
