@@ -24,6 +24,8 @@ __all__ = [
     "a_create_assistant",
     "a_update_assistant",
     "a_delete_assistant",
+    "clean_chat_context",
+    "a_clean_chat_context",
 ]
 
 AssistantTool = ToolRef
@@ -344,3 +346,25 @@ async def a_delete_assistant(assistant_id: str) -> None:
     """
 
     await async_api_delete_assistant(assistant_id=assistant_id)
+
+
+def clean_chat_context(assistant_id: str, chat_id: str) -> None:
+    """
+    Clean chat context.
+
+    :param assistant_id: The ID of the assistant.
+    :param chat_id: The ID of the chat.
+    """
+
+    api_clean_chat_context(assistant_id=assistant_id, chat_id=chat_id)
+
+
+async def a_clean_chat_context(assistant_id: str, chat_id: str) -> None:
+    """
+    Clean chat context in async mode.
+
+    :param assistant_id: The ID of the assistant.
+    :param chat_id: The ID of the chat.
+    """
+
+    await async_api_clean_chat_context(assistant_id=assistant_id, chat_id=chat_id)

@@ -13,6 +13,7 @@ License: Apache 2.0
 
 from .api_bulk_create_actions import *
 from .api_chat_completion import *
+from .api_clean_chat_context import *
 from .api_create_assistant import *
 from .api_create_chat import *
 from .api_create_chunk import *

@@ -14,12 +14,15 @@ License: Apache 2.0
 from pydantic import BaseModel, Field
 from typing import Dict
 
+from ..entities.collection import CollectionType
+
 
 __all__ = ["CollectionCreateRequest"]
 
 
 class CollectionCreateRequest(BaseModel):
     name: str = Field("")
+    type: CollectionType = Field("text")
     description: str = Field("")
     capacity: int = Field(1000)
     embedding_model_id: str = Field(...)
