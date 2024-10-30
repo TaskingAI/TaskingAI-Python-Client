@@ -1,6 +1,5 @@
 from taskingai.assistant import a_list_assistants, a_list_chats, a_list_messages
 from taskingai.retrieval import a_list_collections, a_list_records
-from taskingai.tool import a_list_actions
 
 import pytest
 import asyncio
@@ -42,13 +41,6 @@ async def a_record_id(a_collection_id):
     res = await a_list_records(str(collection_id))
     record_id = res[0].record_id
     return record_id
-
-
-@pytest.fixture(scope="function")
-async def a_action_id():
-    res = await a_list_actions()
-    action_id = res[-1].action_id
-    return action_id
 
 
 @pytest.fixture(scope="session")

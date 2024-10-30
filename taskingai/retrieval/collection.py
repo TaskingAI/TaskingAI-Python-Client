@@ -107,6 +107,7 @@ def create_collection(
     embedding_model_id: str,
     capacity: int = 1000,
     name: Optional[str] = None,
+    type: Optional[CollectionType] = None,
     description: Optional[str] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Collection:
@@ -116,6 +117,7 @@ def create_collection(
     :param embedding_model_id: The ID of an available embedding model in the project.
     :param capacity: The maximum number of embeddings that can be stored in the collection.
     :param name: The name of the collection.
+    :param type: The type of the collection.
     :param description: The description of the collection.
     :param metadata: The collection metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The created collection object.
@@ -125,6 +127,7 @@ def create_collection(
         embedding_model_id=embedding_model_id,
         capacity=capacity,
         name=name or "",
+        type=type or CollectionType.TEXT,
         description=description or "",
         metadata=metadata or {},
     )
@@ -137,6 +140,7 @@ async def a_create_collection(
     embedding_model_id: str,
     capacity: int = 1000,
     name: Optional[str] = None,
+    type: Optional[CollectionType] = None,
     description: Optional[str] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Collection:
@@ -146,16 +150,17 @@ async def a_create_collection(
     :param embedding_model_id: The ID of an available embedding model in the project.
     :param capacity: The maximum number of embeddings that can be stored in the collection.
     :param name: The name of the collection.
+    :param type: The type of the collection.
     :param description: The description of the collection.
     :param metadata: The collection metadata. It can store up to 16 key-value pairs where each key's length is less than 64 and value's length is less than 512.
     :return: The created collection object.
     """
 
-    # todo verify parameters
     body = CollectionCreateRequest(
         embedding_model_id=embedding_model_id,
         capacity=capacity,
         name=name or "",
+        type=type or CollectionType.TEXT,
         description=description or "",
         metadata=metadata or {},
     )

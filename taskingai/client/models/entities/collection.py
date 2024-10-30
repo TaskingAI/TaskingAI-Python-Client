@@ -11,21 +11,26 @@ Organization: TaskingAI
 License: Apache 2.0
 """
 
+from enum import Enum
 from pydantic import BaseModel, Field
 from typing import Dict
 
 
-__all__ = ["Collection"]
+__all__ = ["Collection", "CollectionType"]
+
+
+class CollectionType(str, Enum):
+    TEXT = "text"
+    QA = "qa"
 
 
 class Collection(BaseModel):
     object: str = Field("Collection")
+    type: CollectionType = Field(CollectionType.TEXT)
     collection_id: str = Field(..., min_length=24, max_length=24)
     name: str = Field("", min_length=0, max_length=256)
     description: str = Field("", min_length=0, max_length=512)
     capacity: int = Field(1000, ge=1)
-    num_records: int = Field(..., ge=0)
-    num_chunks: int = Field(..., ge=0)
     embedding_model_id: str = Field(..., min_length=8, max_length=8)
     metadata: Dict[str, str] = Field({}, min_length=0, max_length=16)
     updated_timestamp: int = Field(..., ge=0)

@@ -1,10 +1,10 @@
 import pytest
-
-from taskingai.retrieval import list_collections, list_records, list_chunks
+#
+# from taskingai.retrieval import list_collections, list_records, list_chunks
 from taskingai.assistant import list_assistants, list_chats, list_messages
-from taskingai.tool import list_actions
-
-
+# from taskingai.tool import list_actions
+#
+#
 @pytest.fixture(scope="session")
 def assistant_id():
     res = list_assistants()
@@ -24,34 +24,3 @@ def message_id(assistant_id, chat_id):
     res = list_messages(str(assistant_id), str(chat_id))
     message_id = res[0].message_id
     return message_id
-
-
-@pytest.fixture(scope="session")
-def collection_id():
-    res = list_collections()
-    collection_id = res[0].collection_id
-    return collection_id
-
-
-@pytest.fixture(scope="session")
-def record_id(collection_id):
-    res = list_records(str(collection_id))
-    record_id = res[-1].record_id
-    return record_id
-
-
-@pytest.fixture(scope="session")
-def chunk_id(collection_id):
-    res = list_chunks(str(collection_id))
-    chunk_id = res[0].chunk_id
-    return chunk_id
-
-
-@pytest.fixture(scope="session")
-def action_id():
-    res = list_actions()
-    action_id = res[-1].action_id
-    return action_id
-
-
-

@@ -138,38 +138,6 @@ taskingai.retrieval.delete_collection(collection_id=coll.collection_id)
 print("Collection deleted.")
 ```
 
-### Tools
-
-The Tools module in TaskingAI is an essential suite designed to augment the capabilities of TaskingAI agents. Here is an example of how to create, run, and delete a tool action:
-
-```python
-import taskingai
-
-# Define a schema for the tool action
-OPENAPI_SCHEMA = {
-    # Schema definition goes here
-}
-
-# Create a tool action based on the defined schema
-actions = taskingai.tool.bulk_create_actions(
-    openapi_schema=OPENAPI_SCHEMA,
-    authentication={"type": "none"},
-)
-action = actions[0]
-print(f"Action created: {action.action_id}")
-
-# Run the action for a test purpose
-result = taskingai.tool.run_action(
-    action_id=action.action_id,
-    parameters={"number": 42}
-)
-print(f"Action result: {result}")
-
-# Delete the action when done
-taskingai.tool.delete_action(action_id=action.action_id)
-print("Action deleted.")
-```
-
 ## Contributing
 
 We welcome contributions of all kinds. Please read our [Contributing Guidelines](./CONTRIBUTING.md) for more information on how to get started.

@@ -15,6 +15,8 @@ __all__ = [
     "a_create_chat",
     "a_update_chat",
     "a_delete_chat",
+    "clean_chat_context",
+    "a_clean_chat_context",
 ]
 
 
@@ -238,3 +240,27 @@ async def a_delete_chat(
     """
 
     await async_api_delete_chat(assistant_id=assistant_id, chat_id=chat_id)
+
+
+def clean_chat_context(assistant_id: str, chat_id: str) -> Message:
+    """
+    Clean chat context.
+
+    :param assistant_id: The ID of the assistant.
+    :param chat_id: The ID of the chat.
+    """
+
+    response = api_clean_chat_context(assistant_id=assistant_id, chat_id=chat_id)
+    return response.data
+
+
+async def a_clean_chat_context(assistant_id: str, chat_id: str) -> Message:
+    """
+    Clean chat context in async mode.
+
+    :param assistant_id: The ID of the assistant.
+    :param chat_id: The ID of the chat.
+    """
+
+    response = await async_api_clean_chat_context(assistant_id=assistant_id, chat_id=chat_id)
+    return response.data

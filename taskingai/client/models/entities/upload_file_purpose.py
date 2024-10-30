@@ -18,3 +18,4 @@ __all__ = ["UploadFilePurpose"]
 
 class UploadFilePurpose(str, Enum):
     RECORD_FILE = "record_file"
+    QA_RECORD_FILE = "qa_record_file"

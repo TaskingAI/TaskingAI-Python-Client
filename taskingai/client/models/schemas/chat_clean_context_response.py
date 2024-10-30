@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# action_list_response.py
+# chat_completion_response.py
 
 """
 This script is automatically generated for TaskingAI python client
@@ -12,14 +12,11 @@ License: Apache 2.0
 """
 
 from pydantic import BaseModel, Field
-from typing import List
-from ..entities.action import Action
+from ..entities.message import Message
 
-__all__ = ["ActionListResponse"]
+__all__ = ["ChatCleanContextResponse"]
 
 
-class ActionListResponse(BaseModel):
+class ChatCleanContextResponse(BaseModel):
     status: str = Field("success")
-    data: List[Action] = Field(...)
-    fetched_count: int = Field(...)
-    has_more: bool = Field(...)
+    data: Message = Field(...)
