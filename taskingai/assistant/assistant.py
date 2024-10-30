@@ -348,7 +348,7 @@ async def a_delete_assistant(assistant_id: str) -> None:
     await async_api_delete_assistant(assistant_id=assistant_id)
 
 
-def clean_chat_context(assistant_id: str, chat_id: str) -> None:
+def clean_chat_context(assistant_id: str, chat_id: str) -> ChatCleanContextResponse:
     """
     Clean chat context.
 
@@ -359,7 +359,7 @@ def clean_chat_context(assistant_id: str, chat_id: str) -> None:
     api_clean_chat_context(assistant_id=assistant_id, chat_id=chat_id)
 
 
-async def a_clean_chat_context(assistant_id: str, chat_id: str) -> None:
+async def a_clean_chat_context(assistant_id: str, chat_id: str) -> ChatCleanContextResponse:
     """
     Clean chat context in async mode.
 
