@@ -107,6 +107,7 @@ def create_collection(
     embedding_model_id: str,
     capacity: int = 1000,
     name: Optional[str] = None,
+    type: Optional[CollectionType] = None,
     description: Optional[str] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Collection:
@@ -125,6 +126,7 @@ def create_collection(
         embedding_model_id=embedding_model_id,
         capacity=capacity,
         name=name or "",
+        type=type or CollectionType.TEXT,
         description=description or "",
         metadata=metadata or {},
     )
@@ -137,6 +139,7 @@ async def a_create_collection(
     embedding_model_id: str,
     capacity: int = 1000,
     name: Optional[str] = None,
+    type: Optional[CollectionType] = None,
     description: Optional[str] = None,
     metadata: Optional[Dict[str, str]] = None,
 ) -> Collection:
@@ -156,6 +159,7 @@ async def a_create_collection(
         embedding_model_id=embedding_model_id,
         capacity=capacity,
         name=name or "",
+        type=type or CollectionType.TEXT,
         description=description or "",
         metadata=metadata or {},
     )

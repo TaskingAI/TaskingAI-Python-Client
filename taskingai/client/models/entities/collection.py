@@ -16,7 +16,7 @@ from pydantic import BaseModel, Field
 from typing import Dict
 
 
-__all__ = ["Collection"]
+__all__ = ["Collection", "CollectionType"]
 
 
 class CollectionType(str, Enum):
